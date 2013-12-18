@@ -1,6 +1,8 @@
 <?php
 namespace CartBundle\Action;
 use ActionKit\Action;
+use CartBundle\Cart;
+use Exception;
 
 class AddToCart extends Action
 {
@@ -19,6 +21,14 @@ class AddToCart extends Action
     }
 
     public function run() {
-        return $this->success('成功新增至購物車');
+        $cart = Cart::getInstance();
+        try {
+            if ( $cart->addItem( $this->arg('product_id'), $this->arg('product_type'), $this->arg('quantity') ) ) {
+                return $this->success('成功新增至購物車');
+            }
+        } catch ( Exception $e ) {
+            return $this->error( $e->getMessage() );
+        }
+        return $this->error(_('不明的錯誤'));
     }
 }

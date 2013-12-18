@@ -4,6 +4,7 @@ use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\Order;
+use Exception;
 
 class CartException extends Exception { }
 
