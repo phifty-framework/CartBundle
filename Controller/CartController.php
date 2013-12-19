@@ -1,11 +1,18 @@
 <?php
 namespace CartBundle\Controller;
 use Phifty\Controller;
+use CartBundle\Cart;
 
 class CartController extends Controller
 {
+
     public function indexAction() {
-        return $this->render("cart.html");
+        $cart = Cart::getInstance();
+        $orderItems = $cart->getOrderItems();
+        return $this->render("cart.html",array(
+            'cart' => $cart,
+            'orderItems' => $orderItems,
+        ));
     }
 
     public function calculateAction() {

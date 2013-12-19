@@ -13,6 +13,7 @@ class CartBundle extends Bundle
         $this->route('/=/cart/items', 'CartController:items');
         $this->route('/=/cart/calculate', 'CartController:calculate');
         $this->route('/=/cart/apply_coupon', 'CartController:applyCoupon');
+        $this->route('/cart', 'CartController:index');
 
         /*
         $this->expandRoute( '/bs/product_resource', '\\Product\\ProductResourceCRUDHandler' );

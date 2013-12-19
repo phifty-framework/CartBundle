@@ -20,12 +20,14 @@ class Cart extends CartBase
         $this->storage = new SessionCartStorage;
     }
 
-    public function removeItem($id) {
+    public function removeItem($id)
+    {
         $this->deleteOrderItem($id);
         $this->storage->remove($id);
     }
 
-    public function addItem( $productId , $typeId, $quantity = 1) {
+    public function addItem($productId, $typeId, $quantity = 1)
+    {
         $product = new Product( intval($productId) );
         if ( ! $product->id ) {
             throw new CartException(_("找不到商品"));
@@ -57,7 +59,7 @@ class Cart extends CartBase
         foreach( $items as $item ) {
             if ( $item->product_id == $product->id && $item->type_id == $foundType->id ) {
                 $item->update(array(
-                    'quantity' => $quantity,
+                    'quantity' => intval($item->quantity) + $quantity,
                 ));
                 $foundExistingOrderItem = true;
             }
@@ -67,6 +69,11 @@ class Cart extends CartBase
             $this->storage->add( $item->id );
         }
         return true;
+    }
+
+    public function calculateTotalQuantity() {
+        $collection = $this->getOrderItems();
+        return $collection->calculateTotalQuantity();
     }
 
     public function calculateTotalAmount() {
@@ -83,6 +90,11 @@ class Cart extends CartBase
 
     public function hasCoupon() {
         return false;
+    }
+
+    public function validateCoupon($couponCode) {
+        // TODO: validate coupon code...
+        // Set COUPON code to SESSION (we don't use storage to save coupon here
     }
 
 }

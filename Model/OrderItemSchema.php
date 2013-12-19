@@ -29,6 +29,9 @@ class OrderItemSchema extends SchemaDeclare
             ->required()
             ;
 
+        $this->belongsTo('type', 'ProductBundle\\Model\\ProductTypeSchema','id','type_id');
+
+        $this->belongsTo('product', 'ProductBundle\\Model\\ProductSchema','id','product_id');
 
     }
 }
