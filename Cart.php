@@ -4,30 +4,28 @@ use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\Order;
+use CartBundle\Exception\CartException;
 use Exception;
 use ArrayIterator;
 use IteratorAggregate;
 
-class CartException extends Exception { }
-
-class Cart
+/**
+ * Contains the logics of Cart
+ */
+class Cart extends CartBase
 {
 
-    public $storage;
-
     public function __construct() {
+        // TODO: provide options to specify storage engine.
         $this->storage = new SessionCartStorage;
     }
 
-    static public function getInstance() {
-        static $instance;
-        if ( $instance ) {
-            return $instance;
-        }
-        return $instance = new self;
+    public function removeItem($id) {
+        $this->deleteOrderItem($id);
+        $this->storage->remove($id);
     }
 
-    public function updateOrderItem( $productId , $typeId, $quantity = 1) {
+    public function addItem( $productId , $typeId, $quantity = 1) {
         $product = new Product( intval($productId) );
         if ( ! $product->id ) {
             throw new CartException(_("找不到商品"));
@@ -51,44 +49,42 @@ class Cart
         // Create the order item with session here....
         $quantity = intval($quantity);
 
-        // XXX: find the same product and type, 
-        //   if it's the same, we should simply update the quantity instead of creating new items
-        $item = $this->createOrderItem($product, $foundType, $quantity);
-        $this->storage->add( $item->id );
+
+        // find the same product and type, 
+        // if it's the same, we should simply update the quantity instead of creating new items
+        $foundExistingOrderItem = false;
+        $items = $this->getOrderItems();
+        foreach( $items as $item ) {
+            if ( $item->product_id == $product->id && $item->type_id == $foundType->id ) {
+                $item->update(array(
+                    'quantity' => $quantity,
+                ));
+                $foundExistingOrderItem = true;
+            }
+        }
+        if ( ! $foundExistingOrderItem ) {
+            $item = $this->createOrderItem($product, $foundType, $quantity);
+            $this->storage->add( $item->id );
+        }
         return true;
     }
 
-    public function validateItem($id) {
-        $item = new OrderItem( intval($id) );
-        return $item->id ? true : false;
+    public function calculateTotalAmount() {
+        $collection = $this->getOrderItems();
+        return $collection->calculateTotalAmount();
     }
 
-    public function validateItems() {
-        // using session as our storage
-        $items = $this->storage->get();
-        if ( count($items) ) {
-            $newItems = array();
-            foreach( $items as $id ) {
-                if ( $this->validateItem($id) ) {
-                    $newItems[] = intval($id);
-                }
-            }
-            $this->storage->set($newItems);
-        }
+    public function calculateDiscountedTotalAmount() {
+        $totalAmount = $this->calculateTotalAmount();
+        // get coupon discount ...
+        $couponDiscount = 0;
+        return $totalAmount - $couponDiscount;
     }
 
-    public function createOrderItem($product, $type, $quantity) {
-        $item = new OrderItem;
-        $ret = $item->create([
-            'product_id' => $product->id,
-            'type_id'    => $type->id,
-            'quantity'   => $quantity,
-        ]);
-        if ( ! $ret->success ) {
-            throw new CartException(_('無法新增至購物車'));
-        }
-        return $item;
+    public function hasCoupon() {
+        return false;
     }
+
 }
 
 

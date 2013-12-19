@@ -1,6 +1,10 @@
 <?php
 namespace CartBundle;
 
+
+/**
+ * CartStorage stores only order item id list.
+ */
 interface CartStorage {
 
     public function isEmpty();
