@@ -49,18 +49,39 @@ class Cart
 
         // XXX: find the same product and type, 
         //   if it's the same, we should simply update the quantity instead of creating new items
+        $item = $this->createOrderItem($product, $foundType, $quantity);
+        $_SESSION['items'][] = $item->id;
+        return true;
+    }
+
+    public function validateItems() {
+        // using session as our storage
+        if ( isset($_SESSION['items']) ) {
+            $items = array();
+            foreach( $_SESSION['items'] as $id ) {
+                $item = new OrderItem( intval($id) );
+                if ( $item->id ) {
+                    $items[] = $item->id;
+                }
+            }
+            $_SESSION['items'] = $items;
+        }
+    }
+
+    public function createOrderItem($product, $type, $quantity) {
         $item = new OrderItem;
         $ret = $item->create([
             'product_id' => $product->id,
-            'type_id'    => $foundType->id,
+            'type_id'    => $type->id,
             'quantity'   => $quantity,
         ]);
         if ( ! $ret->success ) {
             throw new CartException(_('無法新增至購物車'));
         }
-        $_SESSION['items'][] = $item->id;
-        return true;
+        return $item;
     }
+
+
 }
 
 
