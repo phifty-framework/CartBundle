@@ -19,6 +19,10 @@ class SessionCartStorage
         return empty($_SESSION['items']);
     }
 
+    public function notEmpty() {
+        return ! empty($_SESSION['items']);
+    }
+
     public function count() {
         return count($_SESSION['items']);
     }

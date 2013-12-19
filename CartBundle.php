@@ -10,6 +10,10 @@ class CartBundle extends Bundle
 
     public function init() 
     {
+        $this->route('/=/cart/items', 'CartController:items');
+        $this->route('/=/cart/calculate', 'CartController:calculate');
+        $this->route('/=/cart/apply_coupon', 'CartController:applyCoupon');
+
         /*
         $this->expandRoute( '/bs/product_resource', '\\Product\\ProductResourceCRUDHandler' );
         $this->expandRoute( '/bs/product_image' ,   '\\Product\\ProductImageCRUDHandler' );

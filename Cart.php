@@ -54,9 +54,13 @@ class Cart
         // XXX: find the same product and type, 
         //   if it's the same, we should simply update the quantity instead of creating new items
         $item = $this->createOrderItem($product, $foundType, $quantity);
-
         $this->storage->add( $item->id );
         return true;
+    }
+
+    public function validateItem($id) {
+        $item = new OrderItem( intval($id) );
+        return $item->id ? true : false;
     }
 
     public function validateItems() {
@@ -65,9 +69,8 @@ class Cart
         if ( count($items) ) {
             $newItems = array();
             foreach( $items as $id ) {
-                $item = new OrderItem( intval($id) );
-                if ( $item->id ) {
-                    $newItems[] = $item->id;
+                if ( $this->validateItem($id) ) {
+                    $newItems[] = intval($id);
                 }
             }
             $this->storage->set($newItems);
