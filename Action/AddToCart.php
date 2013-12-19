@@ -23,7 +23,7 @@ class AddToCart extends Action
     public function run() {
         $cart = Cart::getInstance();
         try {
-            if ( $cart->updateOrderItem( $this->arg('product_id'), $this->arg('product_type'), $this->arg('quantity') ) ) {
+            if ( $cart->addItem( $this->arg('product_id'), $this->arg('product_type'), $this->arg('quantity') ) ) {
                 return $this->success('成功新增至購物車');
             }
         } catch ( Exception $e ) {
