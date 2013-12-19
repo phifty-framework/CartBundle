@@ -5,11 +5,20 @@ use ProductBundle\Model\ProductType;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\Order;
 use Exception;
+use ArrayIterator;
+use IteratorAggregate;
 
 class CartException extends Exception { }
 
 class Cart
 {
+
+    public $storage;
+
+    public function __construct() {
+        $this->storage = new SessionCartStorage;
+    }
+
     static public function getInstance() {
         static $instance;
         if ( $instance ) {
@@ -18,7 +27,7 @@ class Cart
         return $instance = new self;
     }
 
-    public function addItem( $productId , $typeId, $quantity = 1) {
+    public function updateOrderItem( $productId , $typeId, $quantity = 1) {
         $product = new Product( intval($productId) );
         if ( ! $product->id ) {
             throw new CartException(_("找不到商品"));
@@ -40,31 +49,28 @@ class Cart
         }
 
         // Create the order item with session here....
-        if ( ! isset($_SESSION['items']) ) {
-            $_SESSION['items'] = array();
-        }
         $quantity = intval($quantity);
-
-
 
         // XXX: find the same product and type, 
         //   if it's the same, we should simply update the quantity instead of creating new items
         $item = $this->createOrderItem($product, $foundType, $quantity);
-        $_SESSION['items'][] = $item->id;
+
+        $this->storage->add( $item->id );
         return true;
     }
 
     public function validateItems() {
         // using session as our storage
-        if ( isset($_SESSION['items']) ) {
-            $items = array();
-            foreach( $_SESSION['items'] as $id ) {
+        $items = $this->storage->get();
+        if ( count($items) ) {
+            $newItems = array();
+            foreach( $items as $id ) {
                 $item = new OrderItem( intval($id) );
                 if ( $item->id ) {
-                    $items[] = $item->id;
+                    $newItems[] = $item->id;
                 }
             }
-            $_SESSION['items'] = $items;
+            $this->storage->set($newItems);
         }
     }
 
@@ -80,8 +86,6 @@ class Cart
         }
         return $item;
     }
-
-
 }
 
 
