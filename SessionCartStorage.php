@@ -44,10 +44,16 @@ class SessionCartStorage
 
     public function remove($itemId) {
         $itemId = intval($itemId);
-        $idx = array_search( $itemId, $_SESSION['items'] );
-        if ( $idx !== false ) {
-            array_splice( $_SESSION['items'], $idx , 1 );
+        $items = $this->get();
+
+        if( $items && ! empty($items) ) {
+            $idx = array_search( $itemId, $this->get() );
+            if ( $idx !== false ) {
+                array_splice( $_SESSION['items'], $idx , 1 );
+                return true;
+            }
         }
+        return false;
     }
 
 
