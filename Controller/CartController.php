@@ -6,6 +6,9 @@ use CartBundle\Cart;
 class CartController extends Controller
 {
 
+    /**
+     * Cart page controller action
+     */
     public function indexAction() {
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
@@ -14,24 +17,4 @@ class CartController extends Controller
             'orderItems' => $orderItems,
         ));
     }
-
-    public function calculateAction() {
-
-    }
-
-    public function applyCouponAction() {
-
-    }
-
-
-    /**
-     * @param $id               integer order item id.
-     * @param $product_type     integer product type id
-     * @param $quantity integer quantity
-     */
-    public function updateItem($id, $quantity)
-    {
-
-    }
-
 }

@@ -5,6 +5,7 @@ use ProductBundle\Model\ProductType;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\Order;
 use CartBundle\Exception\CartException;
+use CouponBundle\Model\Coupon;
 use Exception;
 use ArrayIterator;
 use IteratorAggregate;
@@ -18,12 +19,14 @@ class Cart extends CartBase
     public function __construct() {
         // TODO: provide options to specify storage engine.
         $this->storage = new SessionCartStorage;
+        $this->validateItems();
     }
 
     public function removeItem($id)
     {
-        $this->deleteOrderItem($id);
-        $this->storage->remove($id);
+        if ( $this->deleteOrderItem($id) ) {
+            $this->storage->remove($id);
+        }
     }
 
     public function addItem($productId, $typeId, $quantity = 1)
@@ -83,18 +86,33 @@ class Cart extends CartBase
 
     public function calculateDiscountedTotalAmount() {
         $totalAmount = $this->calculateTotalAmount();
-        // get coupon discount ...
-        $couponDiscount = 0;
-        return $totalAmount - $couponDiscount;
+        if ( $coupon = $this->loadCoupon() ) {
+            return $coupon->calcualteDiscount($totalAmount);
+        }
+        return $totalAmount;
     }
 
-    public function hasCoupon() {
+
+    /**
+     * Coupon related logics
+     */
+    public function applyCoupon($coupon) {
+        // always validate coupon
+        if ( $coupon->isValid() ) {
+            $_SESSION['coupon_code'] = $coupon->coupon_code;
+            return true;
+        }
         return false;
     }
 
-    public function validateCoupon($couponCode) {
-        // TODO: validate coupon code...
-        // Set COUPON code to SESSION (we don't use storage to save coupon here
+    public function loadCoupon() 
+    {
+        if ( isset($_SESSION['coupon_code']) ) {
+            $coupon = new Coupon([ 'coupon_code' => $_SESSION['coupon_code'] ]);
+            if ( $coupon->id ) {
+                return $coupon;
+            }
+        }
     }
 
 }
