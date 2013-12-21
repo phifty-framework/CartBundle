@@ -15,6 +15,10 @@ class SessionCartStorage
     implements IteratorAggregate, ArrayAccess, Countable, CartStorage
 {
 
+    public function cleanUp() {
+        unset($_SESSION['items']);
+    }
+
     public function isEmpty() {
         return empty($_SESSION['items']);
     }

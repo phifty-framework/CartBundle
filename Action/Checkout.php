@@ -41,6 +41,7 @@ class Checkout extends CreateRecordAction
 
                 }
             }
+            $cart->cleanUp();
             $this->success(_('訂單建立成功，導向中...'));
             return $this->redirectLater('/checkout/review?order_id=' . $this->record->id, 3);
         } else {

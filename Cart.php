@@ -118,6 +118,11 @@ class Cart extends CartBase
         }
     }
 
+    public function cleanUp() {
+        unset($_SESSION['coupon_code']);
+        $this->storage->cleanUp();
+    }
+
 }
 
 
