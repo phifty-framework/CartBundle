@@ -55,6 +55,8 @@ class OrderItemSchema extends SchemaDeclare
             ))
             ;
 
+        $this->belongsTo('shipping_company', 'ShippingBundle\\Model\\CompanySchema', 'id', 'shipping_company_id' );
+
         $this->belongsTo('order', 'CartBundle\\Model\\OrderSchema','id','order_id');
 
         $this->belongsTo('type', 'ProductBundle\\Model\\ProductTypeSchema','id','type_id');
