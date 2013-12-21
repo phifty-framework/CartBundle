@@ -46,6 +46,42 @@ class OrderSchema extends SchemaDeclare
                 ;
         }
 
+        $this->column('invoice_number')
+            ->varchar(32)
+            ->label('發票編號')
+            ;
+
+        $this->column('invoice_type')
+            ->integer()
+            ->validValues([
+                '二聯' => 2,
+                '三聯' => 3,
+            ])
+            ->label('發票種類')
+            ->renderAs('SelectInput')
+            ;
+
+        // unified taxation code
+        $this->column('utc')
+            ->varchar(12)
+            ->label('統編抬頭')
+            ;
+
+        $this->column('utc_title')
+            ->varchar(64)
+            ->label('統編抬頭')
+            ;
+
+        $this->column('utc_address')
+            ->varchar(128)
+            ->label('發票寄送地址')
+            ;
+
+        $this->column('utc_name')
+            ->varchar(32)
+            ->label('發票收件人')
+            ;
+
         $this->column('paid_amount')
             ->integer()
             ->default(0)
@@ -56,6 +92,11 @@ class OrderSchema extends SchemaDeclare
             ->integer()
             ->default(0)
             ->label('總金額')
+            ;
+
+        $this->column('remark')
+            ->text()
+            ->label('消費者備註')
             ;
 
     }

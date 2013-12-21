@@ -10,6 +10,11 @@ class CheckoutController extends Controller
         ]);
     }
 
+    public function confirmAction() {
+        return $this->render("checkout_confirm.html", [
+        ]);
+    }
+
     public function orderAction() {
         return $this->render("checkout_order.html");
     }

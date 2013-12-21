@@ -16,6 +16,7 @@ class CartBundle extends Bundle
 
 
         $this->route('/cart', 'CartController:index');
+        $this->route('/checkout/confirm', 'CheckoutController:confirm');
         $this->route('/checkout/review', 'CheckoutController:review');
         $this->route('/checkout/order', 'CheckoutController:order');
         $this->route('/checkout/payment', 'CheckoutController:payment');
