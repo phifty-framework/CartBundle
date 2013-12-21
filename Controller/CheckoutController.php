@@ -7,7 +7,6 @@ class CheckoutController extends Controller
 {
     public function reviewAction() {
         return $this->render("checkout_review.html", [
-            'cart' => Cart::getInstance()
         ]);
     }
 

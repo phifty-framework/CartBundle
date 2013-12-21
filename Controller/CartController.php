@@ -13,7 +13,6 @@ class CartController extends Controller
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
         return $this->render("cart.html",array(
-            'cart' => $cart,
             'orderItems' => $orderItems,
         ));
     }
