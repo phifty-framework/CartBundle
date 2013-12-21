@@ -59,22 +59,19 @@ class Cart extends CartBase
 
         // find the same product and type, 
         // if it's the same, we should simply update the quantity instead of creating new items
-        $foundExistingOrderItem = false;
         if ( $items = $this->getOrderItems() ) {
             foreach( $items as $item ) {
                 if ( $item->product_id == $product->id && $item->type_id == $foundType->id ) {
                     $item->update(array(
                         'quantity' => intval($item->quantity) + $quantity,
                     ));
-                    $foundExistingOrderItem = true;
+                    return true;
                 }
             }
         }
 
-        if ( ! $foundExistingOrderItem ) {
-            $item = $this->createOrderItem($product, $foundType, $quantity);
-            $this->storage->add( $item->id );
-        }
+        $item = $this->createOrderItem($product, $foundType, $quantity);
+        $this->storage->add( $item->id );
         return true;
     }
 
