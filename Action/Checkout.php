@@ -26,7 +26,20 @@ class Checkout extends CreateRecordAction
         $this->filterOut('paid_amount','total_amount');
     }
 
-    public function run() {
+    public function run() 
+    {
+        if ( $t = $this->arg('invoice_type') ) {
+            if ( intval($t) == 3 ) {
+                $this->requireArgs('utc','utc_title','utc_name','utc_address');
+                if ( $this->result->hasInvalidMessages() ) {
+                    return $this->error(_('您選擇了三聯式發票，請確認欄位填寫喔。'));
+                }
+                if ( strlen(trim($this->arg('utc'))) != 8 ) {
+                    $this->invalidField('utc', _('統一編號必須是八碼，再麻煩您檢查一下') );
+                }
+            }
+        }
+
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
         $totalAmount = $cart->calculateDiscountedTotalAmount();
