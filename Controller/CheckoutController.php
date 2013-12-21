@@ -10,11 +10,22 @@ class CheckoutController extends Controller
         // o=21&t=fb911675
         $oId = intval($this->request->param('o'));
         $token = $this->request->param('t');
+
+        if ( ! $oId || ! $token ) {
+            // XXX: show correct erro message
+            return $this->redirect('/');
+        }
+
+
         $order = new Order;
-        $order->load([
+        $ret = $order->load([
             'id' => $oId,
             'token' => $token,
         ]);
+        if ( ! $ret->success ||  ! $order->id ) {
+            // XXX: show correct erro message
+            return $this->redirect('/');
+        }
         return $this->render("checkout_review.html", [
             'order' => $order,
         ]);
