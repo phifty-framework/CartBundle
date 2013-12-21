@@ -27,13 +27,6 @@ class Checkout extends CreateRecordAction
     }
 
     public function run() {
-        /*
-        $senderPhone = $this->arg('sender_phone');
-        if ( $senderPhoneExtension = $this->arg('sender_phone_extension') ) {
-            $senderPhone .= '#' . $senderPhoneExtension;
-        }
-        $this->setArgument('sender_phone', $senderPhone);
-         */
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
         $totalAmount = $cart->calculateDiscountedTotalAmount();
@@ -44,10 +37,12 @@ class Checkout extends CreateRecordAction
             foreach( $orderItems as $orderItem ) {
                 $ret = $orderItem->update([ 'order_id' => $this->record->id ]);
                 if ( ! $ret->success ) {
+                    // XXX:
+
                 }
             }
-            $this->success(_('訂單建立成功'));
-            return $this->redirectLater('/checkout/review', 3);
+            $this->success(_('訂單建立成功，導向中...'));
+            return $this->redirectLater('/checkout/review?order_id=' . $this->record->id, 3);
         } else {
             return $this->error( _('訂單建立失敗') );
         }
