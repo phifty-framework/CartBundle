@@ -46,6 +46,15 @@ class OrderSchema extends SchemaDeclare
                 ;
         }
 
+        $this->column('token')
+            ->varchar(32)
+            ->label('訂單 Security Token')
+            ->hint('請勿修改或清空')
+            ->default(function() {
+                return substr(md5(uniqid('', true)),0,8);
+            })
+            ;
+
         $this->column('invoice_number')
             ->varchar(32)
             ->label('發票編號')
@@ -82,6 +91,12 @@ class OrderSchema extends SchemaDeclare
             ->label('發票收件人')
             ;
 
+        $this->column('shipping_cost')
+            ->integer()
+            ->default(0)
+            ->label('運費')
+            ;
+
         $this->column('paid_amount')
             ->integer()
             ->default(0)
@@ -99,5 +114,7 @@ class OrderSchema extends SchemaDeclare
             ->label('消費者備註')
             ;
 
+        // an order has many order items
+        $this->many( 'order_items', 'CartBundle\\Model\\OrderItemSchema', 'order_id', 'id' );
     }
 }

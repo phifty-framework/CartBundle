@@ -6,7 +6,9 @@ use CartBundle\Model\OrderItem;
 use CartBundle\Model\Order;
 use CartBundle\Exception\CartException;
 use CouponBundle\Model\Coupon;
+use ShippingBundle\Model\Company as ShippingCompany;
 use Exception;
+use RuntimeException;
 use ArrayIterator;
 use IteratorAggregate;
 
@@ -15,6 +17,7 @@ use IteratorAggregate;
  */
 class Cart extends CartBase
 {
+    public $shippingCompany = 'default';
 
     public function __construct() {
         // TODO: provide options to specify storage engine.
@@ -84,7 +87,8 @@ class Cart extends CartBase
 
     public function calculateTotalAmount() {
         if ( $collection = $this->getOrderItems() ) {
-            return $collection->calculateTotalAmount();
+            $totalAmount = $collection->calculateTotalAmount();
+            return $totalAmount + $this->calculateShippingCost();
         }
         return 0;
     }
@@ -127,6 +131,15 @@ class Cart extends CartBase
         unset($_SESSION['coupon_code']);
         unset($_SESSION['items']);
         $this->storage->removeAll();
+    }
+
+    public function calculateShippingCost() {
+        // Load default shipping method
+        $company = new ShippingCompany([ 'handle' => $this->shippingCompany ]);
+        if ( $company->id ) {
+            return $company->shipping_cost;
+        }
+        return 0;
     }
 
 }

@@ -19,6 +19,7 @@ class UpdateOrderItem extends Action
         $item = $cart->updateOrderItem( $this->arg('id'), $this->arg('product_type') , $this->arg('quantity') );
         return $this->success( _('成功更新'), array( 
             'amount' => $item->calculateAmount(),
+            'shipping_cost' => $cart->calculateShippingCost(),
             'total_amount' => $cart->calculateTotalAmount(),
             'discounted_amount' => $cart->calculateDiscountedTotalAmount(),
         ));
