@@ -11,11 +11,21 @@ class CheckoutController extends Controller
     }
 
     public function confirmAction() {
+        $cart = Cart::getInstance();
+        $orderItems = $cart->getOrderItems();
+        if ( ! $orderItems || empty($orderitems) ) {
+            return $this->redirect('/cart');
+        }
         return $this->render("checkout_confirm.html", [
         ]);
     }
 
     public function orderAction() {
+        $cart = Cart::getInstance();
+        $orderItems = $cart->getOrderItems();
+        if ( ! $orderItems || empty($orderitems) ) {
+            return $this->redirect('/cart');
+        }
         return $this->render("checkout_order.html");
     }
 
