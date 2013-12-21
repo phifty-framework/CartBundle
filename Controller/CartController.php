@@ -11,9 +11,6 @@ class CartController extends Controller
      */
     public function indexAction() {
         $cart = Cart::getInstance();
-        $orderItems = $cart->getOrderItems();
-        return $this->render("cart.html",array(
-            'orderItems' => $orderItems,
-        ));
+        return $this->render("cart.html", [ 'cart' => $cart ]);
     }
 }

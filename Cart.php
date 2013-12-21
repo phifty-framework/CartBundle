@@ -26,7 +26,9 @@ class Cart extends CartBase
     {
         if ( $this->deleteOrderItem($id) ) {
             $this->storage->remove($id);
+            return true;
         }
+        return false;
     }
 
     public function addItem($productId, $typeId, $quantity = 1)
@@ -58,15 +60,17 @@ class Cart extends CartBase
         // find the same product and type, 
         // if it's the same, we should simply update the quantity instead of creating new items
         $foundExistingOrderItem = false;
-        $items = $this->getOrderItems();
-        foreach( $items as $item ) {
-            if ( $item->product_id == $product->id && $item->type_id == $foundType->id ) {
-                $item->update(array(
-                    'quantity' => intval($item->quantity) + $quantity,
-                ));
-                $foundExistingOrderItem = true;
+        if ( $items = $this->getOrderItems() ) {
+            foreach( $items as $item ) {
+                if ( $item->product_id == $product->id && $item->type_id == $foundType->id ) {
+                    $item->update(array(
+                        'quantity' => intval($item->quantity) + $quantity,
+                    ));
+                    $foundExistingOrderItem = true;
+                }
             }
         }
+
         if ( ! $foundExistingOrderItem ) {
             $item = $this->createOrderItem($product, $foundType, $quantity);
             $this->storage->add( $item->id );
@@ -75,13 +79,17 @@ class Cart extends CartBase
     }
 
     public function calculateTotalQuantity() {
-        $collection = $this->getOrderItems();
-        return $collection->calculateTotalQuantity();
+        if ( $collection = $this->getOrderItems() ) {
+            return $collection->calculateTotalQuantity();
+        }
+        return 0;
     }
 
     public function calculateTotalAmount() {
-        $collection = $this->getOrderItems();
-        return $collection->calculateTotalAmount();
+        if ( $collection = $this->getOrderItems() ) {
+            return $collection->calculateTotalAmount();
+        }
+        return 0;
     }
 
     public function calculateDiscountedTotalAmount() {
@@ -120,7 +128,8 @@ class Cart extends CartBase
 
     public function cleanUp() {
         unset($_SESSION['coupon_code']);
-        $this->storage->cleanUp();
+        unset($_SESSION['items']);
+        $this->storage->removeAll();
     }
 
 }

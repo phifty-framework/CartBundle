@@ -13,7 +13,9 @@ class RemoveCartItem extends Action
 
     public function run() {
         $cart = Cart::getInstance();
-        $cart->removeItem( intval($this->arg('id')) );
-        return $this->success( _('已從購物車移除') );
+        if ( $cart->removeItem( intval($this->arg('id')) ) ) {
+            return $this->success( _('已從購物車移除') );
+        }
+        return $this->error( _('無法移除') );
     }
 }
