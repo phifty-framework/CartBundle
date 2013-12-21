@@ -6,7 +6,6 @@ class OrderItemSchema extends SchemaDeclare
 {
     public function schema()
     {
-
         $this->column('order_id')
             ->integer()
             ->refer('CartBundle\\Model\\OrderSchema')
@@ -38,11 +37,13 @@ class OrderItemSchema extends SchemaDeclare
             ->label('物流編號')
             ;
 
+        if ( kernel()->bundle('ShippingBundle') ) {
         $this->column('shipping_company_id')
             ->integer()
             ->label('物流公司')
             ->refer('ShippingBundle\\Model\\CompanySchema')
             ;
+        }
 
         $this->column('shipping_status')
             ->varchar(32)
@@ -55,7 +56,9 @@ class OrderItemSchema extends SchemaDeclare
             ))
             ;
 
-        $this->belongsTo('shipping_company', 'ShippingBundle\\Model\\CompanySchema', 'id', 'shipping_company_id' );
+        if ( kernel()->bundle('ShippingBundle') ) {
+            $this->belongsTo('shipping_company', 'ShippingBundle\\Model\\CompanySchema', 'id', 'shipping_company_id' );
+        }
 
         $this->belongsTo('order', 'CartBundle\\Model\\OrderSchema','id','order_id');
 

@@ -13,19 +13,36 @@ class OrderSchema extends SchemaDeclare
 
             $this->column("{$prefix}name")
                 ->varchar(32)
-                ->label( "$label 姓名" );
+                ->label( "$label 姓名" )
+                ->required()
+                ;
 
+            $this->column("{$prefix}gender")
+                ->varchar(32)
+                ->label( "$label 性別" )
+                ->required()
+                ->validValues([
+                    /**
+                     * Gentleman, ladies
+                     */
+                    '先生' => 'male',
+                    '小姐' => 'female',
+                ])
+                ;
+
+            $this->column("{$prefix}cellphone")
+                ->varchar(32)
+                ->label( "$label 手機" )
+                ->required()
+                ;
             $this->column("{$prefix}phone")
                 ->varchar(32)
                 ->label( "$label 聯絡電話" )
                 ;
-            $this->column("{$prefix}cellphone")
-                ->varchar(32)
-                ->label( "$label 手機" )
-                ;
             $this->column("{$prefix}address")
                 ->varchar(128)
                 ->label( "$label 地址" )
+                ->required()
                 ;
         }
 

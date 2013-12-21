@@ -86,7 +86,7 @@ class Cart extends CartBase
 
     public function calculateDiscountedTotalAmount() {
         $totalAmount = $this->calculateTotalAmount();
-        if ( $coupon = $this->loadCoupon() ) {
+        if ( $coupon = $this->loadSessionCoupon() ) {
             return $coupon->calcualteDiscount($totalAmount);
         }
         return $totalAmount;
@@ -105,13 +105,16 @@ class Cart extends CartBase
         return false;
     }
 
-    public function loadCoupon() 
+    public function loadSessionCoupon()
     {
         if ( isset($_SESSION['coupon_code']) ) {
             $coupon = new Coupon([ 'coupon_code' => $_SESSION['coupon_code'] ]);
-            if ( $coupon->id ) {
+            // always validate coupon
+            if ( $coupon->id && $coupon->isValid() ) {
                 return $coupon;
             }
+            // if it's invalid coupon, just delete the sesssion
+            unset($_SESSION['coupon_code']);
         }
     }
 
