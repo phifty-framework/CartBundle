@@ -13,7 +13,7 @@ class CheckoutController extends Controller
     public function confirmAction() {
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
-        if ( ! $orderItems || empty($orderitems) ) {
+        if ( ! $orderItems || empty($orderItems) ) {
             return $this->redirect('/cart');
         }
         return $this->render("checkout_confirm.html", [
@@ -23,7 +23,7 @@ class CheckoutController extends Controller
     public function orderAction() {
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
-        if ( ! $orderItems || empty($orderitems) ) {
+        if ( ! $orderItems || empty($orderItems) ) {
             return $this->redirect('/cart');
         }
         return $this->render("checkout_order.html");

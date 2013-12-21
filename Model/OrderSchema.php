@@ -64,7 +64,7 @@ class OrderSchema extends SchemaDeclare
         // unified taxation code
         $this->column('utc')
             ->varchar(12)
-            ->label('統編抬頭')
+            ->label('統一編號')
             ;
 
         $this->column('utc_title')
