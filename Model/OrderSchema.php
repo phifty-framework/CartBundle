@@ -1,6 +1,7 @@
 <?php
 namespace CartBundle\Model;
 use LazyRecord\Schema\SchemaDeclare;
+use MemberBundle\CurrentMember;
 
 class OrderSchema extends SchemaDeclare
 {
@@ -54,6 +55,24 @@ class OrderSchema extends SchemaDeclare
                 return substr(md5(uniqid('', true)),0,8);
             })
             ;
+
+        $this->column('payment_type')
+            ->varchar(32)
+            ->validValues([
+                '貨到付款' => 'pod', // pay on delivery
+                'ATM'      => 'atm',
+                '信用卡'   => 'cc', // credit card
+            ])
+            ;
+
+        $this->column('payment_status')
+            ->varchar(32)
+            ->validValues([
+                '未付款'         => 'unpaid',
+                '已付款'         => 'paid',
+                '付款失敗'       => 'paid_error',
+                '確認中'         => 'confirming'
+            ]);
 
         $this->column('invoice_number')
             ->varchar(32)
@@ -114,7 +133,28 @@ class OrderSchema extends SchemaDeclare
             ->label('消費者備註')
             ;
 
+
         // an order has many order items
         $this->many( 'order_items', 'CartBundle\\Model\\OrderItemSchema', 'order_id', 'id' );
+
+        $this->many( 'transactions' , 'CartBundle\\Model\\TransactionSchema', 'order_id', 'id');
+
+
+        $this->column( 'member_id' )
+            ->integer()
+            ->refer('MemberBundle\\Model\\MemberSchema')
+            ->default(function() {
+                if ( isset($_SESSION) ) {
+                    $currentMember = new CurrentMember;
+                    return $currentMember->id;
+                }
+            })
+            ->renderAs('SelectInput')
+            ->label('會員')
+            ;
+
+        $this->mixin('CommonBundle\\Model\\Mixin\\MetaSchema');
+
+
     }
 }

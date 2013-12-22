@@ -52,22 +52,37 @@ class Checkout extends CreateRecordAction
         $this->setArgument('total_amount', $totalAmount);
         $this->setArgument('shipping_cost', $shippingCost);
 
-        if ( $ret = parent::run() ) {
-            foreach( $orderItems as $orderItem ) {
-                $ret = $orderItem->update([ 'order_id' => $this->record->id ]);
-                if ( ! $ret->success ) {
-                    // XXX:
+        // XXX: start transaction
+        kernel()->db->beginTransaction();
 
+        try {
+            if ( ! parent::run() ) {
+                throw new Exception( _('無法建立訂單') );
+            }
+            foreach( $orderItems as $orderItem ) {
+                $ret = $orderItem->update([
+                    'order_id' => $this->record->id,
+                    'shipping_status' => 'unpaid',
+                ]);
+                if ( ! $ret->success ) {
+                    if ( $ret->exception ) {
+                        throw $ret->exception;
+                    }
+                    throw new Exception($ret->message);
                 }
             }
             $cart->cleanUp();
-            $this->success(_('訂單建立成功，導向中...'));
+            kernel()->db->commit();
+            $this->success(_('訂單建立成功，導向中.. 請稍待'));
             return $this->redirectLater('/checkout/review?' . http_build_query([
                 'o' => $this->record->id,
                 't' => $this->record->token,
             ]), 3);
-        } else {
-            return $this->error( _('訂單建立失敗') );
+        } catch ( Exception $e ) {
+            kernel()->db->rollback();
+            return $this->error( $e->getMessage() );
         }
+        return $this->error('訂單建立失敗');
     }
+
 }

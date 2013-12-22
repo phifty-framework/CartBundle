@@ -114,6 +114,11 @@ class Cart extends CartBase
         return false;
     }
 
+    public function usingCoupon() {
+        // the session is registered only when the coupon is validated..
+        return isset($_SESSION['coupon_code']);
+    }
+
     public function loadSessionCoupon()
     {
         if ( isset($_SESSION['coupon_code']) ) {

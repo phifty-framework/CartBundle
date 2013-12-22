@@ -27,4 +27,25 @@ class OrderItem extends \CartBundle\Model\OrderItemBase {
         return $this->getUnitPrice() * intval($this->quantity);
     }
 
+    public function setOrder($orderId) {
+        $this->update([ 'order_id' => $orderId ]);
+    }
+
+    public function setStatusProcessing() {
+        $this->update([ 'shipping_status' => 'processing' ]);
+    }
+
+    public function setStatusUnpaid() {
+        $this->update([ 'shipping_status' => 'unpaid' ]);
+    }
+
+    public function setStatusTransfering() {
+        $this->update([ 'shipping_status' => 'transfering' ]);
+    }
+
+    public function setStatusCompleted() {
+        $this->update([ 'shipping_status' => 'completed' ]);
+    }
+
+
 }

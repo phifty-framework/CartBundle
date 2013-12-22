@@ -48,6 +48,7 @@ class OrderItemSchema extends SchemaDeclare
         $this->column('shipping_status')
             ->varchar(32)
             ->label('物品寄送狀態')
+            ->default('unpaid')
             ->validValues(array( 
                 '未付款' => 'unpaid',
                 '處理中' => 'processing',

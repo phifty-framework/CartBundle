@@ -51,6 +51,9 @@ class CheckoutController extends Controller
     }
 
     public function paymentAction() {
-        return $this->render("checkout_payment.html");
+        $paymentType = $this->request->param('payment_type');
+        return $this->render("checkout_payment.html", [
+            'paymentType' => $paymentType,
+        ]);
     }
 }
