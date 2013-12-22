@@ -80,6 +80,7 @@ class NewebPaymentController extends Controller
                 $checkstr = md5($merchantNumber . $orderNumber . $finalResult . $finalReturn_PRC . $code. $finalReturn_SRC . $amount);
                 if ( strtolower($checkstr) == strtolower($checkSum)){
                     $message = "交易成功";
+                    $reason  = "感謝您的訂購，您的訂單已經成立。";
                     $result = true;
                 } else {
                     $reason = "交易發生問題，驗證碼錯誤!";
@@ -138,8 +139,8 @@ class NewebPaymentController extends Controller
         }
         return $this->render('message.html', [
             'error' => ! $result,
-            'message' => $message,
-            'reason'  => $reason,
+            'title' => $message,
+            'message'  => $reason,
         ]);
     }
 
