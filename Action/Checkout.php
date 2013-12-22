@@ -24,7 +24,7 @@ class Checkout extends CreateRecordAction
         */
 
         // we don't trust amount fields from outside
-        $this->filterOut('paid_amount','total_amount','shipping_cost');
+        $this->filterOut('paid_amount','total_amount','shipping_cost', 'member_id');
     }
 
     public function run()
