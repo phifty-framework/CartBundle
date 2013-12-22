@@ -111,6 +111,12 @@ class NewebPaymentController extends Controller
             '副回傳碼'  => $finalReturn_SRC,
         ];
 
+        $order = new Order;
+        $order->load([ 'sn' =>  $orderNumber ]);
+        if ( ! $order->id ) {
+            die('無此訂單');
+        }
+
         // record the transction
         $txn = new Transaction;
         $ret = $txn->create([
@@ -127,22 +133,15 @@ class NewebPaymentController extends Controller
         } else {
             // XXX: log the error
         }
-
-        $order = new Order;
-        $order->load( intval($orderNumber));
-        if ( $order->id ) {
-            if ( $result ) {
-                $order->update([ 'paid_amount' => $amount ]);
-                if ( $amount >= $order->total_amount ) {
-                    $order->update([ 'payment_status' => 'paid' ]);
-                } else {
-                    $order->update([ 'payment_status' => 'paid' ]);
-                }
+        if ( $result ) {
+            $order->update([ 'paid_amount' => $amount ]);
+            if ( $amount >= $order->total_amount ) {
+                $order->update([ 'payment_status' => 'paid' ]);
             } else {
-                $order->update([ 'payment_status' => 'paid_error' ]);
+                $order->update([ 'payment_status' => 'paid' ]);
             }
         } else {
-            die('無此訂單');
+            $order->update([ 'payment_status' => 'paid_error' ]);
         }
         return $this->render('message.html', [
             'error' => ! $result,
