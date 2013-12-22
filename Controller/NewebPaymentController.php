@@ -29,11 +29,7 @@ class NewebPaymentController extends Controller
             return $this->redirect('/');
         }
 
-        if ( $order->created_on ) {
-            $orderPrefix = sprintf('%s%04s', $order->created_on->format('Ymd') , $order->id );
-        } else {
-            $orderPrefix = sprintf('%s%04s', date('Ymd') , $order->id );
-        }
+        $orderSN = $order->sn;
 
         if ( ! isset($config['Transaction']['Neweb']['MerchantNumber']) ) {
             throw new Exception('Transaction.Neweb.MerchantNumber is required.');
@@ -44,7 +40,7 @@ class NewebPaymentController extends Controller
 
         $checkstr =
               $config['Transaction']['Neweb']['MerchantNumber']
-            . $order->id
+            . $orderSN,
             . $config['Transaction']['Neweb']['RCode']
             . $order->total_amount;
         $checksum = md5($checkstr);
@@ -54,7 +50,7 @@ class NewebPaymentController extends Controller
             'isMobile' => $this->isMobile() ? 1 : 0,
             'english' => kernel()->locale->current() != 'zh_TW' ? 1 : 0,
             'order' => $order,
-            'orderPrefix' => $orderPrefix,
+            'orderSN' => $orderSN,
             'checksum' => $checksum,
         ]);
     }

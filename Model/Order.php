@@ -3,6 +3,11 @@ namespace CartBundle\Model;
 
 class Order  extends \CartBundle\Model\OrderBase {
 
+    public function afterCreate($args) {
+        // generate order sn with format '201309310001'
+        $this->update([ 'sn' => sprintf('%s%04s',date('Ymd'), $this->id) ]);
+    }
+
     public function calculateOriginalTotalAmount() {
         $totalAmount = $this->shipping_cost;
         foreach( $this->order_items as $orderItem ) {

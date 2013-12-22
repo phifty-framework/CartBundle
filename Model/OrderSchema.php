@@ -47,6 +47,12 @@ class OrderSchema extends SchemaDeclare
                 ;
         }
 
+        $this->column('sn')
+            ->varchar(16)
+            ->label( _('訂單編號') )
+            ;
+
+        // Order Security Token (to access from URL)
         $this->column('token')
             ->varchar(32)
             ->label('訂單 Security Token')
