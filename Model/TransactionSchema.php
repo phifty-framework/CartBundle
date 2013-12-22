@@ -15,9 +15,12 @@ class TransactionSchema extends SchemaDeclare
             ;
 
         $this->column('status')
-            ->boolean()
+            ->varchar(32)
             ->label( _('交易狀態') )
-            ->default(false)
+            ->validValues([
+                '交易成功' => 'success',
+                '交易失敗' => 'fail'
+            ]);
             ;
 
         $this->column('amount')
@@ -25,13 +28,35 @@ class TransactionSchema extends SchemaDeclare
             ->label( _('交易金額') )
             ;
 
+        $this->column('result')
+            ->boolean()
+            ->default(false)
+            ->label( _('交易結果') )
+            ;
+
+        $this->column('message')
+            ->varchar(128)
+            ->label( _('訊息') )
+            ;
+
+        $this->column('reason')
+            ->varchar(128)
+            ->label( _('原因') )
+            ;
+
         $this->column('code')
+            ->varchar(8)
             ->label( _('銀行回傳碼') )
             ;
 
         $this->column('data')
             ->text()
-            ->label( _('交易資料') )
+            ->label( _('描述交易資料') )
+            ;
+
+        $this->column('raw_data')
+            ->text()
+            ->label( _('原始 API 交易資料') )
             ;
 
         $this->belongsTo( 'order' , 'CartBundle\\Model\\OrderSchema', 'id', 'order_id');

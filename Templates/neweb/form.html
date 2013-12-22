@@ -1,5 +1,5 @@
 <input type="hidden" name="MerchantNumber" value="{{newebConfig.MerchantNumber}}"/>
-<input type="hidden" name="OrderNumber"    value="{{orderPrefix}}"/>
+<input type="hidden" name="OrderNumber"    value="{{order.id}}"/>
 <input type="hidden" name="Amount"         value="{{order.total_amount}}"/>
 <input type="hidden" name="OrgOrderNumber" value="{{order.id}}"/>
 <input type="hidden" name="ApproveFlag"    value="1"/>{# use 1 as default #}

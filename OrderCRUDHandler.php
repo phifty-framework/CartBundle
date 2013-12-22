@@ -26,11 +26,6 @@ class OrderCRUDHandler extends CRUDHandler
     // public $pageLimit = 15;
     // public $defaultOrder = array('id', 'DESC');
 
-    public function init()
-    {
-        $this->plugin = \CartBundle\CartBundle::getInstance();
-        parent::init();
-    }
 
     public function getCollection()
     {
