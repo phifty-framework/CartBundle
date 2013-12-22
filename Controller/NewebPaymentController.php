@@ -148,6 +148,8 @@ class NewebPaymentController extends Controller
     }
 
     public function responseAction() {
+        $bundle = kernel()->bundle('CartBundle');
+
         // Record the transaction
         $merchantNumber   = $this->getParameter('MerchantNumber');
         $orderNumber      = $this->getParameter('OrderNumber');
