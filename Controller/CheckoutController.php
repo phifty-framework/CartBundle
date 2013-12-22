@@ -6,25 +6,12 @@ use CartBundle\Model\Order;
 use Exception;
 use CartBundle\Controller\NewebPaymentController;
 
-class CheckoutController extends Controller
+class CheckoutController extends OrderBaseController
 {
+
     public function reviewAction() {
-        // o=21&t=fb911675
-        $oId = intval($this->request->param('o'));
-        $token = $this->request->param('t');
-
-        if ( ! $oId || ! $token ) {
-            // XXX: show correct erro message
-            return $this->redirect('/');
-        }
-
-        $order = new Order;
-        $ret = $order->load([
-            'id' => $oId,
-            'token' => $token,
-        ]);
-        if ( ! $ret->success ||  ! $order->id ) {
-            // XXX: show correct erro message
+        $order = $this->getCurrentOrder();
+        if( false === $order ) {
             return $this->redirect('/');
         }
         return $this->render("checkout_review.html", [
@@ -51,6 +38,7 @@ class CheckoutController extends Controller
         return $this->render("checkout_order.html");
     }
 
+
     /**
      * Payment page dispatcher
      */
@@ -59,7 +47,6 @@ class CheckoutController extends Controller
         $cashFlow = $bundle->config('CashFlow');
 
         $paymentType = $this->request->param('payment_type');
-
         if ( $paymentType == "cc" ) {
             if ( $cashFlow == "neweb" ) {
                 $paymentController = new NewebPaymentController;

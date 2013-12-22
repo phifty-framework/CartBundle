@@ -5,27 +5,16 @@ use CartBundle\Model\Order;
 use CartBundle\Model\Transaction;
 use Exception;
 
-class NewebPaymentController extends Controller
+class NewebPaymentController extends OrderBaseController
 {
+
     public function indexAction() {
         $bundle = kernel()->bundle('CartBundle');
         $config = $bundle->config;
 
-        $orderId = intval($this->request->param('o'));
-        $token   = $this->request->param('t');
-        if ( ! $orderId ) {
+        $order = $this->getCurrentOrder();
+        if ( false === $order ) {
             die('parameter error');
-            return $this->redirect('/');
-        }
-
-        $order = new Order;
-        $ret = $order->load([
-            'id' => $orderId,
-            'token' => $token,
-            ]);
-        if ( ! $ret->success ||  ! $order->id ) {
-            // XXX: show correct erro message
-            die('order not found');
             return $this->redirect('/');
         }
 
