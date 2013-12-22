@@ -3,6 +3,8 @@ namespace CartBundle\Controller;
 use Phifty\Controller;
 use CartBundle\Cart;
 use CartBundle\Model\Order;
+use Exception;
+use CartBundle\Controller\NewebPaymentController;
 
 class CheckoutController extends Controller
 {
@@ -15,7 +17,6 @@ class CheckoutController extends Controller
             // XXX: show correct erro message
             return $this->redirect('/');
         }
-
 
         $order = new Order;
         $ret = $order->load([
@@ -50,10 +51,26 @@ class CheckoutController extends Controller
         return $this->render("checkout_order.html");
     }
 
+    /**
+     * Payment page dispatcher
+     */
     public function paymentAction() {
+        $bundle = kernel()->bundle('CartBundle');
+        $cashFlow = $bundle->config('CashFlow');
+
         $paymentType = $this->request->param('payment_type');
+
+        if ( $paymentType == "cc" ) {
+            if ( $cashFlow == "neweb" ) {
+                $paymentController = new NewebPaymentController;
+                return $paymentController->indexAction();
+            } else {
+                throw new Exception('cashflow backend is not defined.');
+            }
+        }
         return $this->render("checkout_payment.html", [
             'paymentType' => $paymentType,
         ]);
     }
+
 }

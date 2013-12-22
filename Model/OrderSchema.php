@@ -154,7 +154,5 @@ class OrderSchema extends SchemaDeclare
             ;
 
         $this->mixin('CommonBundle\\Model\\Mixin\\MetaSchema');
-
-
     }
 }
