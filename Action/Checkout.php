@@ -3,6 +3,7 @@ namespace CartBundle\Action;
 use ActionKit\Action;
 use ActionKit\RecordAction\CreateRecordAction;
 use CartBundle\Cart;
+use CartBundle\CurrentMember;
 
 class Checkout extends CreateRecordAction
 {
@@ -29,6 +30,11 @@ class Checkout extends CreateRecordAction
 
     public function run()
     {
+        $currentMember = new CurrentMember;
+        if ( ! $currentMember->isLogged() ) {
+            return $this->error( _('請先登入會員') );
+        }
+
         if ( $t = $this->arg('invoice_type') ) {
             if ( intval($t) == 3 ) {
                 $this->requireArgs('utc','utc_title','utc_name','utc_address');
@@ -40,6 +46,8 @@ class Checkout extends CreateRecordAction
                 }
             }
         }
+
+
 
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
