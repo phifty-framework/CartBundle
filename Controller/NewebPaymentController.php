@@ -29,8 +29,6 @@ class NewebPaymentController extends Controller
             return $this->redirect('/');
         }
 
-        $orderSN = $order->sn;
-
         if ( ! isset($config['Transaction']['Neweb']['MerchantNumber']) ) {
             throw new Exception('Transaction.Neweb.MerchantNumber is required.');
         }
@@ -40,7 +38,7 @@ class NewebPaymentController extends Controller
 
         $checkstr =
               $config['Transaction']['Neweb']['MerchantNumber']
-            . $orderSN,
+            . $order->sn,
             . $config['Transaction']['Neweb']['RCode']
             . $order->total_amount;
         $checksum = md5($checkstr);
@@ -50,7 +48,6 @@ class NewebPaymentController extends Controller
             'isMobile' => $this->isMobile() ? 1 : 0,
             'english' => kernel()->locale->current() != 'zh_TW' ? 1 : 0,
             'order' => $order,
-            'orderSN' => $orderSN,
             'checksum' => $checksum,
         ]);
     }
@@ -120,7 +117,7 @@ class NewebPaymentController extends Controller
         // record the transction
         $txn = new Transaction;
         $ret = $txn->create([
-            'order_id' => intval($orderNumber),
+            'order_id' => $order->id,
             'result'   => $result,
             'message'  => $message,
             'reason'   => $reason,
@@ -205,10 +202,16 @@ class NewebPaymentController extends Controller
             $reason = '系統錯誤';
         }
 
+        $order = new Order;
+        $order->load([ 'sn' =>  $orderNumber ]);
+        if ( ! $order->id ) {
+            die('無此訂單');
+        }
+
         // record the transction
         $txn = new Transaction;
         $ret = $txn->create([
-            'order_id' => intval($orderNumber),
+            'order_id' => $order->id,
             'result'   => $result,
             'message'  => $message,
             'reason'   => $reason,
