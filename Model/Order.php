@@ -11,4 +11,13 @@ class Order  extends \CartBundle\Model\OrderBase {
         return $totalAmount;
     }
 
+    public function setPaidAmount($amount) {
+        $this->paid_amount = $amount;
+        if ( $this->paid_amount >= $this->total_amount ) {
+            $this->payment_status = 'paid';
+        } else {
+            $this->payment_status = 'paid_incomplete';
+        }
+    }
+
 }

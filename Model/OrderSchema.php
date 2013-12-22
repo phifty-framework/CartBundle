@@ -67,11 +67,17 @@ class OrderSchema extends SchemaDeclare
 
         $this->column('payment_status')
             ->varchar(32)
+            ->default(function() { 
+                return 'unpaid'; 
+            })
             ->validValues([
                 '未付款'         => 'unpaid',
-                '已付款'         => 'paid',
                 '付款失敗'       => 'paid_error',
-                '確認中'         => 'confirming'
+                '已付款'         => 'paid',
+                '已付款但費用不足' => 'paid_incomplete',
+
+                // used in ATM
+                '已付款確認中'         => 'paid_confirming'
             ]);
 
         $this->column('invoice_number')

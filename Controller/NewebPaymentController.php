@@ -56,7 +56,7 @@ class NewebPaymentController extends Controller
             'order' => $order,
             'orderPrefix' => $orderPrefix,
             'checksum' => $checksum,
-            ]);
+        ]);
     }
 
     public function getParameter($pname){
@@ -69,7 +69,7 @@ class NewebPaymentController extends Controller
         $finalResult             = $this->getParameter('final_result');
         $merchantNumber        = $this->getParameter('P_MerchantNumber');
         $orderNumber           = $this->getParameter('P_OrderNumber');
-        $amount                = $this->getParameter('P_Amount');
+        $amount                = intval($this->getParameter('P_Amount'));
         $checkSum              = $this->getParameter('P_CheckSum');
         $finalReturn_PRC         = $this->getParameter('final_return_PRC');
         $finalReturn_SRC         = $this->getParameter('final_return_SRC');
@@ -81,13 +81,13 @@ class NewebPaymentController extends Controller
 
         $message = "交易失敗";
         $reason = '';
-        $error = true;
+        $result = false;
         if ( $finalResult == "1" ) {
             if( strlen($checkSum)>0){
                 $checkstr = md5($merchantNumber . $orderNumber . $finalResult . $finalReturn_PRC . $Code. $finalReturn_SRC . $amount);
                 if ( strtolower($checkstr) == strtolower($checkSum)){
-                    $message = "交易成功!";
-                    $error = false;
+                    $message = "交易成功";
+                    $result = true;
                 } else {
                     $reason = "交易發生問題，驗證碼錯誤!";
                 }
@@ -102,12 +102,56 @@ class NewebPaymentController extends Controller
             }
         }
 
+        $desc = [
+            '結果'       => $finalResult,
+            '店家編號'   => $merchantNumber,
+            '訂單編號'   => $orderNumber,
+            '交易金額'   => $amount,
+            '授權碼'     => $finalReturn_ApproveCode,
+            '銀行回傳碼' => $finalReturn_BankRC,
+            '批次號碼'   => $finalReturn_BatchNumber,
+            '檢查碼'     => $checkSum,
+            '主回傳碼'  => $finalReturn_PRC,
+            '副回傳碼'  => $finalReturn_SRC,
+        ];
 
+        // record the transction
+        $txn = new Transaction;
+        $ret = $txn->create([
+            'order_id' => intval($orderNumber),
+            'result'   => $result,
+            'message'  => $message,
+            'reason'   => $reason,
+            'code'     => $finalReturn_BankRC,
+            'data'     => yaml_emit($desc),
+            'raw_data' => yaml_emit($_POST),
+        ]);
+        if ( $ret->success ) {
+            // set the total
+        } else {
+            // XXX: log the error
+        }
+
+        $order = new Order;
+        $order->load( intval($orderNumber));
+        if ( $order->id ) {
+            if ( $result ) {
+                $order->update([ 'paid_amount' => $amount ]);
+                if ( $amount >= $order->total_amount ) {
+                    $order->update([ 'payment_status' => 'paid' ]);
+                } else {
+                    $order->update([ 'payment_status' => 'paid' ]);
+                }
+            } else {
+                $order->update([ 'payment_status' => 'paid_error' ]);
+            }
+        } else {
+            die('無此訂單');
+        }
         return $this->render('message.html', [
             'error' => $error,
             'message' => $message,
             'reason'  => $reason,
-            'post'  => $_POST,
         ]);
     }
 
@@ -170,13 +214,13 @@ class NewebPaymentController extends Controller
         // record the transction
         $txn = new Transaction;
         $ret = $txn->create([
-            'order_id' => $orderNumber,
+            'order_id' => intval($orderNumber),
             'result'   => $result,
             'message'  => $message,
             'reason'   => $reason,
             'code'     => $bankResponseCode,
-            'data'     => $desc,
-            'raw_data' => $_POST,
+            'data'     => yaml_emit($desc),
+            'raw_data' => yaml_emit($_POST),
         ]);
         if ( ! $ret->success ) {
             // XXX: log the error
