@@ -3,7 +3,7 @@ namespace CartBundle\Action;
 use ActionKit\Action;
 use ActionKit\RecordAction\CreateRecordAction;
 use CartBundle\Cart;
-use CartBundle\CurrentMember;
+use MemberBundle\CurrentMember;
 
 class Checkout extends CreateRecordAction
 {
