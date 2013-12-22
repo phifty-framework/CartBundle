@@ -77,14 +77,14 @@ class NewebPaymentController extends Controller
         $finalReturn_BankRC      = $this->getParameter('final_return_BankRC');
         $finalReturn_BatchNumber = $this->getParameter('final_return_BatchNumber');
 
-        $Code = $bundle->config('Transaction.Neweb.Code');
+        $code = $bundle->config('Transaction.Neweb.Code');
 
         $message = "交易失敗";
         $reason = '';
         $result = false;
         if ( $finalResult == "1" ) {
             if( strlen($checkSum)>0){
-                $checkstr = md5($merchantNumber . $orderNumber . $finalResult . $finalReturn_PRC . $Code. $finalReturn_SRC . $amount);
+                $checkstr = md5($merchantNumber . $orderNumber . $finalResult . $finalReturn_PRC . $code. $finalReturn_SRC . $amount);
                 if ( strtolower($checkstr) == strtolower($checkSum)){
                     $message = "交易成功";
                     $result = true;
@@ -149,7 +149,7 @@ class NewebPaymentController extends Controller
             die('無此訂單');
         }
         return $this->render('message.html', [
-            'error' => $error,
+            'error' => ! $result,
             'message' => $message,
             'reason'  => $reason,
         ]);
@@ -189,7 +189,6 @@ class NewebPaymentController extends Controller
 
             $desc['檢查碼']     = $checkSum;
             $desc['驗證碼']     = $chkstr;
-
 
             // -- 回傳成功，但結果有可能遭竄改，因此需和編碼內容比較
             if (strtolower($chkstr)==strtolower($CheckSum)) {
