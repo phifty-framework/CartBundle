@@ -145,7 +145,7 @@ class OrderSchema extends SchemaDeclare
             ->refer('MemberBundle\\Model\\MemberSchema')
             ->default(function() {
                 if ( isset($_SESSION) ) {
-                    $currentMember = new CurrentMember;
+                    $currentMember = new \MemberBundle\CurrentMember;
                     return $currentMember->id;
                 }
             })
