@@ -60,10 +60,10 @@ class NewebPaymentController extends Controller
         $bundle = kernel()->bundle('CartBundle');
 
         $finalResult             = $this->getParameter('final_result');
-        $merchantNumber        = $this->getParameter('P_MerchantNumber');
-        $orderNumber           = $this->getParameter('P_OrderNumber');
-        $amount                = intval($this->getParameter('P_Amount'));
-        $checkSum              = $this->getParameter('P_CheckSum');
+        $merchantNumber          = $this->getParameter('P_MerchantNumber');
+        $orderNumber             = $this->getParameter('P_OrderNumber');
+        $amount                  = $this->getParameter('P_Amount');
+        $checkSum                = $this->getParameter('P_CheckSum');
         $finalReturn_PRC         = $this->getParameter('final_return_PRC');
         $finalReturn_SRC         = $this->getParameter('final_return_SRC');
         $finalReturn_ApproveCode = $this->getParameter('final_return_ApproveCode');
@@ -131,12 +131,8 @@ class NewebPaymentController extends Controller
             // XXX: log the error
         }
         if ( $result ) {
-            $order->update([ 'paid_amount' => $amount ]);
-            if ( $amount >= $order->total_amount ) {
-                $order->update([ 'payment_status' => 'paid' ]);
-            } else {
-                $order->update([ 'payment_status' => 'paid' ]);
-            }
+            $order->setPaidAmount( intval($amount) );
+            $order->save();
         } else {
             $order->update([ 'payment_status' => 'paid_error' ]);
         }
