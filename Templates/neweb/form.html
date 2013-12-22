@@ -1,0 +1,12 @@
+<input type="hidden" name="MerchantNumber" value="{{newebConfig.MerchantNumber}}"/>
+<input type="hidden" name="OrderNumber"    value="{{orderPrefix}}"/>
+<input type="hidden" name="Amount"         value="{{order.total_amount}}"/>
+<input type="hidden" name="OrgOrderNumber" value="{{order.id}}"/>
+<input type="hidden" name="ApproveFlag"    value="1"/>{# use 1 as default #}
+<input type="hidden" name="DepositFlag"    value="1"/>{# use 1 as default #}
+<input type="hidden" name="Englishmode"    value="{{english}}"/>
+<input type="hidden" name="iphonepage"     value="{{isMobile}}"/>
+<input type="hidden" name="OrderURL"       value="{{newebConfig.OrderURL}}"/>
+<input type="hidden" name="ReturnURL"      value="{{newebConfig.ReturnURL}}"/>
+<input type="hidden" name="checksum"       value="{{checksum}}"/>
+<input type="hidden" name="op"             value="AcceptPayment"/>
