@@ -38,7 +38,7 @@ class NewebPaymentController extends Controller
 
         $checkstr =
               $config['Transaction']['Neweb']['MerchantNumber']
-            . $order->sn,
+            . $order->sn
             . $config['Transaction']['Neweb']['RCode']
             . $order->total_amount;
         $checksum = md5($checkstr);
