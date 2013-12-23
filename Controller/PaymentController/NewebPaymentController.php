@@ -112,14 +112,14 @@ class NewebPaymentController extends OrderBaseController
             'type'     => 'cc',
             'result'   => $result,
             'message'  => $message,
+            'amount'   => intval($amount),
             'reason'   => $reason,
             'code'     => $finalReturn_BankRC,
             'data'     => yaml_emit($desc),
             'raw_data' => yaml_emit($_POST),
         ]);
-        if ( $ret->success ) {
-            // set the total
-        } else {
+        if ( ! $ret->success ) {
+            throw new Exception($ret->message);
             // XXX: log the error
         }
         return $this->render('message.html', [
@@ -198,6 +198,7 @@ class NewebPaymentController extends OrderBaseController
             'order_id' => $order->id,
             'result'   => $result,
             'type'     => 'cc',
+            'amount'   => $amount,
             'message'  => $message,
             'reason'   => $reason,
             'code'     => $bankResponseCode,
