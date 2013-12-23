@@ -4,7 +4,9 @@ use Phifty\Controller;
 use CartBundle\Cart;
 use CartBundle\Model\Order;
 use Exception;
-use CartBundle\Controller\NewebPaymentController;
+use CartBundle\Controller\PaymentController\NewebPaymentController;
+use CartBundle\Controller\PaymentController\ATMPaymentController;
+use CartBundle\Controller\PaymentController\PODPaymentController;
 
 class OrderController extends OrderBaseController
 {
@@ -31,17 +33,21 @@ class OrderController extends OrderBaseController
         $bundle = kernel()->bundle('CartBundle');
         $cashFlow = $bundle->config('CashFlow');
 
-        $paymentType = $this->request->param('payment_type');
-        if ( $paymentType == "cc" ) {
-            if ( $cashFlow == "neweb" ) {
-                $paymentController = new NewebPaymentController;
-                return $paymentController->indexAction();
-            } else {
-                throw new Exception('cashflow backend is not defined.');
-            }
+        $controllers = [
+            'atm' => new ATMPaymentController,
+            'pod' => new PODPaymentController,
+        ];
+        if ( $cashFlow == "neweb" ) {
+            $controllers['cc'] = new NewebPaymentController;
+        } else {
+            throw new Exception('cashflow backend is not defined.');
         }
-        return $this->render("order_payment.html", [
-            'paymentType' => $paymentType,
-        ]);
+
+        $paymentType = $this->request->param('payment_type');
+        if ( isset($controllers[$paymentType]) ) {
+            return $controllers[$paymentType]->indexAction();
+        } else {
+            throw new Exception('unsupported payment.');
+        }
     }
 }

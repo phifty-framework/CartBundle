@@ -83,7 +83,7 @@ class OrderSchema extends SchemaDeclare
                 '已付款但費用不足' => 'paid_incomplete',
 
                 // used in ATM
-                '已付款確認中'         => 'paid_confirming'
+                '已付款待確認'   => 'wait_for_confirmation'
             ]);
 
         $this->column('invoice_number')

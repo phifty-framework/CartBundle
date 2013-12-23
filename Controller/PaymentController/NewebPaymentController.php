@@ -1,8 +1,9 @@
 <?php
-namespace CartBundle\Controller;
+namespace CartBundle\Controller\PaymentController;
 use Phifty\Controller;
 use CartBundle\Model\Order;
 use CartBundle\Model\Transaction;
+use CartBundle\Controller\OrderBaseController;
 use Exception;
 
 class NewebPaymentController extends OrderBaseController

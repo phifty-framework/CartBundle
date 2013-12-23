@@ -24,9 +24,15 @@ class CartBundle extends Bundle
 
 
         /** routes for payment. */
-        $this->route('/payment/neweb', 'NewebPaymentController:neweb');
-        $this->route('/payment/neweb/response', 'NewebPaymentController:response');
-        $this->route('/payment/neweb/return', 'NewebPaymentController:return');
+        $this->route('/payment/neweb'          ,'NewebPaymentController:index');
+        $this->route('/payment/neweb/response' ,'NewebPaymentController:response');
+        $this->route('/payment/neweb/return'   ,'NewebPaymentController:return');
+
+        $this->route('/payment/pod'          ,'PODPaymentController:index');
+        $this->route('/payment/pod/response' ,'PODPaymentController:response');
+
+        $this->route('/payment/atm'          ,'ATMPaymentController:index');
+        $this->route('/payment/atm/response' ,'ATMPaymentController:response');
     }
 
 }
