@@ -3,9 +3,9 @@ namespace CartBundle\Action;
 use ActionKit\Action;
 use ActionKit\RecordAction\UpdateRecordAction;
 
-class UpdateOrderItem extends UpdateRecordAction
+class UpdateOrder extends UpdateRecordAction
 {
-    public $recordClass = 'CartBundle\\Model\\OrderItem';
+    public $recordClass = 'CartBundle\\Model\\Order';
 
     public function runValidate() { 
         $cUser = kernel()->currentUser;

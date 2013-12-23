@@ -1,11 +1,11 @@
 <?php
 namespace CartBundle\Action;
 use ActionKit\Action;
-use ActionKit\RecordAction\UpdateRecordAction;
+use ActionKit\RecordAction\DeleteRecordAction;
 
-class UpdateOrderItem extends UpdateRecordAction
+class DeleteOrder extends DeleteRecordAction
 {
-    public $recordClass = 'CartBundle\\Model\\OrderItem';
+    public $recordClass = 'CartBundle\\Model\\Order';
 
     public function runValidate() { 
         $cUser = kernel()->currentUser;

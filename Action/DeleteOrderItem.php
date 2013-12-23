@@ -1,9 +1,9 @@
 <?php
 namespace CartBundle\Action;
 use ActionKit\Action;
-use ActionKit\RecordAction\UpdateRecordAction;
+use ActionKit\RecordAction\DeleteRecordAction;
 
-class UpdateOrderItem extends UpdateRecordAction
+class DeleteOrderItem extends DeleteRecordAction
 {
     public $recordClass = 'CartBundle\\Model\\OrderItem';
 

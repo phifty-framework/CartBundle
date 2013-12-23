@@ -82,6 +82,9 @@ class CartBase
         if ( ! $item->id ) {
             throw new CartException( _('無此項目') );
         }
+        if ( $item->order_id ) {
+            throw new CartException( _('不可更新已經下訂之訂單項目') );
+        }
 
         $args = array();
 
@@ -110,11 +113,11 @@ class CartBase
     public function deleteOrderItem($id) {
         $item = new OrderItem(intval($id));
         // does not belongs to an order
-        if ( ! $item->order_id ) {
-            $ret = $item->delete();
-            return true;
+        if ( $item->order_id ) {
+            return false;
         }
-        return false;
+        $ret = $item->delete();
+        return $ret->success;
     }
 
     public function createOrderItem($product, $type, $quantity) {
