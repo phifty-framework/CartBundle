@@ -14,6 +14,15 @@ class TransactionSchema extends SchemaDeclare
             ->refer( 'CartBundle\\Model\\OrderSchema' )
             ;
 
+        $this->column('type')
+            ->varchar(32)
+            ->label( _('交易類型') )
+            ->validValues([
+                '信用卡' => 'cc',
+                'ATM'    => 'atm',
+            ])
+            ;
+
         $this->column('status')
             ->varchar(32)
             ->label( _('交易狀態') )

@@ -109,6 +109,7 @@ class NewebPaymentController extends OrderBaseController
         $txn = new Transaction;
         $ret = $txn->create([
             'order_id' => $order->id,
+            'type'     => 'cc',
             'result'   => $result,
             'message'  => $message,
             'reason'   => $reason,
@@ -202,6 +203,7 @@ class NewebPaymentController extends OrderBaseController
         $ret = $txn->create([
             'order_id' => $order->id,
             'result'   => $result,
+            'type'     => 'cc',
             'message'  => $message,
             'reason'   => $reason,
             'code'     => $bankResponseCode,
