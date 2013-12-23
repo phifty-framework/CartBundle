@@ -32,7 +32,7 @@ class SubmitPOD extends Action
         }
         $ret = $order->update([
             'pod_time' => $this->arg('pod_time'),
-            'payment_status' => 'confirming',
+            'payment_status' => 'unpaid',
             'payment_type' => 'pod',
         ]);
         if ( $ret->success ) {
