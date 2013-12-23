@@ -59,6 +59,16 @@ class TransactionSchema extends SchemaDeclare
             ->label( _('原始 API 交易資料') )
             ;
 
+        $this->column( 'created_on' )
+            ->timestamp()
+            ->null()
+            ->renderAs('DateTimeInput')
+            ->label( _('建立時間') )
+            ->default(function() {
+                return date('c');
+            })
+            ;
+
         $this->belongsTo( 'order' , 'CartBundle\\Model\\OrderSchema', 'id', 'order_id');
     }
 }
