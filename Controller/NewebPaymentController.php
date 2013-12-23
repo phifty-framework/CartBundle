@@ -32,7 +32,7 @@ class NewebPaymentController extends OrderBaseController
             . $order->total_amount;
         $checksum = md5($checkstr);
 
-        return $this->render("checkout_payment_credit_card.html", [
+        return $this->render("order_payment_credit_card.html", [
             'config' => $config,
             'isMobile' => $this->isMobile() ? 1 : 0,
             'english' => kernel()->locale->current() != 'zh_TW' ? 1 : 0,

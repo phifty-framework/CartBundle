@@ -19,13 +19,14 @@ class CartBundle extends Bundle
         $this->route('/checkout/confirm', 'CheckoutController:confirm');
         $this->route('/checkout/order', 'CheckoutController:order');
 
-        $this->route('/order/review', 'OrderController:review');
+        $this->route('/order/view', 'OrderController:view');
         $this->route('/order/payment', 'OrderController:payment');
 
+
+        /** routes for payment. */
         $this->route('/payment/neweb', 'NewebPaymentController:neweb');
         $this->route('/payment/neweb/response', 'NewebPaymentController:response');
         $this->route('/payment/neweb/return', 'NewebPaymentController:return');
-
     }
 
 }

@@ -9,12 +9,15 @@ use CartBundle\Controller\NewebPaymentController;
 class OrderController extends OrderBaseController
 {
 
-    public function reviewAction() {
+    /**
+     *   /order/view?o=23&t=B237BC
+     */
+    public function viewAction() {
         $order = $this->getCurrentOrder();
         if( false === $order ) {
             return $this->redirect('/');
         }
-        return $this->render("checkout_review.html", [
+        return $this->render("order_view.html", [
             'order' => $order,
         ]);
     }
@@ -37,7 +40,7 @@ class OrderController extends OrderBaseController
                 throw new Exception('cashflow backend is not defined.');
             }
         }
-        return $this->render("checkout_payment.html", [
+        return $this->render("order_payment.html", [
             'paymentType' => $paymentType,
         ]);
     }
