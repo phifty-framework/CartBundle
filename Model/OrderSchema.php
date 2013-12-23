@@ -115,6 +115,11 @@ class OrderSchema extends SchemaDeclare
             ])
             ;
 
+        $this->column('coupon_code')
+            ->varchar(32)
+            ->label( _('使用的折價券代碼') )
+            ;
+
         $this->column('invoice_number')
             ->varchar(32)
             ->label('發票編號')

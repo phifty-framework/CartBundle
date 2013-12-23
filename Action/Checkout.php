@@ -58,6 +58,11 @@ class Checkout extends CreateRecordAction
         $this->setArgument('total_amount', $totalAmount);
         $this->setArgument('discount_amount', $discountAmount);
 
+        if ( $coupon = $cart->loadSessionCoupon() ) {
+            $this->setArgument('coupon_code', $coupon->coupon_code);
+        }
+
+
         // XXX: start transaction
         kernel()->db->beginTransaction();
 
