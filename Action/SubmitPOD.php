@@ -8,12 +8,12 @@ use CartBundle\Model\Order;
 class SubmitPOD extends Action
 {
     public function schema() {
-        $this->param('order_id')
+        $this->param('o')
             ->required()
             ->label( _('訂單編號') )
             ;
 
-        $this->param('order_token')
+        $this->param('t')
             ->required()
             ->label( _('訂單安全碼') )
             ;
@@ -26,7 +26,7 @@ class SubmitPOD extends Action
 
     public function run() {
         $order = new Order;
-        $order->load([ 'id' => $this->arg('order_id'), 'token' => $this->arg('order_token') ]);
+        $order->load([ 'id' => $this->arg('o'), 'token' => $this->arg('t') ]);
         if ( ! $order->id ) {
             return $this->error( _('參數錯誤') );
         }
