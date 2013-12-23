@@ -7,20 +7,20 @@ class OrderSchema extends SchemaDeclare
 {
     public function schema() {
         $prefixes = [ 
-            '寄件者' => 'sender_', 
-            '收件者' => 'shipping_',
+            '購買人' => 'buyer_', 
+            '收件人' => 'shipping_',
         ];
         foreach( $prefixes as $label => $prefix ) {
 
             $this->column("{$prefix}name")
                 ->varchar(32)
-                ->label( "$label 姓名" )
+                ->label( "{$label}姓名" )
                 ->required()
                 ;
 
             $this->column("{$prefix}gender")
                 ->varchar(32)
-                ->label( "$label 性別" )
+                ->label( "{$label}性別" )
                 ->required()
                 ->validValues([
                     /**
@@ -33,16 +33,16 @@ class OrderSchema extends SchemaDeclare
 
             $this->column("{$prefix}cellphone")
                 ->varchar(32)
-                ->label( "$label 手機" )
+                ->label( "{$label}手機" )
                 ->required()
                 ;
             $this->column("{$prefix}phone")
                 ->varchar(32)
-                ->label( "$label 聯絡電話" )
+                ->label( "{$label}電話" )
                 ;
             $this->column("{$prefix}address")
                 ->varchar(128)
-                ->label( "$label 地址" )
+                ->label( "{$label}地址" )
                 ->required()
                 ;
         }
@@ -66,6 +66,7 @@ class OrderSchema extends SchemaDeclare
         // and "POD" won't have "transaction record" before the shipping is done.
         $this->column('payment_type')
             ->varchar(32)
+            ->label( _('付款方式') )
             ->validValues([
                 '貨到付款' => 'pod', // pay on delivery
                 'ATM'      => 'atm',
@@ -78,6 +79,7 @@ class OrderSchema extends SchemaDeclare
             ->default(function() { 
                 return 'unpaid'; 
             })
+            ->label( _('付款狀態') )
             ->validValues([
                 '未付款'         => 'unpaid',
                 '付款失敗'       => 'paid_error',
@@ -141,6 +143,12 @@ class OrderSchema extends SchemaDeclare
             ->integer()
             ->default(0)
             ->label('運費')
+            ;
+
+        $this->column('discount_amount')
+            ->integer()
+            ->default(0)
+            ->label('折扣金額')
             ;
 
         $this->column('paid_amount')

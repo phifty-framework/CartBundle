@@ -9,8 +9,11 @@ class OrderCRUDHandler extends CRUDHandler
     public $modelClass = 'CartBundle\Model\Order';
     public $crudId     = 'order';
 
-    // public $listColumns = array( 'id', 'thumb', 'name' , 'lang' , 'subtitle' , 'sn' );
-    // public $quicksearchFields = array('name');
+    public $listColumns = array( 'id', 'sn', 'buyer_name', 'buyer_cellphone' , 'payment_type' , 'payment_status' , 'total_amount', 'paid_amount' , 'created_on' );
+
+    public $quicksearchFields = array('buyer_name', 'buyer_phone', 'buyer_email');
+
+    public $filterColumns = array('payment_type', 'payment_status');
 
     public $canCreate = true;
     public $canUpdate = true;

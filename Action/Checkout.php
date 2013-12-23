@@ -13,7 +13,7 @@ class Checkout extends CreateRecordAction
         $this->useRecordSchema();
 
         $prefixes = [
-            '購買人' => 'sender_',
+            '購買人' => 'buyer_',
             '收貨人' => 'shipping_'
         ];
 
