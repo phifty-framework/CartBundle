@@ -62,6 +62,8 @@ class OrderSchema extends SchemaDeclare
             })
             ;
 
+        // we keep this field for admin to query items easily.
+        // and "POD" won't have "transaction record" before the shipping is done.
         $this->column('payment_type')
             ->varchar(32)
             ->validValues([
@@ -83,7 +85,7 @@ class OrderSchema extends SchemaDeclare
                 '已付款但費用不足' => 'paid_incomplete',
 
                 // used in ATM
-                '已付款待確認'   => 'wait_for_confirmation'
+                '已付款待確認'   => 'confirming',
             ]);
 
         $this->column('invoice_number')

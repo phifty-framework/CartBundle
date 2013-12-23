@@ -17,30 +17,25 @@ class TransactionSchema extends SchemaDeclare
         $this->column('type')
             ->varchar(32)
             ->label( _('交易類型') )
+            ->required()
             ->validValues([
                 '信用卡' => 'cc',
                 'ATM'    => 'atm',
+                '貨到付款' => 'pod', // pay on delivery,
             ])
-            ;
-
-        $this->column('status')
-            ->varchar(32)
-            ->label( _('交易狀態') )
-            ->validValues([
-                '交易成功' => 'success',
-                '交易失敗' => 'fail'
-            ]);
             ;
 
         $this->column('amount')
             ->integer()
             ->label( _('交易金額') )
+            ->required()
             ;
 
         $this->column('result')
             ->boolean()
             ->default(false)
             ->label( _('交易結果') )
+            ->required()
             ;
 
         $this->column('message')
@@ -68,6 +63,20 @@ class TransactionSchema extends SchemaDeclare
             ->label( _('原始 API 交易資料') )
             ;
 
+
+        /** the paid_date */
+        $this->column('paid_date')
+            ->timestamp()
+            ->null()
+            ->required()
+            ->renderAs('DateTimeInput')
+            ->label( _('付款日期') )
+            ->default(function() {
+                return date('c');
+            })
+            ;
+
+        /* the record date */
         $this->column( 'created_on' )
             ->timestamp()
             ->null()

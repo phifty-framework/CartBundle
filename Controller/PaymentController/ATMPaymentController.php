@@ -12,6 +12,8 @@ class ATMPaymentController extends OrderBaseController
     }
 
     public function responseAction() {
-        return $this->render("order_payment_atm.html");
+        return $this->render("order_payment_atm.html", [
+            'order' => $this->getCurrentOrder(),
+        ]);
     }
 }

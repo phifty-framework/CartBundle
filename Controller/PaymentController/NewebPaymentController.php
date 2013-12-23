@@ -122,12 +122,6 @@ class NewebPaymentController extends OrderBaseController
         } else {
             // XXX: log the error
         }
-        if ( $result ) {
-            $order->setPaidAmount( intval($amount) );
-            $order->save();
-        } else {
-            $order->update([ 'payment_status' => 'paid_error' ]);
-        }
         return $this->render('message.html', [
             'error' => ! $result,
             'title' => $message,
@@ -207,8 +201,8 @@ class NewebPaymentController extends OrderBaseController
             'message'  => $message,
             'reason'   => $reason,
             'code'     => $bankResponseCode,
-            'data'     => yaml_emit($desc),
-            'raw_data' => yaml_emit($_POST),
+            'data'     => yaml_emit($desc, YAML_UTF8_ENCODING),
+            'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
         ]);
         if ( ! $ret->success ) {
             // XXX: log the error
