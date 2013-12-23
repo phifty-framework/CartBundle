@@ -8,7 +8,9 @@ use Exception;
 class PODPaymentController extends OrderBaseController
 {
     public function indexAction() {
-        return $this->render("order_payment_pod.html");
+        return $this->render("order_payment_pod.html", [
+            'order' => $this->getCurrentOrder(),
+        ]);
     }
 
     public function responseAction() {

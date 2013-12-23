@@ -1,0 +1,43 @@
+<?php
+namespace CartBundle\Action;
+use ActionKit\Action;
+use ActionKit\RecordAction\CreateRecordAction;
+use CartBundle\Model\Transaction;
+use CartBundle\Model\Order;
+
+class SubmitPOD extends Action
+{
+    public function schema() {
+        $this->param('order_id')
+            ->required()
+            ->label( _('訂單編號') )
+            ;
+
+        $this->param('order_token')
+            ->required()
+            ->label( _('訂單安全碼') )
+            ;
+
+        $this->param('pod_time')
+            ->required()
+            ->label( _('貨到付款時間') )
+            ;
+    }
+
+    public function run() {
+        $order = new Order;
+        $order->load([ 'id' => $this->arg('order_id'), 'token' => $this->arg('order_token') ]);
+        if ( ! $order->id ) {
+            return $this->error( _('參數錯誤') );
+        }
+        $ret = $order->update([
+            'pod_time' => $this->arg('pod_time'),
+            'payment_status' => 'confirming',
+            'payment_type' => 'pod',
+        ]);
+        if ( $ret->success ) {
+            return $this->success( _('感謝您的訂購，我們會盡快出貨') );
+        }
+        return $this->error( __('錯誤 %1'), $ret->message );
+    }
+}

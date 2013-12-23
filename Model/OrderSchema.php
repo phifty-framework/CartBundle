@@ -88,6 +88,19 @@ class OrderSchema extends SchemaDeclare
                 '已付款待確認'   => 'confirming',
             ]);
 
+        $this->column('pod_time')
+            ->varchar(24)
+            ->null()
+            ->label( '貨到付款到貨時間' )
+            ->validValues([
+                '不限' => '0',
+                '上午9:00 ~ 上午12:00'  => '0900-1200',
+                '上午12:00 ~ 下午15:00' => '1200-1500',
+                '下午15:00 ~ 下午18:00' => '1500-1800',
+                '下午18:00 ~ 晚上21:00' => '1800-2100',
+            ])
+            ;
+
         $this->column('invoice_number')
             ->varchar(32)
             ->label('發票編號')
