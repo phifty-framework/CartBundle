@@ -36,10 +36,22 @@ class OrderSchema extends SchemaDeclare
                 ->label( "{$label}手機" )
                 ->required()
                 ;
+
+            $this->column("{$prefix}phone_area")
+                ->varchar(3)
+                ->label( "{$label}電話區碼" )
+                ;
+
             $this->column("{$prefix}phone")
                 ->varchar(32)
                 ->label( "{$label}電話" )
                 ;
+
+            $this->column("{$prefix}phone_ext")
+                ->varchar(3)
+                ->label( "{$label}分機" )
+                ;
+
             $this->column("{$prefix}address")
                 ->varchar(128)
                 ->label( "{$label}地址" )

@@ -12,20 +12,16 @@ class Checkout extends CreateRecordAction
     public function schema() {
         $this->useRecordSchema();
 
-        $prefixes = [
-            '購買人' => 'buyer_',
-            '收貨人' => 'shipping_'
-        ];
-
-        /*
-         * XXX:
-        foreach( $prefixes as $label => $prefix ) {
-            $this->param("{$prefix}phone_extension")->isa('str')->label("$label 分機");
-        }
-        */
-
         // we don't trust amount fields from outside
-        $this->filterOut('paid_amount','total_amount','shipping_cost', 'member_id','payment_status','payment_type');
+        $this->filterOut(
+            'paid_amount',
+            'total_amount',
+            'discount_amount',
+            'shipping_cost',
+            'member_id',
+            'payment_status',
+            'payment_type'
+        );
     }
 
     public function run()
@@ -48,18 +44,19 @@ class Checkout extends CreateRecordAction
             }
         }
 
-
-
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
 
         $shippingCost = $cart->calculateShippingCost();
+        $origTotalAmount = $cart->calculateTotalAmount();
         $totalAmount = $cart->calculateDiscountedTotalAmount();
+        $discountAmount = $cart->calculateDiscountAmount();
 
         // Use Try-Cache to cache exceptions and process fallbacks.
         $this->setArgument('paid_amount', 0);
-        $this->setArgument('total_amount', $totalAmount);
         $this->setArgument('shipping_cost', $shippingCost);
+        $this->setArgument('total_amount', $totalAmount);
+        $this->setArgument('discount_amount', $discountAmount);
 
         // XXX: start transaction
         kernel()->db->beginTransaction();

@@ -93,6 +93,12 @@ class Cart extends CartBase
         return 0;
     }
 
+    public function calculateDiscountAmount() {
+        $discountedAmount = $this->calculateDiscountedTotalAmount();
+        $totalAmount = $this->calculateTotalAmount();
+        return $totalAmount - $discountedAmount;
+    }
+
     public function calculateDiscountedTotalAmount() {
         $totalAmount = $this->calculateTotalAmount();
         if ( $coupon = $this->loadSessionCoupon() ) {
