@@ -82,7 +82,7 @@ class Checkout extends CreateRecordAction
             $cart->cleanUp();
             kernel()->db->commit();
             $this->success(_('訂單建立成功，導向中.. 請稍待'));
-            return $this->redirectLater('/checkout/review?' . http_build_query([
+            return $this->redirectLater('/order/review?' . http_build_query([
                 'o' => $this->record->id,
                 't' => $this->record->token,
             ]), 3);
