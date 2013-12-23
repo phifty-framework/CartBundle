@@ -71,7 +71,7 @@ class SubmitATM extends CreateRecordAction
             'paid_date'   => $this->arg('date'),
         ]);
         if ( $ret->success ) {
-            return $this->success( _('謝謝您的購買，我們會請專人幫您查帳。') );
+            return $this->success( _('謝謝您的購買，我們會請專人幫您處理。') );
         } else {
             $this->convertRecordValidation($ret);
             return $this->error( __('錯誤 %1', $ret->message ) );
