@@ -86,8 +86,15 @@
                     </div>
                     <div class="col-field">
                         {{ CRUD.Action.renderField('token')|raw }}
+
+                    </div>
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('member_id')|raw }}
                     </div>
                 </div>
+
+                {{ CRUD.Action.renderField('remark')|raw }}
+
             </fieldset>
         </div>
         <div class="col-md-6">
@@ -136,8 +143,8 @@
                 <h3 class="open">購買項目</h3>
                 <div>
                     {#
-                        {% set subview = CRUD.Action.asView('ActionKit\\View\\StackView',{ "no_form": 1 }) %}
-                        {{ subview.buildRelationalActionViewForExistingRecords('order_items') |raw }}
+                    {% set subview = CRUD.Action.asView('ActionKit\\View\\StackView',{ "no_form": 1 }) %}
+                    {{ subview.buildRelationalActionViewForExistingRecords('order_items') |raw }}
                     #}
                     <table width="100%" cellpadding="3" class="order-item-table">
                     <thead>
@@ -162,7 +169,6 @@
                         <td class="product-name">
                             {{ subRecordAction.renderSignatureWidget()| raw }}
                             {{ subRecordAction.renderWidget('id')| raw }}
-
                             {# {{orderItem.display('product_id')|raw}} #}
                             {# {{ subRecordAction.renderWidget('product_id')| raw }} #}
                             {{orderItem.product.name}}
@@ -186,14 +192,14 @@
 
                         <td>{{subRecordAction.renderWidget('shipping_company_id')|raw}}</td>
                         <td>{{subRecordAction.renderWidget('shipping_id')|raw}}</td>
+                        {% if bundle.config('ShipmentTracking') and orderItem.shipping_id %}
                         <td>
-                            {% if bundle.config('ShipmentTracking') and orderItem.shipping_id %}
-                                {% set trackingUrl = orderItem.getTrackingUrl() %}
-                                {% if trackingUrl %}
-                                    <a target="_blank" href="{{trackingUrl}}">追蹤</a>
-                                {% endif %}
+                            {% set trackingUrl = orderItem.getTrackingUrl() %}
+                            {% if trackingUrl %}
+                                <a target="_blank" href="{{trackingUrl}}">追蹤</a>
                             {% endif %}
                         </td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                     </tbody>
@@ -201,26 +207,30 @@
                 </div>
 
 
-                <h3>交易記錄</h3>
+                <h3 class="open">交易記錄</h3>
                 <div>
                     <table width="100%" cellpadding="3" class="order-transaction-table">
                     <thead>
                         <th>編號</th>
                         <th>類型</th>
-                        <th>金額</th>
                         <th>訊息</th>
                         <th>原因</th>
+                        <th>金額</th>
                         <th>付款日期</th>
+                        <th>交易資料</th>
                     </thead>
                     <tbody>
                     {% for txn in CRUD.Record.transactions %}
-                    <tr class="{% if txn.result %}success{% else %}fail{% endif %}">
+                    <tr>
                         <td>{{txn.id}}</td>
                         <td>{{txn.display('type')}}</td>
-                        <td>{{txn.amount}}</td>
-                        <td>{{txn.message}}</td>
+                        <td>
+                            <span class="{% if txn.result %}success{% else %}fail{% endif %}">{{txn.message}}</span>
+                        </td>
                         <td>{{txn.reason}}</td>
-                        <td>{{txn.paid_date}}</td>
+                        <td>{{txn.amount}}</td>
+                        <td>{{txn.paid_date|date('Y/m/d A h:s')}}</td>
+                        <td><pre>{{txn.data}}</pre></td>
                     </tr>
                     {% endfor %}
                     </tbody>

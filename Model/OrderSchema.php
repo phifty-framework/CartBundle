@@ -201,6 +201,7 @@ class OrderSchema extends SchemaDeclare
         $this->column('remark')
             ->text()
             ->label('消費者備註')
+            ->renderAs('TextareaInput', [ 'rows' => 1, 'cols' => 40 ]) 
             ;
 
 

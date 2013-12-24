@@ -4,7 +4,7 @@ use Phifty\Bundle;
 
 class CartBundle extends Bundle
 {
-    public function assets() { return array(); }
+    public function assets() { return array('cart'); }
 
     public function defaultConfig() { return array(); }
 

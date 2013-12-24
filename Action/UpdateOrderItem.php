@@ -10,7 +10,7 @@ class UpdateOrderItem extends UpdateRecordAction
     public function runValidate() { 
         $cUser = kernel()->currentUser;
         if ( ! $cUser->isLogged() || ! $cUser->hasRole('admin') ) {
-            return false;
+            return $this->error( _('權限不足') );
         }
         // Not sure why this method call fails while submitting from nested action.
         // XXX: return parent::runValidate();

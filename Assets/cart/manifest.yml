@@ -1,4 +1,6 @@
 ---
 collections:
+  - css:
+    - cart.css
   - js:
     - cart.js

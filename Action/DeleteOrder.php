@@ -10,7 +10,7 @@ class DeleteOrder extends DeleteRecordAction
     public function runValidate() { 
         $cUser = kernel()->currentUser;
         if ( ! $cUser->isLogged() || ! $cUser->hasRole('admin') ) {
-            return false;
+            return $this->error( _('權限不足') );
         }
         return parent::runValidate();
     }

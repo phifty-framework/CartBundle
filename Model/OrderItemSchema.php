@@ -46,6 +46,7 @@ class OrderItemSchema extends SchemaDeclare
             ->integer()
             ->label('物流公司')
             ->refer('ShippingBundle\\Model\\CompanySchema')
+            ->renderAs('SelectInput', [ 'allow_empty' => true, ])
             ;
         }
 

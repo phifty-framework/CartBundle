@@ -1,0 +1,46 @@
+
+.order-transaction-table {
+    border: 1px solid #c0c0c0;
+}
+.order-transaction-table th {
+    background: #d0d0d0;
+    text-align:center;
+    padding: 1px;
+    border-right: 1px solid #c0c0c0;
+}
+.order-transaction-table td {
+    padding: 2px 3px;
+}
+
+.order-transaction-table tbody {
+    background: #ffffff;
+}
+
+.order-transaction-table .success {
+    background: #a0ec35;
+    color: #fff;
+    font-weight: bold;
+}
+.order-transaction-table .fail {
+    background: #c34026;
+    color: #fff;
+    font-weight: bold;
+}
+
+.order-item-table {
+    border: 1px solid #c0c0c0;
+}
+
+.order-item-table th {
+    background: #d0d0d0;
+    padding: 1px;
+    text-align:center;
+    border-right: 1px solid #c0c0c0;
+}
+
+.order-item-table tbody {
+    background: #ffffff;
+}
+.order-item-table td {
+    padding: 2px 3px;
+}
