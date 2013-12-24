@@ -51,13 +51,24 @@ class OrderItemSchema extends SchemaDeclare
 
         $this->column('shipping_status')
             ->varchar(32)
-            ->label('物品寄送狀態')
+            ->label('貨運狀態')
             ->default('unpaid')
             ->validValues(array( 
                 '未付款' => 'unpaid',
                 '包裝中' => 'packing',
-                '已出貨' => 'transfering',
+                '已出貨' => 'shipped',
             ))
+            ;
+
+        $this->column('shipping_status_last_update')
+            ->timestamp()
+            ->null()
+            ->required()
+            ->renderAs('DateTimeInput')
+            ->label( _('貨運狀態更新時間') )
+            ->default(function() {
+                return date('c');
+            })
             ;
 
         if ( kernel()->bundle('ShippingBundle') ) {

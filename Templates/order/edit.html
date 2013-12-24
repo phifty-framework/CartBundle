@@ -93,7 +93,7 @@
             <div class="collapsible collapse-section" {# data-collapse="persist" #}>
                 <h3>交易記錄</h3>
                 <div>
-                    <table width="100%">
+                    <table width="100%" cellpadding="6">
                     <thead>
                         <th>編號</th>
                         <th>類型</th>
@@ -123,7 +123,7 @@
                         {{ subview.buildRelationalActionViewForExistingRecords('order_items') |raw }}
                     #}
 
-                    <table width="100%">
+                    <table width="100%" cellpadding="6">
                     <thead>
                         <th>產品</th>
                         <th>類型</th>
@@ -131,8 +131,9 @@
                         <th>數量</th>
                         <th>小計</th>
                         <th>貨運狀態</th>
-                        <th width="100">貨運公司</th>
-                        <th width="100">貨運編號</th>
+                        <th>貨運狀態更新時間</th>
+                        <th width="90">貨運公司</th>
+                        <th width="90">貨運編號</th>
                     </thead>
                     <tbody>
                     {% for orderItem in CRUD.Record.order_items %}
@@ -147,18 +148,23 @@
                         <td>
                             {{subRecordAction.renderWidget('type_id')|raw}}
                         </td>
-                        <td>{{orderItem.getUnitPrice()}}</td>
+                        <td class="money">NT$ {{orderItem.getUnitPrice()}}</td>
                         <td>{{subRecordAction.renderWidget('quantity')|raw}}</td>
-                        <td>{{orderItem.calculateAmount()}}</td>
+                        <td class="money">NT$ {{orderItem.calculateAmount()}}</td>
                         <td>{{subRecordAction.renderWidget('shipping_status')|raw}}</td>
+
+                        <td>{{orderItem.shipping_status_last_update|date('Y/m/d A H:i') }}</td>
+
                         <td>{{subRecordAction.renderWidget('shipping_company_id')|raw}}</td>
                         <td>{{subRecordAction.renderWidget('shipping_id')|raw}}</td>
+                        {#
                         <td>
                             {% set trackingUrl = orderItem.getTrackingUrl() %}
                             {% if trackingUrl %}
                                 <a target="_blank" href="{{trackingUrl}}">追蹤</a>
                             {% endif %}
                         </td>
+                        #}
                     </tr>
                     {% endfor %}
                     </tbody>

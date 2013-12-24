@@ -31,16 +31,31 @@ class OrderItem extends \CartBundle\Model\OrderItemBase {
         $this->update([ 'order_id' => $orderId ]);
     }
 
+
+    public function beforeUpdate($args) {
+        if ( isset($args['shipping_status']) ) {
+            if ( $this->shipping_status != $args['shipping_status'] ) {
+                $args['shipping_status_last_update'] = date('c');
+            }
+        }
+        return $args;
+    }
+
+    public function setShippingStatus($status) 
+    {
+        $this->update([ 'shipping_status' => $status ]);
+    }
+
     public function setStatusPacking() {
-        $this->update([ 'shipping_status' => 'packing' ]);
+        $this->setShippingStatus('packing');
     }
 
     public function setStatusUnpaid() {
-        $this->update([ 'shipping_status' => 'unpaid' ]);
+        $this->setShippingStatus('unpaid');
     }
 
-    public function setStatusTransfering() {
-        $this->update([ 'shipping_status' => 'transfering' ]);
+    public function setStatusShipped() {
+        $this->setShippingStatus('shipped');
     }
 
     public function getShippingCompany() {
