@@ -31,8 +31,8 @@ class OrderItem extends \CartBundle\Model\OrderItemBase {
         $this->update([ 'order_id' => $orderId ]);
     }
 
-    public function setStatusProcessing() {
-        $this->update([ 'shipping_status' => 'processing' ]);
+    public function setStatusPacking() {
+        $this->update([ 'shipping_status' => 'packing' ]);
     }
 
     public function setStatusUnpaid() {
@@ -48,6 +48,8 @@ class OrderItem extends \CartBundle\Model\OrderItemBase {
     }
 
     public function getTrackingUrl() {
-        return $this->getShippingCompany()->getTrackingUrl();
+        if ( $this->shipping_id ) {
+            return $this->getShippingCompany()->getTrackingUrl($this->shipping_id);
+        }
     }
 }

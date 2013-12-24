@@ -118,6 +118,11 @@
                 </div>
                 <h3>購買項目</h3>
                 <div>
+                    {#
+                        {% set subview = CRUD.Action.asView('ActionKit\\View\\StackView',{ "no_form": 1 }) %}
+                        {{ subview.buildRelationalActionViewForExistingRecords('order_items') |raw }}
+                    #}
+
                     <table width="100%">
                     <thead>
                         <th>產品</th>
@@ -126,21 +131,18 @@
                         <th>數量</th>
                         <th>小計</th>
                         <th>貨運狀態</th>
-                        <th>貨運公司</th>
-                        <th>貨運編號</th>
+                        <th width="100">貨運公司</th>
+                        <th width="100">貨運編號</th>
                     </thead>
                     <tbody>
-                    {#
-                    {% set subview = CRUD.Action.asView('ActionKit\\View\\StackView',{ "no_form": 1 }) %}
-                    {{ subview.buildRelationalActionViewForExistingRecords('order_items') |raw }}
-                    #}
                     {% for orderItem in CRUD.Record.order_items %}
                     {% set subRecordAction = orderItem.asUpdateAction() %}
                     {% set formIndex = subRecordAction.setParamNamesWithIndex('order_items') %}
                     <tr>
                         <td>
                             {{ subRecordAction.renderSignatureWidget()| raw }}
-                            {{orderItem.product.name}}
+                            {{ subRecordAction.renderWidget('id')| raw }}
+                            {{ subRecordAction.renderWidget('product_id')| raw }}
                         </td>
                         <td>
                             {{subRecordAction.renderWidget('type_id')|raw}}
@@ -152,10 +154,10 @@
                         <td>{{subRecordAction.renderWidget('shipping_company_id')|raw}}</td>
                         <td>{{subRecordAction.renderWidget('shipping_id')|raw}}</td>
                         <td>
-                            {#
-                            TODO: 貨運狀態連結
-                            http://postserv.post.gov.tw/webpost/CSController?cmd=POS4009_2&MAILNO=RR060912937TW
-                            #}
+                            {% set trackingUrl = orderItem.getTrackingUrl() %}
+                            {% if trackingUrl %}
+                                <a target="_blank" href="{{trackingUrl}}">追蹤</a>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}

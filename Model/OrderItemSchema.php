@@ -55,7 +55,7 @@ class OrderItemSchema extends SchemaDeclare
             ->default('unpaid')
             ->validValues(array( 
                 '未付款' => 'unpaid',
-                '處理中' => 'processing',
+                '包裝中' => 'packing',
                 '已出貨' => 'transfering',
             ))
             ;
