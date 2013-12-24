@@ -10,12 +10,15 @@ class OrderItemSchema extends SchemaDeclare
             ->integer()
             ->refer('CartBundle\\Model\\OrderSchema')
             ->label('訂單')
+            ->renderable(false)
             ;
+
 
         $this->column('quantity')
             ->integer()
             ->default(1)
             ->label('數量')
+            ->renderAs('TextInput', [ 'size' => 2 ])
             ;
 
         $this->column('product_id')
@@ -35,6 +38,7 @@ class OrderItemSchema extends SchemaDeclare
         $this->column('shipping_id')
             ->varchar(64)
             ->label('物流編號')
+            ->renderAs('TextInput', [ 'size' => 8 ])
             ;
 
         if ( kernel()->bundle('ShippingBundle') ) {
@@ -52,8 +56,7 @@ class OrderItemSchema extends SchemaDeclare
             ->validValues(array( 
                 '未付款' => 'unpaid',
                 '處理中' => 'processing',
-                '寄送中' => 'transfering',
-                '已到貨' => 'completed',
+                '已出貨' => 'transfering',
             ))
             ;
 

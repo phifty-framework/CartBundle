@@ -43,9 +43,11 @@ class OrderItem extends \CartBundle\Model\OrderItemBase {
         $this->update([ 'shipping_status' => 'transfering' ]);
     }
 
-    public function setStatusCompleted() {
-        $this->update([ 'shipping_status' => 'completed' ]);
+    public function getShippingCompany() {
+        return $this->shipping_company;
     }
 
-
+    public function getTrackingUrl() {
+        return $this->getShippingCompany()->getTrackingUrl();
+    }
 }

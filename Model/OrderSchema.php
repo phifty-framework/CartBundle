@@ -15,6 +15,7 @@ class OrderSchema extends SchemaDeclare
             $this->column("{$prefix}name")
                 ->varchar(32)
                 ->label( "{$label}姓名" )
+                ->renderAs('TextInput', [ 'size' => 7 ])
                 ->required()
                 ;
 
@@ -35,33 +36,39 @@ class OrderSchema extends SchemaDeclare
                 ->varchar(32)
                 ->label( "{$label}手機" )
                 ->required()
+                ->renderAs('TextInput', [ 'size' => 12 ])
                 ;
 
             $this->column("{$prefix}phone_area")
                 ->varchar(3)
-                ->label( "{$label}電話區碼" )
+                ->label( "{$label}區碼" )
+                ->renderAs('TextInput', [ 'size' => 3 ])
                 ;
 
             $this->column("{$prefix}phone")
                 ->varchar(32)
                 ->label( "{$label}電話" )
+                ->renderAs('TextInput', [ 'size' => 8 ])
                 ;
 
             $this->column("{$prefix}phone_ext")
                 ->varchar(3)
                 ->label( "{$label}分機" )
+                ->renderAs('TextInput', [ 'size' => 3 ])
                 ;
 
             $this->column("{$prefix}address")
                 ->varchar(128)
                 ->label( "{$label}地址" )
                 ->required()
+                ->renderAs('TextInput', [ 'size' => 28 ])
                 ;
         }
 
         $this->column('sn')
             ->varchar(16)
             ->label( _('訂單編號') )
+            ->renderAs('TextInput', [ 'size' => 10 ])
             ;
 
         // Order Security Token (to access from URL)
@@ -69,6 +76,7 @@ class OrderSchema extends SchemaDeclare
             ->varchar(32)
             ->label('訂單 Security Token')
             ->hint('請勿修改或清空')
+            ->renderAs('TextInput', [ 'size' => 8 ])
             ->default(function() {
                 return substr(md5(uniqid('', true)),0,8);
             })
@@ -118,11 +126,13 @@ class OrderSchema extends SchemaDeclare
         $this->column('coupon_code')
             ->varchar(32)
             ->label( _('使用的折價券代碼') )
+            ->renderAs('TextInput', [ 'size' => 8 ])
             ;
 
         $this->column('invoice_number')
             ->varchar(32)
             ->label('發票編號')
+            ->renderAs('TextInput', [ 'size' => 12 ])
             ;
 
         $this->column('invoice_type')
@@ -139,45 +149,53 @@ class OrderSchema extends SchemaDeclare
         $this->column('utc')
             ->varchar(12)
             ->label('統一編號')
+            ->renderAs('TextInput', [ 'size' => 8 ])
             ;
 
         $this->column('utc_title')
             ->varchar(64)
             ->label('統編抬頭')
+            ->renderAs('TextInput', [ 'size' => 12 ])
             ;
 
         $this->column('utc_address')
             ->varchar(128)
             ->label('發票寄送地址')
+            ->renderAs('TextInput', [ 'size' => 30 ])
             ;
 
         $this->column('utc_name')
             ->varchar(32)
             ->label('發票收件人')
+            ->renderAs('TextInput', [ 'size' => 8 ])
             ;
 
         $this->column('shipping_cost')
             ->integer()
             ->default(0)
             ->label('運費')
+            ->renderAs('TextInput', [ 'size' => 5 ])
             ;
 
         $this->column('discount_amount')
             ->integer()
             ->default(0)
             ->label('折扣金額')
+            ->renderAs('TextInput', [ 'size' => 5 ])
             ;
 
         $this->column('paid_amount')
             ->integer()
             ->default(0)
             ->label('已付金額')
+            ->renderAs('TextInput', [ 'size' => 6 ])
             ;
 
         $this->column('total_amount')
             ->integer()
             ->default(0)
             ->label('總金額')
+            ->renderAs('TextInput', [ 'size' => 6 ])
             ;
 
         $this->column('remark')
