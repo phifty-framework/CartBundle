@@ -208,7 +208,9 @@ class OrderSchema extends SchemaDeclare
         // an order has many order items
         $this->many( 'order_items', 'CartBundle\\Model\\OrderItemSchema', 'order_id', 'id' );
 
-        $this->many( 'transactions' , 'CartBundle\\Model\\TransactionSchema', 'order_id', 'id');
+        $this->many( 'transactions' , 'CartBundle\\Model\\TransactionSchema', 'order_id', 'id')
+            ->ordering('id','desc')
+            ;
 
 
         $this->column( 'member_id' )
