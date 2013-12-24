@@ -38,7 +38,7 @@ class OrderItemSchema extends SchemaDeclare
         $this->column('shipping_id')
             ->varchar(64)
             ->label('物流編號')
-            ->renderAs('TextInput', [ 'size' => 8 ])
+            ->renderAs('TextInput', [ 'size' => 12 ])
             ;
 
         if ( kernel()->bundle('ShippingBundle') ) {

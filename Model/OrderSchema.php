@@ -15,7 +15,7 @@ class OrderSchema extends SchemaDeclare
             $this->column("{$prefix}name")
                 ->varchar(32)
                 ->label( "{$label}姓名" )
-                ->renderAs('TextInput', [ 'size' => 7 ])
+                ->renderAs('TextInput', [ 'size' => 8 ])
                 ->required()
                 ;
 
@@ -61,7 +61,7 @@ class OrderSchema extends SchemaDeclare
                 ->varchar(128)
                 ->label( "{$label}地址" )
                 ->required()
-                ->renderAs('TextInput', [ 'size' => 28 ])
+                ->renderAs('TextInput', [ 'size' => 60 ])
                 ;
         }
 

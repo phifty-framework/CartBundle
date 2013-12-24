@@ -2,36 +2,110 @@
 {% block section_body %}
 
 <form class="ajax-action" enctype="multipart/form-data" method="post">
+    {% set bundle = Kernel.bundle('CartBundle') %}
+
     {{ CRUD.Action.renderSignatureWidget|raw}}
     {% if CRUD.Record.id %}
         {{ forms.hidden('id', CRUD.Record.id) }}
     {% endif %}
 
+    {% for prefix, label in {
+        'buyer_': '購買人',
+        'shipping_': '收貨人'
+    } %}
+    <div class="row">
+        <div class="col-md-10">
+            <fieldset>
+                <legend>{{label}}</legend>
+
+                <div class="col-field">
+                {{ CRUD.Action.renderField(prefix ~ 'name')|raw }}
+                </div>
+                <div class="col-field">
+                {{ CRUD.Action.renderField(prefix ~ 'gender')|raw }}
+                </div>
+
+                <div class="col-field">
+                {{ CRUD.Action.renderField(prefix ~ 'cellphone')|raw }}
+                </div>
+
+                <div class="col-field">
+                    <div class="v-field">
+                        <div class="label">
+                            聯絡電話
+                        </div>
+                        <div class="input">
+                            {{ CRUD.Action.renderWidget( prefix ~ 'phone_area')|raw }}
+                            - {{ CRUD.Action.renderWidget( prefix ~ 'phone')|raw }}
+                            # {{ CRUD.Action.renderWidget( prefix ~ 'phone_ext')|raw }}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-field">
+                    {{ CRUD.Action.renderField(prefix ~ 'address')|raw }}
+                </div>
+                <div class="clearfix"> </div>
+            </fieldset>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="row">
+        <div class="col-md-10">
+            <fieldset>
+                <legend>發票</legend>
+                <div class="clearfix">
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('invoice_type')|raw }}
+                    </div>
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('utc')|raw }}
+                    </div>
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('utc_name')|raw }}
+                    </div>
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('utc_title')|raw }}
+                    </div>
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('utc_address')|raw }}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
     <div class="row">
 
-        <div class="col-md-3">
+        <div class="col-md-4">
             <fieldset>
                 <legend>訂單</legend>
-                {{ CRUD.Action.renderField('sn')|raw }}
-                {{ CRUD.Action.renderField('token')|raw }}
+                <div class="clearfix">
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('sn')|raw }}
+                    </div>
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('token')|raw }}
+                    </div>
+                </div>
             </fieldset>
-
+        </div>
+        <div class="col-md-6">
             <fieldset>
                 <legend>付款</legend>
-
-                {{ CRUD.Action.renderField('payment_type')|raw }}
-                {{ CRUD.Action.renderField('payment_status')|raw }}
-
                 <div class="clearfix">
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('payment_type')|raw }}
+                    </div>
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('payment_status')|raw }}
+                    </div>
                     <div class="col-field">
                         {{ CRUD.Action.renderField('total_amount')|raw }}
                     </div>
                     <div class="col-field">
-                    {{ CRUD.Action.renderField('paid_amount')|raw }}
+                        {{ CRUD.Action.renderField('paid_amount')|raw }}
                     </div>
-                </div>
-
-                <div class="clearfix">
                     <div class="col-field">
                         {{ CRUD.Action.renderField('shipping_cost')|raw }}
                     </div>
@@ -42,41 +116,6 @@
             </fieldset>
         </div>
 
-        {% for prefix, label in {
-            'buyer_': '購買人',
-            'shipping_': '收貨人'
-        } %}
-        <div class="col-md-3">
-            <fieldset>
-                <legend>{{label}}</legend>
-
-                <div class="col-field">
-                {{ CRUD.Action.renderField(prefix ~ 'name')|raw }}
-                </div>
-                <div class="col-field">
-                {{ CRUD.Action.renderField(prefix ~ 'gender')|raw }}
-                </div>
-                <div class="clearfix"> </div>
-
-                {{ CRUD.Action.renderField(prefix ~ 'cellphone')|raw }}
-
-                <div class="v-field">
-                <div class="label">
-                    聯絡電話
-                </div>
-                <div class="input">
-                    {{ CRUD.Action.renderWidget( prefix ~ 'phone_area')|raw }}
-                    - {{ CRUD.Action.renderWidget( prefix ~ 'phone')|raw }}
-                    # {{ CRUD.Action.renderWidget( prefix ~ 'phone_ext')|raw }}
-                </div>
-
-
-                {{ CRUD.Action.renderField(prefix ~ 'address')|raw }}
-
-            </div>
-            </fieldset>
-        </div>
-        {% endfor %}
 
 
 
@@ -89,11 +128,82 @@
 
     <div class="row">
         <div class="col-md-11">
+
+
+
             <h3>訂單明細</h3>
             <div class="collapsible collapse-section" {# data-collapse="persist" #}>
+                <h3 class="open">購買項目</h3>
+                <div>
+                    {#
+                        {% set subview = CRUD.Action.asView('ActionKit\\View\\StackView',{ "no_form": 1 }) %}
+                        {{ subview.buildRelationalActionViewForExistingRecords('order_items') |raw }}
+                    #}
+                    <table width="100%" cellpadding="3" class="order-item-table">
+                    <thead>
+                        <th>產品</th>
+                        <th>類型</th>
+                        <th>單價</th>
+                        <th>數量</th>
+                        <th>小計</th>
+                        <th>貨運狀態</th>
+                        <th>貨運狀態更新時間</th>
+                        <th>貨運公司</th>
+                        <th>貨運編號</th>
+                        {% if bundle.config('ShipmentTracking') %}
+                        <th> </th>
+                        {% endif %}
+                    </thead>
+                    <tbody>
+                    {% for orderItem in CRUD.Record.order_items %}
+                    {% set subRecordAction = orderItem.asUpdateAction() %}
+                    {% set formIndex = subRecordAction.setParamNamesWithIndex('order_items') %}
+                    <tr>
+                        <td class="product-name">
+                            {{ subRecordAction.renderSignatureWidget()| raw }}
+                            {{ subRecordAction.renderWidget('id')| raw }}
+
+                            {# {{orderItem.display('product_id')|raw}} #}
+                            {# {{ subRecordAction.renderWidget('product_id')| raw }} #}
+                            {{orderItem.product.name}}
+                        </td>
+                        <td class="product-type">
+                            {# {{orderItem.display('type_id')|raw}} #}
+                            {# {{subRecordAction.renderWidget('type_id')|raw}} #}
+                            {{orderItem.type.name}}
+                        </td>
+                        <td class="price money">NT$ {{orderItem.getUnitPrice()}}</td>
+                        <td class="quantity">
+                            {{orderItem.display('quantity')|raw}}
+                            {#
+                            {{subRecordAction.renderWidget('quantity')|raw}}
+                            #}
+                        </td>
+                        <td class="price money">NT$ {{orderItem.calculateAmount()}}</td>
+                        <td>{{subRecordAction.renderWidget('shipping_status')|raw}}</td>
+
+                        <td>{{orderItem.shipping_status_last_update|date('Y/m/d A H:i') }}</td>
+
+                        <td>{{subRecordAction.renderWidget('shipping_company_id')|raw}}</td>
+                        <td>{{subRecordAction.renderWidget('shipping_id')|raw}}</td>
+                        <td>
+                            {% if bundle.config('ShipmentTracking') and orderItem.shipping_id %}
+                                {% set trackingUrl = orderItem.getTrackingUrl() %}
+                                {% if trackingUrl %}
+                                    <a target="_blank" href="{{trackingUrl}}">追蹤</a>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                    </table>
+                </div>
+
+
                 <h3>交易記錄</h3>
                 <div>
-                    <table width="100%" cellpadding="6">
+                    <table width="100%" cellpadding="3" class="order-transaction-table">
                     <thead>
                         <th>編號</th>
                         <th>類型</th>
@@ -111,60 +221,6 @@
                         <td>{{txn.message}}</td>
                         <td>{{txn.reason}}</td>
                         <td>{{txn.paid_date}}</td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                    </table>
-                </div>
-                <h3>購買項目</h3>
-                <div>
-                    {#
-                        {% set subview = CRUD.Action.asView('ActionKit\\View\\StackView',{ "no_form": 1 }) %}
-                        {{ subview.buildRelationalActionViewForExistingRecords('order_items') |raw }}
-                    #}
-
-                    <table width="100%" cellpadding="6">
-                    <thead>
-                        <th>產品</th>
-                        <th>類型</th>
-                        <th>單價</th>
-                        <th>數量</th>
-                        <th>小計</th>
-                        <th>貨運狀態</th>
-                        <th>貨運狀態更新時間</th>
-                        <th width="90">貨運公司</th>
-                        <th width="90">貨運編號</th>
-                    </thead>
-                    <tbody>
-                    {% for orderItem in CRUD.Record.order_items %}
-                    {% set subRecordAction = orderItem.asUpdateAction() %}
-                    {% set formIndex = subRecordAction.setParamNamesWithIndex('order_items') %}
-                    <tr>
-                        <td>
-                            {{ subRecordAction.renderSignatureWidget()| raw }}
-                            {{ subRecordAction.renderWidget('id')| raw }}
-                            {{ subRecordAction.renderWidget('product_id')| raw }}
-                        </td>
-                        <td>
-                            {{subRecordAction.renderWidget('type_id')|raw}}
-                        </td>
-                        <td class="money">NT$ {{orderItem.getUnitPrice()}}</td>
-                        <td>{{subRecordAction.renderWidget('quantity')|raw}}</td>
-                        <td class="money">NT$ {{orderItem.calculateAmount()}}</td>
-                        <td>{{subRecordAction.renderWidget('shipping_status')|raw}}</td>
-
-                        <td>{{orderItem.shipping_status_last_update|date('Y/m/d A H:i') }}</td>
-
-                        <td>{{subRecordAction.renderWidget('shipping_company_id')|raw}}</td>
-                        <td>{{subRecordAction.renderWidget('shipping_id')|raw}}</td>
-                        {#
-                        <td>
-                            {% set trackingUrl = orderItem.getTrackingUrl() %}
-                            {% if trackingUrl %}
-                                <a target="_blank" href="{{trackingUrl}}">追蹤</a>
-                            {% endif %}
-                        </td>
-                        #}
                     </tr>
                     {% endfor %}
                     </tbody>
