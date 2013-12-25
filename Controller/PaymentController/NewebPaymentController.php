@@ -115,8 +115,8 @@ class NewebPaymentController extends OrderBaseController
             'amount'   => intval($amount),
             'reason'   => $reason,
             'code'     => $finalReturn_BankRC,
-            'data'     => yaml_emit($desc),
-            'raw_data' => yaml_emit($_POST),
+            'data'     => yaml_emit($desc, YAML_UTF8_ENCODING),
+            'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
         ]);
         if ( ! $ret->success ) {
             throw new Exception($ret->message);
@@ -144,11 +144,6 @@ class NewebPaymentController extends OrderBaseController
         $batchNumber      = $this->getParameter('BatchNumber');
         $code = $bundle->config('Transaction.Neweb.Code');
 
-        // fail by default
-        $result = false;
-        $message = '交易失敗';
-        $reason  = '';
-
 
         // api data with description
         $desc = [ 
@@ -159,6 +154,12 @@ class NewebPaymentController extends OrderBaseController
             '批次號碼'   => $batchNumber,
         ];
 
+        // fail by default
+        $result = false;
+        $message = '交易失敗';
+        $reason  = '';
+
+
         if ( $PRC =="0" && $SRC == "0" ) {
             $chkstr = $merchantNumber.$orderNumber.$PRC.$SRC.$code.$amount;
             $chkstr = md5($chkstr);
@@ -167,7 +168,7 @@ class NewebPaymentController extends OrderBaseController
             $desc['驗證碼']     = $chkstr;
 
             // -- 回傳成功，但結果有可能遭竄改，因此需和編碼內容比較
-            if (strtolower($chkstr)==strtolower($CheckSum)) {
+            if (strtolower($chkstr)==strtolower($checkSum)) {
                 $result = true;
                 $message = '交易成功';
                 // $desc['狀態'] = '交易成功';
