@@ -14,4 +14,14 @@ class DeleteOrder extends DeleteRecordAction
         }
         return parent::runValidate();
     }
+
+    public function run() {
+        foreach( $this->order_items as $item ) {
+            $item->delete();
+        }
+        foreach( $this->transactions as $txn ) {
+            $txn->delete();
+        }
+        return parent::run();
+    }
 }
