@@ -148,6 +148,7 @@
                     #}
                     <table width="100%" cellpadding="3" class="order-item-table">
                     <thead>
+                        <th>&nbsp;</th>
                         <th>產品</th>
                         <th>類型</th>
                         <th>單價</th>
@@ -166,6 +167,9 @@
                     {% set subRecordAction = orderItem.asUpdateAction() %}
                     {% set formIndex = subRecordAction.setParamNamesWithIndex('order_items') %}
                     <tr>
+                        <td>
+                            <img src="/{{orderItem.product.thumb}}" height="20"/>
+                        </td>
                         <td class="product-name">
                             {{ subRecordAction.renderSignatureWidget()| raw }}
                             {{ subRecordAction.renderWidget('id')| raw }}
