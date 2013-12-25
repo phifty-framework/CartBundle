@@ -8,6 +8,85 @@ use Exception;
 
 class NewebPaymentController extends OrderBaseController
 {
+
+    /**
+     * Translate response code to message for customers.
+     *
+     * @param string $PRC
+     * @param string $SRC
+     */
+    public function translateCustomerMessage($PRC, $SRC)
+    {
+        $table = [
+            '15-1018' => '系統無法處理。銀行主機忙碌中或銀行線路中斷',
+            '34-171'  => '金融交易失敗',
+            '8-204'   => '訂單編號重複',
+            '52-554'  => '使用者帳號密碼錯誤',
+        ];
+        if ( isset($table["$PRC-$SRC"]) ) {
+            return $table["$PRC-$SRC"];
+        } else {
+            return '請與商家聯絡';
+        }
+    }
+
+
+    /**
+     * @param string $PRC
+     * @param string $SRC
+     */
+    public function translateMessage($PRC, $SRC) 
+    {
+        $table = [
+            '15-1018' => '系統無法處理。銀行主機忙碌中或銀行線路中斷',
+            '34-171'  => '金融交易失敗',
+            '8-204'   => '訂單編號重複',
+            '52-554'  => '使用者帳號密碼錯誤',
+        ];
+        if ( isset($table["$PRC-$SRC"]) ) {
+            return $table["$PRC-$SRC"];
+        } elseif ( isset($table["$PRC-*"]) ) {
+            return $table["$PRC-*"];
+        } elseif ( isset($table["*-$SRC"]) ) {
+            return $table["*-$SRC"];
+        }
+        return $this->translatePRCMessage($PRC) . ': ' . $this->translateSRCMessage($SRC);
+    }
+
+    /**
+     * @param string $PRC
+     */
+    public function translatePRCMessage($PRC) {
+        $table = [
+            '0' => '作業順利完成。',
+            '2' => '找不到指定的物件。',
+            '3' => '找不到必要參數。',
+            '6' => '必要參數的格式不正確。',
+            '7' => '必要參數的值不正確。',
+            '8' => '有重複物件存在。',
+            '10' => '剖析輸入串流時發生錯誤。',
+            '11' => '對此動作而言,物件未處於正確狀態。',
+            '12' => 'Payment Manager 中發生通信錯誤。',
+            '13' => 'Payment Manager 遇到非預期的內部錯誤。',
+            '14' => '發生資料庫通信錯誤。',
+            '15' => '發生卡匣特定錯誤。相關說明請參閱卡匣補充資訊。',
+            '32' => '不容許 API 指令中所指定的參數組合。',
+            '34' => '因金融理由導致作業失敗。',
+            '43' => '為特定商店做的風險控管',
+            '52' => '進行使用者授權期間發生錯誤。',
+            '55' => '指令名稱未被視為有效的 $til; 指令。',
+        ];
+        if ( isset($table[$PRC]) ) {
+            return $table[$PRC];
+        } else {
+            return "未定義訊息 [$PRC] 請查詢藍新提供之 PRC 表格";
+        }
+    }
+
+
+    /**
+     * @param string $SRC
+     */
     public function translateSRCMessage($SRC) {
         $table = [
             '0' => '無其它資訊可用。',
@@ -74,33 +153,9 @@ class NewebPaymentController extends OrderBaseController
         }
     }
 
-    public function translatePRCMessage($PRC) {
-        $table = [
-            '0' => '作業順利完成。',
-            '2' => '找不到指定的物件。',
-            '3' => '找不到必要參數。',
-            '6' => '必要參數的格式不正確。',
-            '7' => '必要參數的值不正確。',
-            '8' => '有重複物件存在。',
-            '10' => '剖析輸入串流時發生錯誤。',
-            '11' => '對此動作而言,物件未處於正確狀態。',
-            '12' => 'Payment Manager 中發生通信錯誤。',
-            '13' => 'Payment Manager 遇到非預期的內部錯誤。',
-            '14' => '發生資料庫通信錯誤。',
-            '15' => '發生卡匣特定錯誤。相關說明請參閱卡匣補充資訊。',
-            '32' => '不容許 API 指令中所指定的參數組合。',
-            '34' => '因金融理由導致作業失敗。',
-            '43' => '為特定商店做的風險控管',
-            '52' => '進行使用者授權期間發生錯誤。',
-            '55' => '指令名稱未被視為有效的 $til; 指令。',
-        ];
-        if ( isset($table[$PRC]) ) {
-            return $table[$PRC];
-        } else {
-            return "未定義訊息 [$PRC] 請查詢藍新提供之 PRC 表格";
-        }
-    }
-
+    /**
+     *
+     */
     public function indexAction() {
         $bundle = kernel()->bundle('CartBundle');
         $config = $bundle->config;
@@ -134,8 +189,9 @@ class NewebPaymentController extends OrderBaseController
         ]);
     }
 
-    public function getParameter($pname){
-        return isset($_POST[$pname])?$_POST[$pname]:"";
+    public function getParameter($n) 
+    {
+        return isset($_POST[$n]) ? $_POST[$n] : "";
     }
 
     public function returnAction() {
@@ -169,13 +225,7 @@ class NewebPaymentController extends OrderBaseController
                 }
             }
         } else {
-            if ( $finalReturn_PRC == "8" && $finalReturn_SRC == "204"){
-                $reason = "訂單編號重複";
-            } else if ( $finalReturn_PRC == "34" && $finalReturn_SRC == "171" ) {
-                $reason = "銀行交易失敗。 銀行回傳碼 [" . $finalReturn_BankRC . "]";
-            } else {
-                $reason = "請與商家聯絡";
-            }
+            $reason = $this->translateCustomerMessage($finalReturn_PRC, $finalReturn_SRC);
         }
 
         $desc = [
@@ -189,6 +239,7 @@ class NewebPaymentController extends OrderBaseController
             '檢查碼'     => $checkSum,
             '主回傳碼'  => $finalReturn_PRC,
             '副回傳碼'  => $finalReturn_SRC,
+            '回傳訊息'  => $this->translateMessage($finalReturn_PRC, $finalReturn_SRC),
         ];
 
         $order = new Order;
@@ -205,7 +256,7 @@ class NewebPaymentController extends OrderBaseController
             'result'   => $result,
             'message'  => $message,
             'amount'   => intval($amount),
-            'reason'   => $reason,
+            'reason'   => $this->translateMessage($finalReturn_PRC, $finalReturn_SRC),
             'code'     => $finalReturn_BankRC,
             'data'     => yaml_emit($desc, YAML_UTF8_ENCODING),
             'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
