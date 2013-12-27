@@ -4,6 +4,7 @@ use ActionKit\Action;
 use ActionKit\RecordAction\CreateRecordAction;
 use CartBundle\Cart;
 use MemberBundle\CurrentMember;
+use CartBundle\Email\OrderCreatedEmail;
 
 class Checkout extends CreateRecordAction
 {
@@ -88,6 +89,10 @@ class Checkout extends CreateRecordAction
             $cart->cleanUp();
             kernel()->db->commit();
             $this->success(_('訂單建立成功，導向中.. 請稍待'));
+
+            $email = new OrderCreatedEmail($currentMember->getRecord(), $this->getRecord());
+            $email->send();
+
             return $this->redirectLater('/order/view?' . http_build_query([
                 'o' => $this->record->id,
                 't' => $this->record->token,

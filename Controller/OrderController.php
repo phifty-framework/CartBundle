@@ -47,7 +47,7 @@ class OrderController extends OrderBaseController
         if ( isset($controllers[$paymentType]) ) {
             return $controllers[$paymentType]->indexAction();
         } else {
-            throw new Exception('unsupported payment.');
+            return $this->redirect('/');
         }
     }
 }

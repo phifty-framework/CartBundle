@@ -1,0 +1,12 @@
+{% extends "@MemberBundle/email/layout.html" %}
+{% block content %}
+
+{{member.name}} 您好:
+
+<p>您的訂單 {{order.sn}} 已經建立成功。</p>
+
+{#
+<a href="{{ Kernel.getHostBaseUrl() }}/order/view?"> </a>
+#}
+
+{% endblock %}
