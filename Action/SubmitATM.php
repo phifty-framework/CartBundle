@@ -4,10 +4,15 @@ use ActionKit\Action;
 use ActionKit\RecordAction\CreateRecordAction;
 use CartBundle\Model\Transaction;
 use CartBundle\Model\Order;
+use DateTime;
+
 
 class SubmitATM extends CreateRecordAction
 {
     public $recordClass = 'CartBundle\\Model\\Transaction';
+
+
+
 
     public function schema() {
 
@@ -46,6 +51,12 @@ class SubmitATM extends CreateRecordAction
             ;
     }
 
+    public function validateDate($date, $format = 'Y-m-d H:i:s')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        return $d && $d->format($format) == $date;
+    }
+
     public function run() {
         $order = new Order;
         $order->load([ 'id' => $this->arg('o'), 'token' => $this->arg('t') ]);
@@ -57,6 +68,24 @@ class SubmitATM extends CreateRecordAction
             return $this->error( _('匯款金額不正確喔，請再確認一下。') );
         }
 
+        $date = $this->arg('date');
+        // validate date
+        if ( ! $this->validateDate($date,'Y-m-d') ) {
+            return $this->error( _('日期不正確喔') );
+        }
+        // the correct date range should be   "order.created_on" < ATM < before tomorrow
+        $paidDate = new DateTime($date);
+        $now      = new DateTime;
+        if ( $paidDate > $now ) {
+            return $this->error( _('日期不正確喔。') );
+        }
+
+        $orderCreatedTime = new DateTime($order->created_on);
+        if ( $paidDate < $orderCreatedTime->format('Y-m-d') ) {
+            return $this->error( _('日期過早不正確喔') );
+        }
+
+
         $txn = new Transaction;
         $ret = $txn->create([
             'result' => true,
@@ -67,6 +96,8 @@ class SubmitATM extends CreateRecordAction
                 '銀行名稱' => $this->arg('bank_name'),
                 '銀行代號' => $this->arg('bank_code'),
             ], YAML_UTF8_ENCODING),
+            'message'     => '已建立 ATM 匯款記錄',
+            'reason'      => '客戶已提交 ATM 匯款資料，請確認',
             'amount'      => $this->arg('amount'),
             'paid_date'   => $this->arg('date'),
         ]);

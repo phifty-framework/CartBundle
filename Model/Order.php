@@ -45,9 +45,13 @@ class Order  extends \CartBundle\Model\OrderBase {
     public function setPaidAmount($amount, $status = 'paid') {
         $this->paid_amount = $amount;
         if ( $this->paid_amount >= $this->total_amount ) {
+            // paid status
             $this->payment_status = $status;
+            $this->order_items->updateShippingStatus('processing');
         } else {
+            // incomplete payment, need to confirm.
             $this->payment_status = 'paid_incomplete';
+            $this->order_items->updateShippingStatus('confirming');
         }
     }
 

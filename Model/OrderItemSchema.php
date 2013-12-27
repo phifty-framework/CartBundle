@@ -55,9 +55,12 @@ class OrderItemSchema extends SchemaDeclare
             ->label('貨運狀態')
             ->default('unpaid')
             ->validValues(array( 
-                '未付款' => 'unpaid',
-                '包裝中' => 'packing',
-                '已出貨' => 'shipped',
+                '未付款'       => 'unpaid',
+                '確認中'       => 'confirming',
+                '處理中'       => 'processing',
+                '包裝中'       => 'packing',
+                '已出貨'       => 'shipped',
+                // '已退貨'       => '',
             ))
             ;
 

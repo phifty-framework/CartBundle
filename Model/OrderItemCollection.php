@@ -1,5 +1,6 @@
 <?php
 namespace CartBundle\Model;
+use Exception;
 
 class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase {
 
@@ -22,6 +23,15 @@ class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase {
             $quantity += $item->quantity;
         }
         return $quantity;
+    }
+
+    public function updateShippingStatus($s) {
+        foreach( $this as $item ) {
+            $ret = $item->update([ 'shipping_status' => $s ]);
+            if ( ! $ret->success ) {
+                throw new Exception($ret->message);
+            }
+        }
     }
 
 }
