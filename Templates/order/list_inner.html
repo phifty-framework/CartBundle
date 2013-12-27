@@ -1,0 +1,24 @@
+{% extends '@CRUD/list_inner.html' %}
+{% block extra_buttons %}
+
+<input type="button" 
+    value="{% trans "列印訂單" %}"
+    data-record-id="{{ item.id }}"
+    data-id="{{ item.id }}"
+    data-token="{{ item.token }}"
+    class="button-s order-print-btn"/>
+
+{% endblock %}
+
+{% block script %}
+    {{parent()}}
+<script>
+$(function() {
+    $('.order-print-btn').click(function(e) {
+        e.stopPropagation();
+        window.open('/order/print?o=' + $(this).data('id') +  '&t=' + $(this).data('token') );
+        return false;
+    });
+});
+</script>
+{% endblock %}
