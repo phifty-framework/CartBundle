@@ -1,0 +1,88 @@
+
+<table width="100%" border="1px none" cellspacing="0" cellpadding="10" >
+    <tr>
+        <td width="20%">付款方式</td>
+        <td width="80%">{{ order.display('payment_type') }}</td>
+    </tr>
+    <tr>
+        <td>訂單狀態</td>
+        <td>{{order.display('payment_status')}}</td>
+    </tr>
+</table>
+<h3>購買人資訊</h3>
+<table width="100%" border="1" cellspacing="0" cellpadding="10" >
+    <tr>
+        <td width="20%">購買人姓名</td>
+        <td width="40%">地址</td>
+        <td width="20%">手機</td>
+        <td width="20%">市話</td>
+    </tr>
+    <tr>
+        <td>{{order.buyer_name}} {{order.display('buyer_gender')}}</td>
+        <td>{{order.buyer_address}}</td>
+        <td>{{order.buyer_cellphone}}</td>
+        <td>
+            {% if order.buyer_phone %}
+                {{order.buyer_phone_area}}-{{order.buyer_phone}} # {{order.buyer_phone_ext}}
+            {% endif %}
+        </td>
+    </tr>
+</table>
+<h3>收貨人資訊</h3>
+<table width="100%" border="1" cellspacing="0" cellpadding="10" >
+    <tr>
+        <td width="20%">收貨人姓名</td>
+        <td width="40%">地址</td>
+        <td width="20%">手機</td>
+        <td width="20%">市話</td>
+    </tr>
+    <tr>
+        <td>{{order.shipping_name}} {{order.display('shipping_gender')}}</td>
+        <td>{{order.shipping_address}}</td>
+        <td>{{order.shipping_cellphone}}</td>
+        <td>
+            {% if order.shipping_phone %}
+                {{order.shipping_phone_area}}-{{order.shipping_phone}} # {{order.shipping_phone_ext}}
+            {% endif %}
+        </td>
+    </tr>
+</table>
+<h3>物品清單</h3>
+<table width="100%" border="1" cellspacing="0" cellpadding="10" >
+    <tr>
+        <td width="40%">商品</td>
+        <td width="15%">單價</td>
+        <td width="15%">數量</td>
+        <td width="15%">金額</td>
+        <td width="15%">寄送狀態</td>
+    </tr>
+    {% for item in order.order_items %}
+    <tr>
+        <td>{{item.product.name}} / {{item.type.name}}</td>
+        <td>NT$ {{item.getUnitPrice()}}</td>
+        <td>{{item.quantity}}</td>
+        <td>NT$ {{item.calculateAmount()}}</td>
+        <td>{{item.display('shipping_status')}}</td>
+    </tr>
+    {% endfor %}
+    <tr>
+        <td colspan="3" align="right">運費</td>
+        <td colspan="1" align="left">NT$ {{order.shipping_cost}}</td>
+        <td> </td>
+    </tr>
+    <tr>
+        <td colspan="3" align="right">原金額 </td>
+        <td colspan="1" align="left">NT$ {{order.calculateOriginalTotalAmount()}}</td>
+        <td> </td>
+    </tr>
+    <tr>
+        <td colspan="3" align="right">折扣</td>
+        <td colspan="1" align="left">NT$ {{order.discount_amount}}</td>
+        <td> </td>
+    </tr>
+    <tr>
+        <td colspan="3" align="right">結帳金額</td>
+        <td colspan="1" align="left">NT$ {{order.total_amount}}</td>
+        <td> </td>
+    </tr>
+</table>

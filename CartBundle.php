@@ -21,6 +21,7 @@ class CartBundle extends Bundle
 
         $this->route('/order/view', 'OrderController:view');
         $this->route('/order/payment', 'OrderController:payment');
+        $this->route('/order/packing_list', 'OrderController:packingList');
 
 
         /** routes for payment. */

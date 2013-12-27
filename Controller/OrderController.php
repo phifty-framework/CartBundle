@@ -24,7 +24,20 @@ class OrderController extends OrderBaseController
         ]);
     }
 
-
+    /**
+     * 貨運清單頁面
+     *
+     * http://ibiyaya.dev/order/packing_list?o=69&t=67eba91a
+     */
+    public function packingListAction() {
+        $order = $this->getCurrentOrder();
+        if( false === $order ) {
+            return $this->redirect('/');
+        }
+        return $this->render("@CartBundle/order/print.html", [
+            'order' => $order,
+        ]);
+    }
 
     /**
      * Payment page dispatcher
@@ -50,4 +63,9 @@ class OrderController extends OrderBaseController
             return $this->redirect('/');
         }
     }
+
+
+
+
+
 }
