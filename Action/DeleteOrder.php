@@ -8,20 +8,34 @@ class DeleteOrder extends DeleteRecordAction
     public $recordClass = 'CartBundle\\Model\\Order';
 
     public function runValidate() { 
-        $cUser = kernel()->currentUser;
-        if ( ! $cUser->isLogged() || ! $cUser->hasRole('admin') ) {
-            return $this->error( _('權限不足') );
-        }
         return parent::runValidate();
     }
 
     public function run() {
-        foreach( $this->order_items as $item ) {
-            $item->delete();
+        $cUser = kernel()->currentUser;
+
+        if ( ! $cUser->isLogged() ) {
+            return $this->error( _('登入時間過長，請重新登入系統。') );
         }
-        foreach( $this->transactions as $txn ) {
-            $txn->delete();
+
+        if ( ! $cUser->hasRole('admin') ) {
+            return $this->error( _('您的權限不足，請詢問管理員') );
+        }
+
+        if ( $orderItems = $this->order_items ) {
+            foreach( $this->order_items as $item ) {
+                $item->delete();
+            }
+        }
+        if ( $txns = $this->transactions ) {
+            foreach( $this->transactions as $txn ) {
+                $txn->delete();
+            }
         }
         return parent::run();
+    }
+
+    public function successMessage($ret) {
+        return _('已成功刪除訂單');
     }
 }
