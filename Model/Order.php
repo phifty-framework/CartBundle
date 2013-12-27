@@ -10,7 +10,6 @@ class Order  extends \CartBundle\Model\OrderBase {
     {
         // generate order sn with format '201309310001'
         $this->update([ 'sn' => $this->createSN() ]);
-
     }
 
     /**
@@ -20,9 +19,15 @@ class Order  extends \CartBundle\Model\OrderBase {
      */
     public function createSN() {
         if ( $this->id ) {
-            return sprintf('%s%02s%08s', $this->created_on->format('Ymd'), $this->transaction_times + 1, $this->id);
+            return sprintf('%s%02d%08d',
+                $this->created_on->format('Ymd'),
+                $this->transaction_times + 1,
+                $this->id);
         }
-        return sprintf('%s%02s%08s', date('Ymd'), $this->transaction_times + 1, $this->id);
+        return sprintf('%s%02d%08d',
+            date('Ymd'),
+            $this->transaction_times + 1,
+            $this->id);
     }
 
     public function regenerateSN() 

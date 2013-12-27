@@ -17,14 +17,20 @@
 }
 
 .order-transaction-table .success {
-    background: #a0ec35;
-    color: #fff;
+    background: #AEEB59;
+    color: #3C3C3C;
     font-weight: bold;
+    padding: 2px 10px;
+    display: inline-block;
+    border-radius: 3px;
 }
 .order-transaction-table .fail {
     background: #c34026;
     color: #fff;
     font-weight: bold;
+    padding: 2px 10px;
+    display: inline-block;
+    border-radius: 3px;
 }
 
 .order-item-table {
