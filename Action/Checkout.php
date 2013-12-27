@@ -2,8 +2,11 @@
 namespace CartBundle\Action;
 use ActionKit\Action;
 use ActionKit\RecordAction\CreateRecordAction;
-use CartBundle\Cart;
 use MemberBundle\CurrentMember;
+use ProductBundle\Model\ProductType;
+use CartBundle\Cart;
+use CartBundle\Model\OrderItem;
+use CartBundle\Model\Order;
 use CartBundle\Email\OrderCreatedEmail;
 
 class Checkout extends CreateRecordAction
@@ -48,10 +51,10 @@ class Checkout extends CreateRecordAction
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
 
-        $shippingCost = $cart->calculateShippingCost();
+        $shippingCost    = $cart->calculateShippingCost();
         $origTotalAmount = $cart->calculateTotalAmount();
-        $totalAmount = $cart->calculateDiscountedTotalAmount();
-        $discountAmount = $cart->calculateDiscountAmount();
+        $totalAmount     = $cart->calculateDiscountedTotalAmount();
+        $discountAmount  = $cart->calculateDiscountAmount();
 
         // Use Try-Cache to cache exceptions and process fallbacks.
         $this->setArgument('paid_amount', 0);
@@ -63,8 +66,6 @@ class Checkout extends CreateRecordAction
             $this->setArgument('coupon_code', $coupon->coupon_code);
         }
 
-
-        // XXX: start transaction
         kernel()->db->beginTransaction();
 
         try {
@@ -74,20 +75,32 @@ class Checkout extends CreateRecordAction
             if ( ! $this->record->id ) {
                 throw new Exception( _('無法建立訂單項目') );
             }
+
+            // kernel()->db->query("LOCK TABLES " . OrderItem::table . " AS oi READ");
+
             foreach( $orderItems as $orderItem ) {
+                $orderItem->setAlias('oi');
                 $ret = $orderItem->update([
                     'order_id' => $this->record->id,
                     'shipping_status' => 'unpaid',
                 ]);
-                if ( ! $ret->success ) {
+
+                if ( $ret->success ) {
+                    kernel()->db->query("LOCK TABLES " . ProductType::table . " AS t WRITE");
+                    $stmt = kernel()->db->prepare("UPDATE " . ProductType::table . " t SET quantity = quantity - ? WHERE id = ?");
+                    $stmt->execute([ $orderItem->quantity, $orderItem->type_id ]);
+                    kernel()->db->query("UNLOCK TABLES");
+                } else {
                     if ( $ret->exception ) {
                         throw $ret->exception;
                     }
                     throw new Exception($ret->message);
                 }
             }
+
             $cart->cleanUp();
             kernel()->db->commit();
+
             $this->success(_('訂單建立成功，導向中.. 請稍待'));
 
             $email = new OrderCreatedEmail($currentMember->getRecord(), $this->getRecord());

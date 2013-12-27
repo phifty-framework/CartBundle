@@ -1,5 +1,8 @@
 <?php
 namespace CartBundle\Model;
+use ProductBundle\Model\ProductType;
+use CartBundle\Model\OrderItem;
+use CartBundle\Model\Order;
 
 class Order  extends \CartBundle\Model\OrderBase {
 
@@ -7,6 +10,7 @@ class Order  extends \CartBundle\Model\OrderBase {
     {
         // generate order sn with format '201309310001'
         $this->update([ 'sn' => $this->createSN() ]);
+
     }
 
     /**
