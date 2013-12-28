@@ -63,7 +63,8 @@ class Checkout extends CreateRecordAction
         $this->setArgument('discount_amount', $discountAmount);
         $this->setArgument('member_id', $currentMember->id);
 
-        if ( $coupon = $cart->loadSessionCoupon() ) {
+        $coupon = $cart->loadSessionCoupon();
+        if ($coupon) {
             $this->setArgument('coupon_code', $coupon->coupon_code);
         }
 
@@ -76,6 +77,8 @@ class Checkout extends CreateRecordAction
             if ( ! $this->record->id ) {
                 throw new Exception( _('無法建立訂單項目') );
             }
+
+            $coupon->update([ 'used' => ['used + 1'] ]);
 
             // kernel()->db->query("LOCK TABLES " . OrderItem::table . " AS oi READ");
 
