@@ -265,6 +265,12 @@ class NewebPaymentController extends OrderBaseController
             throw new Exception($ret->message);
             // XXX: log the error
         }
+
+        // regenerateSN if the transaction failed.
+        if ( ! $result ) {
+            $order->regenerateSN();
+        }
+
         return $this->render('message.html', [
             'error' => ! $result,
             'title' => $message,
