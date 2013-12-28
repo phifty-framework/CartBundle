@@ -102,7 +102,7 @@ class SubmitATM extends CreateRecordAction
             'paid_date'   => $this->arg('date'),
         ]);
         if ( $ret->success ) {
-            $email = new PaymentATMEmail($member, $order);
+            $email = new PaymentATMEmail($order->member, $order);
             $email->send();
             return $this->success( _('謝謝您的購買，我們會請專人幫您處理。') );
         } else {

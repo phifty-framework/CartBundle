@@ -37,7 +37,7 @@ class SubmitPOD extends Action
             'payment_type' => 'pod',
         ]);
         if ( $ret->success ) {
-            $email = new PaymentPODEmail($member, $order);
+            $email = new PaymentPODEmail($order->member, $order);
             $email->send();
             return $this->success( _('感謝您的訂購，我們會盡快出貨') );
         }
