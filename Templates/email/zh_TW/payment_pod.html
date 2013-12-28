@@ -1,0 +1,8 @@
+{% extends "@MemberBundle/email/layout.html" %}
+{% block content %}
+
+{{member.name}} {{member.display('gender')}} 您好:
+
+<p>感謝您的購買！我們會儘快安排出貨，出貨之前會先以電話通知您，確認您本人方便親自收貨的時間，這幾天請勿拒接通訊錄以外的來電喔！</p>
+
+{% endblock %}

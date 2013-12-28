@@ -241,6 +241,8 @@ class OrderSchema extends SchemaDeclare
             ->label('會員')
             ;
 
+        $this->belongsTo('member', 'MemberBundle\\Model\\MemberSchema', 'id', 'member_id');
+
         $this->mixin('CommonBundle\\Model\\Mixin\\MetaSchema');
     }
 }

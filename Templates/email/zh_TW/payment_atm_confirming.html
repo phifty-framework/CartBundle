@@ -1,0 +1,8 @@
+{% extends "@MemberBundle/email/layout.html" %}
+{% block content %}
+
+{{member.name}} {{member.display('gender')}} 您好:
+
+<p>感謝您購買ibiyaya的商品，我們會請專人核對您的帳號以及匯款金額之後，由專人跟您電話聯絡之後確認出貨，這幾天請勿拒接通訊錄以外的來電喔！</p>
+
+{% endblock %}

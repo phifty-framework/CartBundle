@@ -97,6 +97,10 @@ class Order  extends \CartBundle\Model\OrderBase {
         return $args;
     }
 
+    public function afterUpdate($args = array())
+    {
+    }
+
     public function getOrderViewUrl() {
         return kernel()->getHostBaseUrl() . '/order/view?' . http_build_query([ 
             'o' => $this->id,

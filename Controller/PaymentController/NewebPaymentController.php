@@ -5,6 +5,7 @@ use CartBundle\Model\Order;
 use CartBundle\Model\Transaction;
 use CartBundle\Controller\OrderBaseController;
 use Exception;
+use CartBundle\Email\PaymentCreditCardEmail;
 
 class NewebPaymentController extends OrderBaseController
 {
@@ -261,13 +262,18 @@ class NewebPaymentController extends OrderBaseController
             'data'     => yaml_emit($desc, YAML_UTF8_ENCODING),
             'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
         ]);
-        if ( ! $ret->success ) {
-            throw new Exception($ret->message);
+
+        if ( $ret->success ) {
+        } else {
             // XXX: log the error
+            throw new Exception($ret->message);
         }
 
         // regenerateSN if the transaction failed.
-        if ( ! $result ) {
+        if ( $result ) {
+            $email = new PaymentCreditCardEmail($member, $order);
+            $email->send();
+        } else {
             $order->regenerateSN();
         }
 

@@ -1,7 +1,7 @@
 {% extends "@MemberBundle/email/layout.html" %}
 {% block content %}
 
-{{member.name}} 您好:
+{{member.name}} {{member.display('gender')}} 您好:
 
 <p>您的訂單 {{order.sn}} 已經建立成功。</p>
 

@@ -1,0 +1,22 @@
+{% extends "@MemberBundle/email/layout.html" %}
+{% block content %}
+
+{{member.name}} {{member.display('gender')}} 您好:
+
+<p>您的商品已經順利出貨，請於三日內留意一下，感謝您的購買。</p>
+
+<ul>
+{% for orderItem in order_items %}
+    <li>{{orderItem.product.name}}-{{orderItem.type.name}}
+            {{orderItem.display('shipping_status')}}
+
+            (已於 {{orderItem.display('shipping_status_last_update')}} 出貨)
+    </li>
+{% endfor %}
+</ul>
+
+<p>點連結查看訂單資料:</p>
+
+<a href="{{order.getOrderViewUrl()}}">{{order.getOrderViewUrl()}}</a>
+
+{% endblock %}

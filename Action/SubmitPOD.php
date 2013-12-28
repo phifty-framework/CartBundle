@@ -4,6 +4,7 @@ use ActionKit\Action;
 use ActionKit\RecordAction\CreateRecordAction;
 use CartBundle\Model\Transaction;
 use CartBundle\Model\Order;
+use CartBundle\Email\PaymentPODEmail;
 
 class SubmitPOD extends Action
 {
@@ -36,6 +37,8 @@ class SubmitPOD extends Action
             'payment_type' => 'pod',
         ]);
         if ( $ret->success ) {
+            $email = new PaymentPODEmail($member, $order);
+            $email->send();
             return $this->success( _('感謝您的訂購，我們會盡快出貨') );
         }
         return $this->error( __('錯誤 %1'), $ret->message );

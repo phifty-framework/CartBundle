@@ -5,7 +5,7 @@ use ActionKit\RecordAction\CreateRecordAction;
 use CartBundle\Model\Transaction;
 use CartBundle\Model\Order;
 use DateTime;
-
+use CartBundle\Email\PaymentATMEmail;
 
 class SubmitATM extends CreateRecordAction
 {
@@ -102,6 +102,8 @@ class SubmitATM extends CreateRecordAction
             'paid_date'   => $this->arg('date'),
         ]);
         if ( $ret->success ) {
+            $email = new PaymentATMEmail($member, $order);
+            $email->send();
             return $this->success( _('謝謝您的購買，我們會請專人幫您處理。') );
         } else {
             $this->convertRecordValidation($ret);

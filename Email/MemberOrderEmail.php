@@ -6,7 +6,7 @@ use MemberBundle\Email\MemberEmail;
 /**
  * Order Shipping Notification Email
  */
-class MemberOrderEmail extends MemberEmail
+abstract class MemberOrderEmail extends MemberEmail
 {
     public $order;
 
