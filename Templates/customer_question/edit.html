@@ -12,13 +12,27 @@
     <div class="row">
         <div class="col-md-5">
             <div class="v-field">
-                <div class="label">客戶問題</div>
+                <div class="label">問題主旨</div>
                 <div class="input">
-                    {{ CRUD.Record.question }}
+                    {{ CRUD.Record.question_title }}
+                </div>
+            </div>
+
+            <div class="v-field">
+                <div class="label">
+                    發問於 {{ CRUD.Record.question_time |date('F jS \\a\\t g:ia')}}
+                </div>
+                <div class="input">
+                    <blockquote>{{ CRUD.Record.question }}</blockquote>
                 </div>
             </div>
             <div>
-                {{ CRUD.Action.renderField('answer',{ style: "width: 100%;" })|raw}}
+                <div class="label">
+                    回答於 {{ CRUD.Record.answer_time |date('F jS \\a\\t g:ia')}}
+                </div>
+                <div class="input">
+                    {{ CRUD.Action.renderWidget('answer',null, { style: "width: 100%;" })|raw}}
+                </div>
             </div>
         </div>
         <div class="col-md-5">
@@ -27,8 +41,10 @@
                 <div class="label">訂單編號</div>
                 <div class="input">
                     {% if CRUD.Record.order_id %}
-                    <a href="{{ CRUD.Record.order.getOrderViewUrl() }}">{{ CRUD.Record.order_sn }}</a>
+                    <a target="_blank" href="{{ CRUD.Record.order.getOrderViewUrl() }}">{{ CRUD.Record.order.sn }}</a>
                     {% endif %}
+
+                    (<a target="_blank" href="/bs/order/edit?id={{ CRUD.Record.order.id }}">編輯</a>)
                 </div>
             </div>
 

@@ -1,7 +1,7 @@
 <?php
 namespace CartBundle\Model;
 
-class CustomerServiceCollection  extends \CartBundle\Model\CustomerServiceCollectionBase {
+class CustomerQuestionCollection  extends \CartBundle\Model\CustomerQuestionCollectionBase {
 
 
 

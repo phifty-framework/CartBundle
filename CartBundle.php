@@ -36,12 +36,12 @@ class CartBundle extends Bundle
         $this->route('/payment/atm/response' ,'PaymentController\ATMPaymentController:response');
 
         $this->expandRoute( '/bs/order',          'OrderCRUDHandler');
-        $this->expandRoute( '/bs/customer_service',          'CustomerServiceCRUDHandler');
+        $this->expandRoute( '/bs/customer_question',          'CustomerQuestionCRUDHandler');
 
         $bundle = $this;
         kernel()->event->register( 'adminui.init_menu' , function($menu) use ($bundle) {
             $menu->createCrudMenuItem( 'order', _('訂單管理') );
-            $menu->createCrudMenuItem( 'customer_service', _('客服問答管理') );
+            $menu->createCrudMenuItem( 'customer_question', _('客服問答管理') );
         });
     }
 

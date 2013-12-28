@@ -2,10 +2,17 @@
 namespace CartBundle\Model;
 use LazyRecord\Schema\SchemaDeclare;
 
-class CustomerServiceSchema extends SchemaDeclare
+class CustomerQuestionSchema extends SchemaDeclare
 {
     public function schema() 
     {
+        $this->column('question_title')
+            ->varchar(120)
+            ->label('問題主旨')
+            ->required()
+            ->renderAs('TextInput', array( 'size' => 50 ))
+            ;
+
         $this->column('question')
             ->text()
             ->label('問題')
