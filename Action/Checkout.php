@@ -61,6 +61,7 @@ class Checkout extends CreateRecordAction
         $this->setArgument('shipping_cost', $shippingCost);
         $this->setArgument('total_amount', $totalAmount);
         $this->setArgument('discount_amount', $discountAmount);
+        $this->setArgument('member_id', $currentMember->id);
 
         if ( $coupon = $cart->loadSessionCoupon() ) {
             $this->setArgument('coupon_code', $coupon->coupon_code);
