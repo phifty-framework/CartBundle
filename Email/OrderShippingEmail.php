@@ -6,15 +6,11 @@ use MemberBundle\Email\MemberEmail;
 /**
  * Order Shipping Notification Email
  */
-class OrderShippingEmail extends MemberEmail
+class OrderShippingEmail extends MemberOrderEmail
 {
-
-    public $order;
-
     public function __construct($member, $order)
     {
-        parent::__construct($member);
-        $this->order = $this['order'] = $order;
+        parent::__construct($member, $order);
         $lang = $this->getLang();
         $this->setTemplate( "@CartBundle/email/$lang/order_shipping.html" );
     }

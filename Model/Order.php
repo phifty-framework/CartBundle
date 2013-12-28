@@ -3,40 +3,67 @@ namespace CartBundle\Model;
 use ProductBundle\Model\ProductType;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\Order;
+use CartBundle\Model\OrderCollection;
+use DateTime;
 
 class Order  extends \CartBundle\Model\OrderBase {
 
-    public function afterCreate($args) 
-    {
-        // generate order sn with format '201309310001'
-        $this->update([ 'sn' => $this->createSN() ]);
-    }
+
 
     /**
      * Create Order SN from Date, transaction_times and Order id
      *
-     * TODO: get serial number group by day
+     *   {year}{month}{day}{transaction_times}{ order count by day }
      */
-    public function createSN() {
-        if ( $this->id ) {
-            return sprintf('%s%02d%08d',
-                $this->created_on->format('Ymd'),
-                $this->transaction_times + 1,
-                $this->id);
+    const SN_FORMAT  = '%8s%02d%05d';
+
+
+    /**
+     * @param DateTime $date 
+     * @param int $txnTimes 
+     * @param int $serialNum
+     */
+    public function generateSN($date, $txnTimes = 1, $serialNum = null) {
+        if ( is_string($date) ) {
+            $date = new DateTime($date);
         }
-        return sprintf('%s%02d%08d',
-            date('Ymd'),
-            $this->transaction_times + 1,
-            $this->id);
+        if ( ! $serialNum ) {
+            $serialNum = OrderCollection::getCountByDay($date);
+        }
+        return sprintf(self::SN_FORMAT, $date->format('Ymd'), $txnTimes, $serialNum);
     }
 
     public function regenerateSN() 
     {
-        $args = [
-            'transaction_times' => ++$this->transaction_times,
-            'sn' => $this->createSN(),
-        ];
-        return $this->update($args);
+        // parse sn from the current sn
+        if ( false !== sscanf($this->sn, self::SN_FORMAT, $date, $t , $serialNum) ) {
+            $date = DateTime::createFromFormat('Ymd', $date);
+            $this->sn = $this->generateSN($date, ++$this->transaction_times, $serialNum);
+        } else {
+            throw new Exception('SN generation failed.');
+        }
+        return $this->save();
+    }
+
+    public function afterCreate($args) 
+    {
+        // generate order sn with format '201309310001'
+        $this->lockWrite();
+        $this->update([ 'sn' => $this->generateSN($this->created_on, $this->transaction_times) ]);
+        $this->unlock();
+    }
+
+    public function beforeDelete($args) {
+        if ( $orderItems = $this->order_items ) {
+            foreach( $this->order_items as $item ) {
+                $item->delete();
+            }
+        }
+        if ( $txns = $this->transactions ) {
+            foreach( $this->transactions as $txn ) {
+                $txn->delete();
+            }
+        }
     }
 
     public function calculateOriginalTotalAmount() {
