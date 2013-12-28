@@ -271,7 +271,7 @@ class NewebPaymentController extends OrderBaseController
 
         // regenerateSN if the transaction failed.
         if ( $result ) {
-            $email = new PaymentCreditCardEmail($member, $order);
+            $email = new PaymentCreditCardEmail($order->member, $order);
             $email->send();
         } else {
             $order->regenerateSN();
