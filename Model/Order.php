@@ -87,6 +87,16 @@ class Order  extends \CartBundle\Model\OrderBase {
         }
     }
 
+    public function beforeUpdate($args = array()) 
+    {
+        if ( isset($args['payment_status']) ) {
+            if ($args['payment_status'] != $this->payment_status) {
+                $args['payment_status_last_update'] = date('c');
+            }
+        }
+        return $args;
+    }
+
     public function getOrderViewUrl() {
         return kernel()->getHostBaseUrl() . '/order/view?' . http_build_query([ 
             'o' => $this->id,

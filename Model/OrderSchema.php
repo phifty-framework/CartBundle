@@ -94,6 +94,16 @@ class OrderSchema extends SchemaDeclare
             ])
             ;
 
+        $this->column('payment_status_last_update')
+            ->timestamp()
+            ->null()
+            ->renderAs('DateTimeInput')
+            ->label( _('付款狀態最後更新時間') )
+            ->default(function() {
+                return date('c');
+            })
+            ;
+
         $this->column('payment_status')
             ->varchar(32)
             ->default(function() { 
