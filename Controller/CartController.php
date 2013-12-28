@@ -11,6 +11,7 @@ class CartController extends Controller
      */
     public function indexAction() {
         $cart = Cart::getInstance();
+        // $cart->validateItems();
         return $this->render("cart.html", [ 'cart' => $cart ]);
     }
 }

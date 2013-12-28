@@ -11,6 +11,7 @@ class CheckoutController extends OrderBaseController
 
     public function confirmAction() {
         $cart = Cart::getInstance();
+        $cart->purgeQuantityInvalidItems();
         $orderItems = $cart->getOrderItems();
         if ( ! $orderItems || empty($orderItems) ) {
             return $this->redirect('/cart');

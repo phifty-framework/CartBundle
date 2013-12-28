@@ -19,6 +19,7 @@ class Cart extends CartBase
 {
     public $shippingCompany = 'default';
 
+
     public function __construct() {
         // TODO: provide options to specify storage engine.
         $this->storage = new SessionCartStorage;

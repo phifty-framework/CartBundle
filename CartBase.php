@@ -16,6 +16,8 @@ class CartBase
 {
     public $storage;
 
+    public $quantityInvalidItems = array();
+
     /**
      * Get item id list from storage and rebless them into objects.
      *
@@ -36,8 +38,17 @@ class CartBase
         return array();
     }
 
-    public function validateItem($id) {
-        $item = new OrderItem( intval($id) );
+    public function validateItemQuantity($item) {
+        $t = $item->type;
+        if ( !$t || !$t->id ) {
+            return false;
+        }
+        if ( $item->quantity > $t->quantity ) {
+            return false;
+        }
+    }
+
+    public function validateItem($item) {
         if (!$item->id) {
             return false;
         }
@@ -55,14 +66,42 @@ class CartBase
         return true;
     }
 
-    public function validateItems() {
+
+    public function isInvalidItem($item) {
+        return in_array($item->id, $this->quantityInvalidItems);
+    }
+
+
+    public function purgeQuantityInvalidItems() {
         // using session as our storage
         $items = $this->storage->get();
+        $this->quantityInvalidItems = array();
         if ( count($items) ) {
             $newItems = array();
             foreach( $items as $id ) {
-                if ( $this->validateItem($id) ) {
+                $item = new OrderItem( intval($id) );
+                if ( $this->validateItem($item) && $this->validateItemQuantity($item)  ) {
                     $newItems[] = intval($id);
+                }
+            }
+            $this->storage->set($newItems);
+        }
+    }
+
+    public function validateItems() {
+        // using session as our storage
+        $items = $this->storage->get();
+        $this->quantityInvalidItems = array();
+        if ( count($items) ) {
+            $newItems = array();
+            foreach( $items as $id ) {
+                $item = new OrderItem( intval($id) );
+                if ( $this->validateItem($item) ) {
+                    $newItems[] = intval($id);
+
+                    if ( ! $this->validateItemQuantity($item) ) {
+                        $this->quantityInvalidItems[] = intval($id);
+                    }
                 }
             }
             $this->storage->set($newItems);
