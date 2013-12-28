@@ -35,47 +35,8 @@ class OrderItemSchema extends SchemaDeclare
             ->label('產品類型')
             ;
 
-        $this->column('shipping_id')
-            ->varchar(64)
-            ->label('物流編號')
-            ->renderAs('TextInput', [ 'size' => 12 ])
-            ;
-
         if ( kernel()->bundle('ShippingBundle') ) {
-        $this->column('shipping_company_id')
-            ->integer()
-            ->label('物流公司')
-            ->refer('ShippingBundle\\Model\\CompanySchema')
-            ->renderAs('SelectInput', [ 'allow_empty' => true, ])
-            ;
-        }
-
-        $this->column('shipping_status')
-            ->varchar(32)
-            ->label('貨運狀態')
-            ->default('unpaid')
-            ->validValues(array( 
-                '未付款'       => 'unpaid',
-                '確認中'       => 'confirming',
-                '處理中'       => 'processing',
-                '包裝中'       => 'packing',
-                '已出貨'       => 'shipped',
-                // '已退貨'       => '',
-            ))
-            ;
-
-        $this->column('shipping_status_last_update')
-            ->timestamp()
-            ->null()
-            ->required()
-            ->renderAs('DateTimeInput')
-            ->label( _('貨運狀態更新時間') )
-            ->default(function() {
-                return date('c');
-            })
-            ;
-
-        if ( kernel()->bundle('ShippingBundle') ) {
+            $this->mixin('ShippingBundle\\Model\\Mixin\\ShippingStatusMixinSchema');
             $this->belongsTo('shipping_company', 'ShippingBundle\\Model\\CompanySchema', 'id', 'shipping_company_id' );
         }
 
