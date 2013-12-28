@@ -9,7 +9,6 @@ use DateTime;
 class Order  extends \CartBundle\Model\OrderBase {
 
 
-
     /**
      * Create Order SN from Date, transaction_times and Order id
      *
@@ -17,6 +16,9 @@ class Order  extends \CartBundle\Model\OrderBase {
      */
     const SN_FORMAT  = '%8s%02d%05d';
 
+    public function dataLabel() {
+        return $this->sn;
+    }
 
     /**
      * @param DateTime $date 

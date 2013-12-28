@@ -1,0 +1,74 @@
+{% extends '@CRUD/edit.html' %}
+{% block section_body %}
+
+{% set bundle = Kernel.bundle('CartBundle') %}
+
+<form class="ajax-action" enctype="multipart/form-data" method="post">
+    {{ CRUD.Action.renderSignatureWidget|raw}}
+    {% if CRUD.Record.id %}
+        {{ forms.hidden('id', CRUD.Record.id) }}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-5">
+            <div class="v-field">
+                <div class="label">客戶問題</div>
+                <div class="input">
+                    {{ CRUD.Record.question }}
+                </div>
+            </div>
+            <div>
+                {{ CRUD.Action.renderField('answer',{ style: "width: 100%;" })|raw}}
+            </div>
+        </div>
+        <div class="col-md-5">
+
+            <div class="v-field">
+                <div class="label">訂單編號</div>
+                <div class="input">
+                    {% if CRUD.Record.order_id %}
+                    <a href="{{ CRUD.Record.order.getOrderViewUrl() }}">{{ CRUD.Record.order_sn }}</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="v-field">
+                <div class="label">購買項目</div>
+                <div class="input">
+                    {% if CRUD.Record.order_id %}
+                        {{ CRUD.Record.order_item.product.name }}-{{ CRUD.Record.order_item.type.name }}
+                        X
+                        {{ CRUD.Record.order_item.quantity }}
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="v-field">
+                <div class="label">購買會員</div>
+                <div class="input">
+                    {% if CRUD.Record.member_id %}
+                        {{ CRUD.Record.member.name }}
+                        {{ CRUD.Record.member.display('gender') }}
+
+                        ({{ CRUD.Record.member.email }})
+                    {% endif %}
+                </div>
+            </div>
+
+            {{ CRUD.Action.renderField('remark',{ style: "width: 100%;" })|raw}}
+
+
+        </div>
+    </div>
+
+    <div class="collapsible collapse-section" {# data-collapse="persist" #}>
+        <h3>詳細資料</h3>
+        <div>
+            {% include '@CRUD/metadata.html' %}
+            <div class="clear"> </div>
+        </div>
+    </div>
+    {% include '@CRUD/controll.html' %}
+</form>
+
+{% endblock %}
