@@ -16,6 +16,16 @@ class CustomerServiceSchema extends SchemaDeclare
             ))
             ;
 
+        $this->column('question_time')
+            ->timestamp()
+            ->null()
+            ->renderAs('DateTimeInput')
+            ->label( _('發問時間') )
+            ->default(function() {
+                return date('c');
+            })
+            ;
+
         $this->column('answer')
             ->text()
             ->label('客服回答問題')
@@ -23,6 +33,13 @@ class CustomerServiceSchema extends SchemaDeclare
                 'rows' => 5,
                 'cols' => 50,
             ))
+            ;
+
+        $this->column('answer_time')
+            ->timestamp()
+            ->null()
+            ->renderAs('DateTimeInput')
+            ->label( _('回答時間') )
             ;
 
         $this->column('order_id')
