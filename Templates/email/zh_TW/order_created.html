@@ -5,8 +5,8 @@
 
 <p>您的訂單 {{order.sn}} 已經建立成功。</p>
 
-{#
-<a href="{{ Kernel.getHostBaseUrl() }}/order/view?"> </a>
-#}
+<p>可點選下列連結查看訂單明細:</p>
+
+<a href="{{order.getOrderViewUrl()}}">{{order.getOrderViewUrl()}}</a>
 
 {% endblock %}

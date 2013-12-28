@@ -87,4 +87,11 @@ class Order  extends \CartBundle\Model\OrderBase {
         }
     }
 
+    public function getOrderViewUrl() {
+        return kernel()->getHostBaseUrl() . '/order/view?' . http_build_query([ 
+            'o' => $this->id,
+            't' => $this->token,
+        ]);
+    }
+
 }
