@@ -78,7 +78,9 @@ class Checkout extends CreateRecordAction
                 throw new Exception( _('無法建立訂單項目') );
             }
 
-            $coupon->update([ 'used' => ['used + 1'] ]);
+            if ( $coupon ) {
+                $coupon->update([ 'used' => ['used + 1'] ]);
+            }
 
             // kernel()->db->query("LOCK TABLES " . OrderItem::table . " AS oi READ");
 
