@@ -46,6 +46,7 @@ class CartBase
         if ( $item->quantity > $t->quantity ) {
             return false;
         }
+        return true;
     }
 
     public function validateItem($item) {
