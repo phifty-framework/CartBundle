@@ -87,11 +87,12 @@ class Cart extends CartBase
     }
 
     public function calculateTotalAmount() {
+        $totalAmount = 0;
         if ( $collection = $this->getOrderItems() ) {
-            $totalAmount = $collection->calculateTotalAmount();
-            return $totalAmount + $this->calculateShippingCost();
+            $totalAmount += $collection->calculateTotalAmount();
+            $totalAmount += $this->calculateShippingCost();
         }
-        return 0;
+        return $totalAmount;
     }
 
     public function calculateDiscountAmount() {
@@ -148,7 +149,7 @@ class Cart extends CartBase
     public function calculateShippingCost() {
         // Load default shipping method
         $company = new ShippingCompany([ 'handle' => $this->shippingCompany ]);
-        if ( $company->id ) {
+        if ( $company->id && $this->getOrderItems() ) {
             return $company->shipping_cost;
         }
         return 0;
