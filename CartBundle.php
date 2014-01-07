@@ -36,7 +36,8 @@ class CartBundle extends Bundle
         $this->route('/payment/atm/response' ,'PaymentController\ATMPaymentController:response');
 
         $this->expandRoute( '/bs/order',          'OrderCRUDHandler');
-        $this->expandRoute( '/bs/customer_question',          'CustomerQuestionCRUDHandler');
+        $this->expandRoute( '/bs/returning_order_item',  'ReturningOrderItemCRUDHandler');
+        $this->expandRoute( '/bs/customer_question', 'CustomerQuestionCRUDHandler');
 
         $bundle = $this;
         kernel()->event->register( 'adminui.init_menu' , function($menu) use ($bundle) {
