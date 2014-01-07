@@ -35,6 +35,11 @@ class OrderItemSchema extends SchemaDeclare
             ->label('產品類型')
             ;
 
+        $this->column('remark')
+            ->text()
+            ->label('品項備註')
+            ;
+
         if ( kernel()->bundle('ShippingBundle') ) {
             $this->mixin('ShippingBundle\\Model\\Mixin\\ShippingStatusMixinSchema');
             $this->belongsTo('shipping_company', 'ShippingBundle\\Model\\CompanySchema', 'id', 'shipping_company_id' );

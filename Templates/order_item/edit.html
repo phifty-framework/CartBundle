@@ -1,0 +1,83 @@
+{% extends '@CRUD/edit.html' %}
+{% block section_body %}
+
+<form class="ajax-action" enctype="multipart/form-data" method="post">
+    {% set bundle = Kernel.bundle('CartBundle') %}
+    {{ CRUD.Action.renderSignatureWidget|raw}}
+    {% if CRUD.Record.id %}
+        {{ forms.hidden('id', CRUD.Record.id) }}
+    {% endif %}
+
+    <h3>退貨品項</h3>
+
+    <div class="clearfix">
+        <div class="col-field">
+        {{ CRUD.Action.renderField('product_id')|raw }}
+        </div>
+
+        <div class="col-field">
+        {{ CRUD.Action.renderField('type_id')|raw }}
+        </div>
+
+        <div class="col-field">
+        {{ CRUD.Action.renderField('quantity')|raw }}
+        </div>
+    </div>
+
+    <h3>退貨原因</h3>
+    {{ CRUD.Action.renderField('returning_reason')|raw }}
+
+    <h3>後台備註</h3>
+    {{ CRUD.Action.renderField('remark')|raw }}
+
+
+    {% set order = CRUD.Record.order %}
+
+    {% for prefix, label in {
+        'buyer_': '購買人',
+        'shipping_': '收貨人'
+    } %}
+    <div class="row">
+        <div class="col-md-11">
+            <fieldset>
+                <legend>{{label}}</legend>
+
+                <div class="col-field">
+                    {{ order.display(prefix ~ 'name')|raw }}
+                </div>
+                <div class="col-field">
+                    {{ order.display(prefix ~ 'gender')|raw }}
+                </div>
+
+                <div class="col-field">
+                    {{ order.display(prefix ~ 'cellphone')|raw }}
+                </div>
+
+                {% if order.get(prefix ~ 'phone') %}
+                <div class="col-field">
+                    <div class="v-field">
+                        <div class="label">
+                            聯絡電話
+                        </div>
+                        <div class="input">
+                            {{ order.display( prefix ~ 'phone_area')|raw }}
+                            - {{ order.display( prefix ~ 'phone')|raw }}
+                            # {{ order.display( prefix ~ 'phone_ext')|raw }}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                <div class="col-field">
+                    {{ order.display(prefix ~ 'address')|raw }}
+                </div>
+                <div class="clearfix"> </div>
+            </fieldset>
+        </div>
+    </div>
+    {% endfor %}
+
+
+    {% include '@CRUD/controll.html' %}
+</form>
+
+{% endblock %}

@@ -8,6 +8,7 @@ class ReturningOrderItemCRUDHandler extends CRUDHandler
     /* CRUD Attributes */
     public $modelClass = 'CartBundle\Model\OrderItem';
     public $crudId     = 'returning_order_item';
+    public $templateId = 'order_item';
 
     // public $listColumns = array( 'id', 'thumb', 'name' , 'lang' , 'subtitle' , 'sn' );
     // public $filterColumns = array();
