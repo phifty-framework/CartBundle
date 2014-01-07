@@ -23,6 +23,8 @@ class CartBundle extends Bundle
         $this->route('/order/payment', 'OrderController:payment');
         $this->route('/order/print', 'OrderController:packingList');
 
+        $this->route('/order_item/return', 'OrderController:returnOrderItem');
+
 
         /** routes for payment. */
         $this->route('/payment/neweb'          ,'PaymentController\NewebPaymentController:index');
@@ -42,6 +44,7 @@ class CartBundle extends Bundle
         $bundle = $this;
         kernel()->event->register( 'adminui.init_menu' , function($menu) use ($bundle) {
             $menu->createCrudMenuItem( 'order', _('訂單管理') );
+            $menu->createCrudMenuItem( 'returning_order_item', _('申請退貨項目') );
             $menu->createCrudMenuItem( 'customer_question', _('客服問答管理') );
         });
     }

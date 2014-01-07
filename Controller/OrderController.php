@@ -64,8 +64,20 @@ class OrderController extends OrderBaseController
         }
     }
 
+    public function returnOrderItemAction() {
+        $itemId = intval($this->request->param('oi'));
+        $order = $this->getCurrentOrder();
+        if( false === $order || ! $itemId ) {
+            return $this->redirect('/');
+        }
 
-
-
+        $orderItem = new OrderItem($itemId);
+        if ( ! $orderItem->id || $orderItem->order_id != $order->id ) {
+            return $this->redirect('/');
+        }
+        return $this->render("order_view.html", [
+            'order' => $order,
+        ]);
+    }
 
 }
