@@ -19,10 +19,12 @@ class SubmitPOD extends Action
             ->label( _('訂單安全碼') )
             ;
 
+        /*
         $this->param('pod_time')
             ->required()
             ->label( _('貨到付款時間') )
             ;
+         */
     }
 
     public function run() {
@@ -32,7 +34,7 @@ class SubmitPOD extends Action
             return $this->error( _('參數錯誤') );
         }
         $ret = $order->update([
-            'pod_time' => $this->arg('pod_time'),
+            // 'pod_time' => $this->arg('pod_time'),
             'payment_status' => 'unpaid',
             'payment_type' => 'pod',
         ]);
