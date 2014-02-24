@@ -20,7 +20,7 @@ class OrderCRUDHandler extends CRUDHandler
         'created_on',
     );
 
-    public $quicksearchFields = array('sn', 'buyer_name', 'buyer_phone', 'buyer_email','buyer_address');
+    public $quicksearchFields = array('buyer_name', 'buyer_phone', 'buyer_cellphone','buyer_address','sn');
 
     public $filterColumns = array('payment_type', 'payment_status');
 
