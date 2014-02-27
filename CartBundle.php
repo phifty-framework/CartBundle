@@ -10,6 +10,7 @@ class CartBundle extends Bundle
     {
         return array(
             'RequireUTCNameAndAddress' => 'always',
+            'UseProductTypeQuantity' => false,
             'ShipmentTracking' => false,
             'CashFlow' => 'neweb',
             'Transaction' => array(
@@ -26,12 +27,11 @@ class CartBundle extends Bundle
         );
     }
 
-    public function init() 
+    public function init()
     {
         $this->route('/=/cart/items', 'CartController:items');
         $this->route('/=/cart/calculate', 'CartController:calculate');
         $this->route('/=/cart/apply_coupon', 'CartController:applyCoupon');
-
 
         $this->route('/cart', 'CartController:index');
         $this->route('/checkout/confirm', 'CheckoutController:confirm');
