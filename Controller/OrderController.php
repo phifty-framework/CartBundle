@@ -24,6 +24,7 @@ class OrderController extends OrderBaseController
         }
         return $this->render("order_view.html", [
             'order' => $order,
+            '_controller' => $this,
         ]);
     }
 
@@ -39,29 +40,37 @@ class OrderController extends OrderBaseController
         }
         return $this->render("@CartBundle/order/print.html", [
             'order' => $order,
+            '_controller' => $this,
         ]);
     }
 
-    /**
-     * Payment page dispatcher
-     */
-    public function paymentAction() {
-        $bundle = kernel()->bundle('CartBundle');
-        $cashFlow = $bundle->config('CashFlow');
+    public function createPaymentController($paymentType) 
+    {
+        $cashFlow = $this->getBundle()->config('CashFlow');
 
         $controllers = [
             'atm' => new ATMPaymentController,
             'pod' => new PODPaymentController,
         ];
         if ( $cashFlow == "neweb" ) {
+            // assign to credit card type payment
             $controllers['cc'] = new NewebPaymentController;
         } else {
             throw new Exception('cashflow backend is not defined.');
         }
+        if ( isset($controllers[ $paymentType ]) ) {
+            return $controllers[ $paymentType ];
+        }
+        return null;
+    }
 
+    /**
+     * Payment page dispatcher
+     */
+    public function paymentAction() {
         $paymentType = $this->request->param('payment_type');
-        if ( isset($controllers[$paymentType]) ) {
-            return $controllers[$paymentType]->indexAction();
+        if ( $paymentController = $this->createPaymentController( $paymentType ) ) {
+            return $paymentController->indexAction();
         } else {
             return $this->redirect('/');
         }
@@ -81,6 +90,7 @@ class OrderController extends OrderBaseController
         return $this->render("order_item_return.html", [
             'order' => $order,
             'orderItem' => $orderItem,
+            '_controller' => $this,
         ]);
     }
 

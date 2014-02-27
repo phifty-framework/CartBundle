@@ -154,8 +154,50 @@ class NewebPaymentController extends OrderBaseController
         }
     }
 
+    public function validateConfig() {
+        $bundle = kernel()->bundle('CartBundle');
+
+        // Move to config validation
+        if ( ! $bundle->config('Transaction.Neweb.MerchantNumber') ) {
+            throw new Exception('Transaction.Neweb.MerchantNumber is required.');
+        }
+        if ( ! $bundle->config('Transaction.Neweb.Code') ) {
+            throw new Exception('Transaction.Neweb.Code is required.');
+        }
+    }
+
+    public function getFormData() {
+        $bundle = kernel()->bundle('CartBundle');
+        $config = $bundle->config; // CartBundle config
+
+        $order = $this->getCurrentOrder();
+        if ( false === $order ) {
+            return null;
+        }
+
+        $this->validateConfig();
+
+        $merchantNumber = $bundle->config('Transaction.Neweb.MerchantNumber');
+        $code = $bundle->config('Transaction.Neweb.Code');
+        $rcode = $bundle->config('Transaction.Neweb.RCode');
+
+        $checkstr =
+              $merchantNumber
+            . $order->sn
+            . $rcode
+            . $order->total_amount;
+        $checksum = md5($checkstr);
+        return array(
+            'config' => $bundle->config('Transaction.Neweb'),
+            'mobile' => $this->isMobile() ? 1 : 0,
+            'english' => kernel()->locale->current() != 'zh_TW' ? 1 : 0,
+            'order' => $order,
+            'checksum' => $checksum,
+        );
+    }
+
     /**
-     *
+     * Neweb payment form page
      */
     public function indexAction() {
         $bundle = kernel()->bundle('CartBundle');
@@ -166,28 +208,8 @@ class NewebPaymentController extends OrderBaseController
             die('parameter error');
             return $this->redirect('/');
         }
-
-        if ( ! isset($config['Transaction']['Neweb']['MerchantNumber']) ) {
-            throw new Exception('Transaction.Neweb.MerchantNumber is required.');
-        }
-        if ( ! isset($config['Transaction']['Neweb']['Code']) ) {
-            throw new Exception('Transaction.Neweb.Code is required.');
-        }
-
-        $checkstr =
-              $config['Transaction']['Neweb']['MerchantNumber']
-            . $order->sn
-            . $config['Transaction']['Neweb']['RCode']
-            . $order->total_amount;
-        $checksum = md5($checkstr);
-
-        return $this->render("order_payment_credit_card.html", [
-            'config' => $config,
-            'isMobile' => $this->isMobile() ? 1 : 0,
-            'english' => kernel()->locale->current() != 'zh_TW' ? 1 : 0,
-            'order' => $order,
-            'checksum' => $checksum,
-        ]);
+        $formData = $this->getFormData();
+        return $this->render("order_payment_credit_card.html", [ 'neweb' => $formData ]);
     }
 
     public function getParameter($n) 
