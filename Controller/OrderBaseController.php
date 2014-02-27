@@ -8,6 +8,8 @@ use CartBundle\Controller\NewebPaymentController;
 
 class OrderBaseController extends Controller
 {
+    public $order;
+
     /**
      * Get Current Order by 'o' and 't'
      *
@@ -15,6 +17,10 @@ class OrderBaseController extends Controller
      *
      */
     public function getCurrentOrder() {
+        if ( $this->order ) {
+            return $this->order;
+        }
+
         $oId = intval($this->request->param('o'));
         $token = $this->request->param('t');
         if ( ! $oId || ! $token ) {
@@ -28,7 +34,11 @@ class OrderBaseController extends Controller
         if ( ! $ret->success ||  ! $order->id ) {
             return false;
         }
-        return $order;
+        return $this->order = $order;
+    }
+
+    public function getBundle() {
+        return kernel()->bundle('CartBundle');
     }
 
 }
