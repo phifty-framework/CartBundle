@@ -6,7 +6,25 @@ class CartBundle extends Bundle
 {
     public function assets() { return array('cart'); }
 
-    public function defaultConfig() { return array(); }
+    public function defaultConfig()
+    {
+        return array(
+            'RequireUTCNameAndAddress' => 'always',
+            'ShipmentTracking' => false,
+            'CashFlow' => 'neweb',
+            'Transaction' => array(
+                'Neweb' => array(
+                    'MerchantNumber' => 759973,
+                    'RCode' => 'abcd1234',
+                    'Code' => 'abcd1234',
+                    'PaymentURL' => 'https://testmaple2.neweb.com.tw/NewebmPP/cdcard.jsp',
+                    'OrderURL'   =>  'http://ibiyaya.dev/payment/neweb/response',
+                    'ReturnURL'  => 'http://ibiyaya.dev/payment/neweb/return',
+                    'AdminURL'   => 'https://testmaple2.neweb.com.tw/NewebPayment2/login.jsp',
+                ),
+            ),
+        );
+    }
 
     public function init() 
     {
