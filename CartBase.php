@@ -74,6 +74,9 @@ class CartBase
 
 
     public function purgeQuantityInvalidItems() {
+        $bundle = kernel()->bundle('CartBundle');
+
+
         // using session as our storage
         $items = $this->storage->get();
         $this->quantityInvalidItems = array();
@@ -81,15 +84,22 @@ class CartBase
             $newItems = array();
             foreach( $items as $id ) {
                 $item = new OrderItem( intval($id) );
-                if ( $this->validateItem($item) && $this->validateItemQuantity($item)  ) {
-                    $newItems[] = intval($id);
+
+                if ( false == $this->validateItem($item) ) {
+                    continue;
                 }
+                if ( $bundle->config('UseProductTypeQuantity') && false == $this->validateItemQuantity($item) ) {
+                    continue;
+                }
+                $newItems[] = intval($id);
             }
             $this->storage->set($newItems);
         }
     }
 
     public function validateItems() {
+        $bundle = kernel()->bundle('CartBundle');
+
         // using session as our storage
         $items = $this->storage->get();
         $this->quantityInvalidItems = array();
@@ -100,7 +110,7 @@ class CartBase
                 if ( $this->validateItem($item) ) {
                     $newItems[] = intval($id);
 
-                    if ( ! $this->validateItemQuantity($item) ) {
+                    if ( $bundle->config('UseProductTypeQuantity')  && false === $this->validateItemQuantity($item) ) {
                         $this->quantityInvalidItems[] = intval($id);
                     }
                 }

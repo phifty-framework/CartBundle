@@ -102,10 +102,12 @@ class Checkout extends CreateRecordAction
                 ]);
 
                 if ( $ret->success ) {
-                    kernel()->db->query("LOCK TABLES " . ProductType::table . " AS t WRITE");
-                    $stmt = kernel()->db->prepare("UPDATE " . ProductType::table . " t SET quantity = quantity - ? WHERE id = ?");
-                    $stmt->execute([ $orderItem->quantity, $orderItem->type_id ]);
-                    kernel()->db->query("UNLOCK TABLES");
+                    if ( $bundle->config('UseProductTypeQuantity') ) {
+                        kernel()->db->query("LOCK TABLES " . ProductType::table . " AS t WRITE");
+                        $stmt = kernel()->db->prepare("UPDATE " . ProductType::table . " t SET quantity = quantity - ? WHERE id = ?");
+                        $stmt->execute([ $orderItem->quantity, $orderItem->type_id ]);
+                        kernel()->db->query("UNLOCK TABLES");
+                    }
                 } else {
                     if ( $ret->exception ) {
                         throw $ret->exception;
