@@ -30,12 +30,22 @@ class Checkout extends CreateRecordAction
 
     public function run()
     {
+        $bundle = kernel()->bundle('CartBundle');
+
         $currentMember = new CurrentMember;
         if ( ! $currentMember->isLogged() ) {
             return $this->error( _('請先登入會員') );
         }
 
         if ( $t = $this->arg('invoice_type') ) {
+
+            if ( $bundle->config('RequireUTCNameAndAddress') == 'always' ) {
+                $this->requireArgs('utc_name','utc_address');
+                if ( $this->result->hasInvalidMessages() ) {
+                    return $this->error(_('請填寫發票收件人以及地址。'));
+                }
+            }
+
             if ( intval($t) == 3 ) {
                 $this->requireArgs('utc','utc_title','utc_name','utc_address');
                 if ( $this->result->hasInvalidMessages() ) {
