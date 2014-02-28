@@ -12,6 +12,7 @@ class CartBundle extends Bundle
             'RequireUTCNameAndAddress' => 'always',
             'UseProductTypeQuantity' => false,
             'ShipmentTracking' => false,
+            'NoShippingFeeCondition' => array( 'AboveAmount' => 1500 ),
             'CashFlow' => 'neweb',
             'Transaction' => array(
                 'Neweb' => array(
