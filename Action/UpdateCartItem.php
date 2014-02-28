@@ -17,7 +17,8 @@ class UpdateCartItem extends Action
     public function run() {
         $cart = Cart::getInstance();
         if ($item = $cart->updateOrderItem( $this->arg('id'), $this->arg('product_type') , $this->arg('quantity') ) ) {
-            return $this->success( _('成功更新'), array( 
+            return $this->success( _('成功更新'), array(
+                // the amount of this item
                 'amount'            => $item->calculateAmount(),
                 'shipping_cost'     => $cart->calculateShippingCost(),
                 'total_amount'      => $cart->calculateTotalAmount(),
