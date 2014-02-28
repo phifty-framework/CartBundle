@@ -61,6 +61,10 @@ class Checkout extends CreateRecordAction
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
 
+        if ( count($orderItems) == 0 ) {
+            return $this->error( _('購物車是空的') );
+        }
+
         $shippingCost    = $cart->calculateShippingCost();
         $origTotalAmount = $cart->calculateTotalAmount();
         $totalAmount     = $cart->calculateDiscountedTotalAmount();
