@@ -89,13 +89,12 @@
 
                     </div>
                     <div class="col-field">
+                        {#
                         {{ CRUD.Action.renderField('member_id')|raw }}
+                        #}
+                        <code>{{ CRUD.Record.member.name }}
+                        &lt;{{ CRUD.Record.member.email }}&gt;</code>
                     </div>
-                </div>
-
-                <div>
-                    {{ CRUD.Record.member.name }}
-                    &lt;{{ CRUD.Record.member.email }}&gt;
                 </div>
 
                 {{ CRUD.Action.renderField('remark')|raw }}
