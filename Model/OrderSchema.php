@@ -231,6 +231,7 @@ class OrderSchema extends SchemaDeclare
         $this->column( 'member_id' )
             ->integer()
             ->refer('MemberBundle\\Model\\MemberSchema')
+            ->immutable()
             ->default(function() {
                 if ( isset($_SESSION) ) {
                     $currentMember = new \MemberBundle\CurrentMember;
