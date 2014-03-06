@@ -7,7 +7,7 @@ class OrderSchema extends SchemaDeclare
 {
     public function schema() {
         $prefixes = [ 
-            '購買人' => 'buyer_', 
+            '訂購人' => 'buyer_', 
             '收件人' => 'shipping_',
         ];
         foreach( $prefixes as $label => $prefix ) {
