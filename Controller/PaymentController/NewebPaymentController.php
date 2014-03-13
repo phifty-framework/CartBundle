@@ -270,26 +270,30 @@ class NewebPaymentController extends OrderBaseController
         if ( ! $order->id ) {
             die('無此訂單');
         }
+        $order->update(['payment_type' => 'cc']); // credit card
 
-        // record the transction
-        $txn = new Transaction;
-        $ret = $txn->create([
-            'order_id' => $order->id,
-            'type'     => 'cc',
-            'result'   => $result,
-            'message'  => $message,
-            'amount'   => intval($amount),
-            'reason'   => $this->translateMessage($finalReturn_PRC, $finalReturn_SRC),
-            'code'     => $finalReturn_BankRC,
-            'data'     => yaml_emit($desc, YAML_UTF8_ENCODING),
-            'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
-        ]);
+        try {
+            // record the transction
+            $txn = new Transaction;
+            $ret = $txn->create([
+                'order_id' => $order->id,
+                'type'     => 'cc',
+                'result'   => $result,
+                'message'  => $message,
+                'amount'   => intval($amount),
+                'reason'   => $this->translateMessage($finalReturn_PRC, $finalReturn_SRC),
+                'code'     => $finalReturn_BankRC,
+                'data'     => yaml_emit($desc, YAML_UTF8_ENCODING),
+                'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
+            ]);
 
-        if ( $ret->success ) {
-        } else {
+            if ( ! $ret->success ) {
+                throw new Exception($ret->message);
+            }
+
+        }  catch ( Exception $e ) {
             $order->regenerateSN();
-            // XXX: log the error
-            throw new Exception($ret->message);
+            error_log($e->message);
         }
 
         // regenerateSN if the transaction is failed.
