@@ -13,7 +13,7 @@ class OrderItemShippedEmail extends MemberOrderEmail
         $this['order_items'] = $items;
     }
 
-    public function getTitle() {
+    public function title() {
         return _('商品出貨通知');
     }
 }

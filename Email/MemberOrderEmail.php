@@ -5,8 +5,11 @@ use MemberBundle\Email\MemberEmail;
 
 /**
  * Order Shipping Notification Email
+ *
+ *     $email = new MemberOrderEmail($member, $order)
+ *     $email->send();
  */
-abstract class MemberOrderEmail extends MemberEmail
+class MemberOrderEmail extends MemberEmail
 {
     public $order;
 
