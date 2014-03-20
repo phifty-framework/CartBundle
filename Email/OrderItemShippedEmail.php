@@ -5,12 +5,12 @@ use MemberBundle\Email\MemberEmail;
 
 class OrderItemShippedEmail extends MemberOrderEmail
 {
+    public $templateHandle = 'order_item_shipped';
+
     public function __construct($member, $order, $items)
     {
         parent::__construct($member, $order);
         $this['order_items'] = $items;
-        $lang = $this->getLang();
-        $this->setTemplate( "@CartBundle/email/$lang/order_item_shipped.html" );
     }
 
     public function getTitle() {
