@@ -59,21 +59,42 @@
                         {{ CRUD.Action.renderField('invoice_type')|raw }}
                     </div>
                     <div class="col-field">
-                        {{ CRUD.Action.renderField('utc')|raw }}
-                    </div>
-                    <div class="col-field">
                         {{ CRUD.Action.renderField('utc_name')|raw }}
                     </div>
                     <div class="col-field">
-                        {{ CRUD.Action.renderField('utc_title')|raw }}
-                    </div>
-                    <div class="col-field">
                         {{ CRUD.Action.renderField('utc_address')|raw }}
+                    </div>
+
+                    <div class="col-field utc-3">
+                        {{ CRUD.Action.renderField('utc')|raw }}
+                    </div>
+                    <div class="col-field utc-3">
+                        {{ CRUD.Action.renderField('utc_title')|raw }}
                     </div>
                 </div>
             </fieldset>
         </div>
     </div>
+
+    {% if bundle.config('ChooseDeliveryType') %}
+
+    <div class="row">
+        <div class="col-md-10">
+            <fieldset>
+                <legend>取貨方式</legend>
+                <div class="clearfix">
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('delivery_type')|raw }}
+                    </div>
+                    <div class="col-field">
+                        {{ CRUD.Action.renderField('delivery_store')|raw }}
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
+    {% endif %}
 
     <div class="row">
 
@@ -254,5 +275,23 @@
 
     {% include '@CRUD/controll.html' %}
 </form>
+
+<script>
+$(function() {
+    if ( $('#{{editRegionId}} select[name=invoice_type]').val()  == 3 ) {
+        $('#{{editRegionId}} .utc-3').show();
+    } else {
+        $('#{{editRegionId}} .utc-3').hide();
+    }
+    $('#{{editRegionId}} select[name=invoice_type]').change(function() {
+        var val = $(this).val();
+        if (val == 3) {
+            $('#{{editRegionId}} .utc-3').show();
+        } else if ( val == 2 ) {
+            $('#{{editRegionId}} .utc-3').hide();
+        }
+    });
+});
+</script>
 
 {% endblock %}

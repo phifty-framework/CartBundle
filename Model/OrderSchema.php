@@ -6,6 +6,7 @@ use MemberBundle\CurrentMember;
 class OrderSchema extends SchemaDeclare
 {
     public function schema() {
+        $bundle = kernel()->bundle('CartBundle');
         $prefixes = [ 
             '訂購人' => 'buyer_', 
             '收件人' => 'shipping_',
@@ -81,6 +82,31 @@ class OrderSchema extends SchemaDeclare
                 return substr(md5(uniqid('', true)),0,8);
             })
             ;
+
+
+        if ( $bundle->config('ChooseDeliveryType') ) {
+        $this->column('delivery_type')
+            ->varchar(32)
+            ->label( _('取貨方式') )
+            ->validValues([
+                '宅配' => 'home',
+                '到店取貨' => 'store',
+            ])
+            ->renderAs('SelectInput')
+            ;
+
+        $this->column('delivery_store')
+            ->integer()
+            ->label( _('取貨店家') )
+            ->validValues(function() {
+                $c = new \StoreLocationBundle\Model\StoreCategory(array( 'handle' => 'delivery' ));
+                if ( $c->id ) {
+                    return $c->stores->asPairs('title','id');
+                }
+            })
+            ->renderAs('SelectInput',[ 'allow_empty' => true ])
+            ;
+        }
 
         // we keep this field for admin to query items easily.
         // and "POD" won't have "transaction record" before the shipping is done.

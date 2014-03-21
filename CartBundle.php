@@ -14,6 +14,7 @@ class CartBundle extends Bundle
             'ShipmentTracking' => false,
             'NoShippingFeeCondition' => array( 'AboveAmount' => 1500 ),
             'CashFlow' => 'neweb',
+            'ChooseDeliveryType' => true,
             'Transaction' => array(
                 'Neweb' => array(
                     'MerchantNumber' => 759973,
