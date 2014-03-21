@@ -32,6 +32,7 @@ class UpdateOrder extends UpdateRecordAction
                     }
                 }
             }
+            // send shipping email
             if ( count($shippedItems) ) {
                 $orderItemShippedEmail = new OrderItemShippedEmail($order->member, $order, $shippedItems);
                 $orderItemShippedEmail->send();

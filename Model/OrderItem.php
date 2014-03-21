@@ -58,6 +58,14 @@ class OrderItem extends \CartBundle\Model\OrderItemBase {
         $this->setShippingStatus('shipped');
     }
 
+    public function isPacking() {
+        return $this->shipping_status == 'packing';
+    }
+
+    public function isShipped() {
+        return $this->shipping_status == 'shipped';
+    }
+
     public function getShippingCompany() {
         return $this->shipping_company;
     }
