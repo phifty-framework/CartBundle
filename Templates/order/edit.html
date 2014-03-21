@@ -51,7 +51,7 @@
     {% endfor %}
 
     <div class="row">
-        <div class="col-md-11">
+        <div class="col-md-7">
             <fieldset>
                 <legend>發票</legend>
                 <div class="clearfix">
@@ -74,27 +74,24 @@
                 </div>
             </fieldset>
         </div>
+
+        {% if bundle.config('ChooseDeliveryType') %}
+            <div class="col-md-3">
+                <fieldset>
+                    <legend>取貨方式</legend>
+                    <div class="clearfix">
+                        <div class="col-field">
+                            {{ CRUD.Action.renderField('delivery_type')|raw }}
+                        </div>
+                        <div class="col-field">
+                            {{ CRUD.Action.renderField('delivery_store')|raw }}
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        {% endif %}
     </div>
 
-    {% if bundle.config('ChooseDeliveryType') %}
-
-    <div class="row">
-        <div class="col-md-10">
-            <fieldset>
-                <legend>取貨方式</legend>
-                <div class="clearfix">
-                    <div class="col-field">
-                        {{ CRUD.Action.renderField('delivery_type')|raw }}
-                    </div>
-                    <div class="col-field">
-                        {{ CRUD.Action.renderField('delivery_store')|raw }}
-                    </div>
-                </div>
-            </fieldset>
-        </div>
-    </div>
-
-    {% endif %}
 
     <div class="row">
 
