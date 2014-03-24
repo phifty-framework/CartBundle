@@ -20,10 +20,6 @@ class AdminOrderEmail extends AdminEmail
         $this->order = $this['order'] = $order;
         parent::__construct();
     }
-
-    public function from() {
-         return kernel()->getSystemMail();
-    }
 }
 
 
