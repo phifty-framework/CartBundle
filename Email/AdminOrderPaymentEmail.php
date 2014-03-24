@@ -6,7 +6,7 @@ use UserBundle\Email\AdminEmail;
 /**
  * Order Shipping Notification Email
  *
- *     $email = new MemberOrderEmail($member, $order)
+ *     $email = new AdminOrderPaymentEmail($member, $order, $txn)
  *     $email->send();
  */
 class AdminOrderPaymentEmail extends AdminEmail
