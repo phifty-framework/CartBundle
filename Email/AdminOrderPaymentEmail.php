@@ -15,6 +15,8 @@ class AdminOrderPaymentEmail extends AdminEmail
     public $member;
     public $txn;
 
+    public $templateHandle = 'payment_admin';
+
     public function __construct($member, $order, $txn)
     {
         $this->member = $this['member'] = $member;
