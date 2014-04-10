@@ -2,6 +2,7 @@
 namespace CartBundle;
 use Phifty\Bundle;
 use AdminUI\CRUDHandler;
+use CartBundle\Controller\OrderFilterToolbarItemController;
 
 class OrderCRUDHandler extends CRUDHandler
 {
@@ -33,15 +34,22 @@ class OrderCRUDHandler extends CRUDHandler
     public $canBulkCopy = false;
     public $canEditInNewWindow = false;
 
+    // public $debug = true;
+
     // public $templatePage = '@CRUD/page.html';
     // public $actionViewClass = 'AdminUI\\Action\\View\\StackView';
     // public $pageLimit = 15;
     // public $defaultOrder = array('id', 'DESC');
 
+    public function initToolbarControls() {
+        parent::initToolbarControls();
+        $this->addToolbarItem(new OrderFilterToolbarItemController());
+    }
 
     public function getCollection()
     {
-        return parent::getCollection();
+        $collection = parent::getCollection();
+        return $collection;
     }
 }
 
