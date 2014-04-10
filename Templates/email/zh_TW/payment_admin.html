@@ -1,0 +1,12 @@
+{# title: "付款通知信" comment:"付款通知信" #}
+{% extends "@EmailBundle/email/layout.html" %}
+{% block content %}
+
+<p>{{member.name}} {{member.display('gender')}} 已經透過 {{txn.display('type')}} 付款。</p>
+
+<p>訂單 #{{order.sn}}</p>
+<p>付款金額: NTD $ {{txn.amount}}</p>
+<p>付款方式: {{txn.display('type')}}</p>
+<p>付款時間: {{txn.display('created_on')}}</p>
+
+{% endblock %}

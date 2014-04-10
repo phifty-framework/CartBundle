@@ -1,0 +1,9 @@
+{# title: "ATM 付款通知信" #}
+{% extends "@EmailBundle/email/layout.html" %}
+{% block content %}
+
+<p>{{member.name}} {{member.display('gender')}} 已經透過 ATM 轉帳付款。</p>
+
+<p>訂單 #{{order.sn}}</p>
+
+{% endblock %}
