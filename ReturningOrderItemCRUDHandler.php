@@ -10,7 +10,7 @@ class ReturningOrderItemCRUDHandler extends CRUDHandler
     public $crudId     = 'returning_order_item';
     public $templateId = 'order_item';
 
-    // public $listColumns = array( 'id', 'thumb', 'name' , 'lang' , 'subtitle' , 'sn' );
+    public $listColumns = array( 'order_id', 'product', 'type', 'quantity', 'shipping_company', 'shipping_status', 'returning_reason' );
     // public $filterColumns = array();
     // public $quicksearchFields = array('name');
 
@@ -28,8 +28,7 @@ class ReturningOrderItemCRUDHandler extends CRUDHandler
     // public $pageLimit = 15;
     // public $defaultOrder = array('id', 'DESC');
 
-
-    public function getLabel() 
+    public function getListTitle() 
     {
         return '退貨項目';
     }
