@@ -120,7 +120,7 @@ class Cart extends CartBase
      */
     public function applyCoupon($coupon) {
         // always validate coupon
-        if ( $coupon->isValid() ) {
+        if ( $coupon->isValid($this) ) {
             $_SESSION['coupon_code'] = $coupon->coupon_code;
             return true;
         }
@@ -137,7 +137,7 @@ class Cart extends CartBase
         if ( isset($_SESSION['coupon_code']) ) {
             $coupon = new Coupon([ 'coupon_code' => $_SESSION['coupon_code'] ]);
             // always validate coupon
-            if ( $coupon->id && $coupon->isValid() ) {
+            if ( $coupon->id && $coupon->isValid($this) ) {
                 return $coupon;
             }
             // if it's invalid coupon, just delete the sesssion
