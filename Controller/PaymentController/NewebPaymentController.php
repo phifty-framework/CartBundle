@@ -209,7 +209,10 @@ class NewebPaymentController extends OrderBaseController
             return $this->redirect('/');
         }
         $formData = $this->getFormData();
-        return $this->render("order_payment_credit_card.html", [ 'neweb' => $formData ]);
+        return $this->render("order_payment_credit_card.html", [
+            'neweb' => $formData,
+            'neweb_controller' => $this,
+        ]);
     }
 
     public function getParameter($n) 
@@ -266,7 +269,7 @@ class NewebPaymentController extends OrderBaseController
         ];
 
         $order = new Order;
-        $order->load([ 'sn' =>  $orderNumber ]);
+        $order->load([ 'sn' => $orderNumber ]);
         if ( ! $order->id ) {
             die('無此訂單');
         }

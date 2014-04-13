@@ -12,7 +12,7 @@ class Order  extends \CartBundle\Model\OrderBase {
     /**
      * Create Order SN from Date, transaction_times and Order id
      *
-     *   {year}{month}{day}{transaction_times}{ order count by day }
+     *   {year}{month}{day}{order count by day}
      */
     const SN_FORMAT  = '%8s%02d%05d';
 
@@ -25,22 +25,22 @@ class Order  extends \CartBundle\Model\OrderBase {
      * @param int $txnTimes 
      * @param int $serialNum
      */
-    public function generateSN($date, $txnTimes = 1, $serialNum = null) {
+    public function generateSN($date,  $serialNum = null) {
         if ( is_string($date) ) {
             $date = new DateTime($date);
         }
         if ( ! $serialNum ) {
             $serialNum = OrderCollection::getCountByDay($date);
         }
-        return sprintf(self::SN_FORMAT, $date->format('Ymd'), $txnTimes, $serialNum);
+        return sprintf(self::SN_FORMAT, $date->format('Ymd'), $serialNum);
     }
 
     public function regenerateSN() 
     {
         // parse sn from the current sn
-        if ( false !== sscanf($this->sn, self::SN_FORMAT, $date, $t , $serialNum) ) {
+        if ( false !== sscanf($this->sn, self::SN_FORMAT, $date, $serialNum) ) {
             $date = DateTime::createFromFormat('Ymd', $date);
-            $this->sn = $this->generateSN($date, ++$this->transaction_times, $serialNum);
+            $this->sn = $this->generateSN($date, $serialNum);
         } else {
             throw new Exception('SN generation failed.');
         }
@@ -51,7 +51,7 @@ class Order  extends \CartBundle\Model\OrderBase {
     {
         // generate order sn with format '201309310001'
         $this->lockWrite();
-        $this->update([ 'sn' => $this->generateSN($this->created_on, $this->transaction_times) ]);
+        $this->update([ 'sn' => $this->generateSN($this->created_on) ]);
         $this->unlock();
     }
 
