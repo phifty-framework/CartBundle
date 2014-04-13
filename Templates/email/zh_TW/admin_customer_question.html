@@ -1,0 +1,12 @@
+{# title: "客服問題通知信件", comment: "客服問題通知信件" #}
+{% extends '@MemberBundle/email/layout.html' %}
+{% block content %}
+
+{# email content for {{emailClassName}} #}
+
+客服問題通知信 {{question.member.name}}
+
+內容:
+<blockquote>{{question.question}}</blockquote>
+
+{% endblock %}
