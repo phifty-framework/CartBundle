@@ -20,6 +20,8 @@ class CartBundle extends Bundle
                     'MerchantNumber' => 759973,
                     'RCode' => 'abcd1234',
                     'Code' => 'abcd1234',
+                    'ApproveFlag' => 1,
+                    'DepositFlag' => 1,
                     'PaymentURL' => 'https://testmaple2.neweb.com.tw/NewebmPP/cdcard.jsp',
                     'OrderURL'   =>  'http://ibiyaya.dev/payment/neweb/response',
                     'ReturnURL'  => 'http://ibiyaya.dev/payment/neweb/return',

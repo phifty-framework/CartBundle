@@ -10,11 +10,15 @@ class Order  extends \CartBundle\Model\OrderBase {
 
 
     /**
-     * Create Order SN from Date, transaction_times and Order id
+     * Create Order SN from Date, and Order id
      *
      *   {year}{month}{day}{order count by day}
+     *
+     *   20140102 0005
+     *
+     *   12 charactors
      */
-    const SN_FORMAT  = '%8s%02d%05d';
+    const SN_FORMAT  = '%8s%04d';
 
     public function dataLabel() {
         return $this->sn;

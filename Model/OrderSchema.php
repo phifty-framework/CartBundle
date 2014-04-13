@@ -240,12 +240,6 @@ class OrderSchema extends SchemaDeclare
             ->renderAs('TextareaInput', [ 'rows' => 1, 'cols' => 40 ]) 
             ;
 
-        $this->column('transaction_times')
-            ->integer()
-            ->default(0)
-            ->renderable(false)
-            ;
-
         // an order has many order items
         $this->many( 'order_items', 'CartBundle\\Model\\OrderItemSchema', 'order_id', 'id' );
 

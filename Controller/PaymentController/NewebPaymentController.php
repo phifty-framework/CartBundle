@@ -234,6 +234,8 @@ class NewebPaymentController extends OrderBaseController
         $finalReturn_BankRC      = $this->getParameter('final_return_BankRC');
         $finalReturn_BatchNumber = $this->getParameter('final_return_BatchNumber');
 
+        $orgOrderNumber = substr($orderNumber,0,12);
+
         $code = $bundle->config('Transaction.Neweb.Code');
 
         $message = "交易失敗";
@@ -269,7 +271,7 @@ class NewebPaymentController extends OrderBaseController
         ];
 
         $order = new Order;
-        $order->load([ 'sn' => $orderNumber ]);
+        $order->load([ 'sn' => $orgOrderNumber ]);
         if ( ! $order->id ) {
             die('無此訂單');
         }
@@ -330,6 +332,8 @@ class NewebPaymentController extends OrderBaseController
         $code = $bundle->config('Transaction.Neweb.Code');
 
 
+        $orgOrderNumber = substr($orderNumber, 0 ,12);
+
         // api data with description
         $desc = [ 
             '訂單編號'   => $orderNumber,
@@ -377,7 +381,7 @@ class NewebPaymentController extends OrderBaseController
         }
 
         $order = new Order;
-        $order->load([ 'sn' =>  $orderNumber ]);
+        $order->load([ 'sn' => $orgOrderNumber ]);
         if ( ! $order->id ) {
             die('無此訂單');
         }

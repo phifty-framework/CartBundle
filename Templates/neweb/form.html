@@ -1,9 +1,9 @@
 <input type="hidden" name="MerchantNumber" value="{{neweb.config.MerchantNumber}}"/>
-<input type="hidden" name="OrderNumber"    value="{{order.sn}}"/>
+<input type="hidden" name="OrderNumber"    value="{{order.sn}}{{order.transactions.size()}}"/>
 <input type="hidden" name="Amount"         value="{{order.total_amount}}"/>
 <input type="hidden" name="OrgOrderNumber" value="{{order.id}}"/>
-<input type="hidden" name="ApproveFlag"    value="1"/>{# use 1 as default #}
-<input type="hidden" name="DepositFlag"    value="1"/>{# use 1 as default #}
+<input type="hidden" name="ApproveFlag"    value="{{neweb.config.ApproveFlag|default('1')}}"/>{# use 1 as default #}
+<input type="hidden" name="DepositFlag"    value="{{neweb.config.DepositFlag|default('1')}}"/>{# use 1 as default #}
 <input type="hidden" name="Englishmode"    value="{{neweb.english}}"/>
 <input type="hidden" name="iphonepage"     value="{{neweb.mobile}}"/>
 <input type="hidden" name="OrderURL"       value="{{neweb.config.OrderURL}}"/>
