@@ -51,7 +51,7 @@ class CheckoutNonMember extends Checkout
             'password' => sha1( $this->arg('password') ),
         ));
         if ( ! $ret->success ) {
-            return $this->error( _('系統發生了問題，請聯絡 Ibiyaya 客服。謝謝您。') );
+            return $this->error( _('系統發生了問題，請聯絡客服。謝謝您。') );
         }
         $currentMember = new CurrentMember;
         $currentMember->setRecord($member);
