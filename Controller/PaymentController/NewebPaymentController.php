@@ -166,7 +166,7 @@ class NewebPaymentController extends OrderBaseController
         }
     }
 
-    public function getNewebOrderNumber($order)
+    public function createNewebOrderNumber($order)
     {
         return $order->sn .  $order->transactions->size();
     }
@@ -187,10 +187,10 @@ class NewebPaymentController extends OrderBaseController
         $code = $bundle->config('Transaction.Neweb.Code');
         $rcode = $bundle->config('Transaction.Neweb.RCode');
 
-        $orderNumber = $this->getNewebOrderNumber($order);
+        $orderNumber = $this->createNewebOrderNumber($order);
         $checkstr =
               $merchantNumber
-            . $order->sn
+            . $orderNumber
             . $rcode
             . $order->total_amount;
         $checksum = md5($checkstr);
