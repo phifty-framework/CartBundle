@@ -1,12 +1,19 @@
-{# title: "客服問題通知信件", comment: "客服問題通知信件" #}
+{#
+title: "客服問題通知 {{question.member.name}} {{question.member.display('gender')}} 訂單編號 {{question.order.sn}}"
+comment: "客服問題通知信件"
+#}
 {% extends '@MemberBundle/email/layout.html' %}
 {% block content %}
 
 {# email content for {{emailClassName}} #}
 
-客服問題通知信 {{question.member.name}}
+{% set member = question.member %}
 
-內容:
+<p>會員 {{member.name}} {{member.display('gender')}}
+<p>會員編號 {{question.member.id}}
+<p>電話 {{question.member.cellphone}}
+<p>訂單編號 {{question.order.sn}}
+<p>內容:
 <blockquote>{{question.question}}</blockquote>
 
 {% endblock %}
