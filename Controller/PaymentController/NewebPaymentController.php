@@ -166,6 +166,12 @@ class NewebPaymentController extends OrderBaseController
         }
     }
 
+    public function getNewebOrderNumber($order)
+    {
+        return $order->sn .  $order->transactions->size();
+    }
+    
+
     public function getFormData() {
         $bundle = kernel()->bundle('CartBundle');
         $config = $bundle->config; // CartBundle config
@@ -181,6 +187,7 @@ class NewebPaymentController extends OrderBaseController
         $code = $bundle->config('Transaction.Neweb.Code');
         $rcode = $bundle->config('Transaction.Neweb.RCode');
 
+        $orderNumber = $this->getNewebOrderNumber($order);
         $checkstr =
               $merchantNumber
             . $order->sn
@@ -191,6 +198,7 @@ class NewebPaymentController extends OrderBaseController
             'config' => $bundle->config('Transaction.Neweb'),
             'mobile' => $this->isMobile() ? 1 : 0,
             'english' => kernel()->locale->current() != 'zh_TW' ? 1 : 0,
+            'order_number' => $orderNumber,
             'order' => $order,
             'checksum' => $checksum,
         );
@@ -209,10 +217,7 @@ class NewebPaymentController extends OrderBaseController
             return $this->redirect('/');
         }
         $formData = $this->getFormData();
-        return $this->render("order_payment_credit_card.html", [
-            'neweb' => $formData,
-            'neweb_controller' => $this,
-        ]);
+        return $this->render("order_payment_credit_card.html", ['neweb' => $formData ]);
     }
 
     public function getParameter($n) 
