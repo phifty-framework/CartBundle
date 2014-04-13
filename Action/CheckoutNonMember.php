@@ -40,7 +40,14 @@ class CheckoutNonMember extends Checkout
             $memberField = str_replace('buyer_', '', $field);
             $this->setArgument( $memberField , $this->arg($field) );
         }
+
         $member = new \MemberBundle\Model\Member;
+
+        $member->load(array( 'email' => $this->arg('email') ));
+        if ( $member->id ) {
+            return $this->error( _('此 Email 已經註冊過了') );
+        }
+
         $ret = $member->create(array(
             'name' => $this->arg('name'),
             'phone' => $this->arg('phone'),
