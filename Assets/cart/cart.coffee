@@ -17,7 +17,7 @@ $ ->
         # update item amount price here
         $amount.text "$ " + resp.data.amount
         $totalAmount.text "$ " + resp.data.total_amount
-        $discountedAmount.text "$ " + resp.data.discounted_amount
+        $discountedAmount.text "$ " + resp.data.discounted_total_amount
 
 
   $(".coupon-submit-btn").click ->
@@ -26,13 +26,13 @@ $ ->
       coupon_code: couponCode
     , (resp) ->
       
-      # resp.data.discounted_amount
+      # resp.data.discounted_total_amount
       # resp.data.total_amount
       if resp.success
         $.jGrowl resp.message
         $(".discounted-summary").removeClass "hide"
         $(".total-amount").text("$ " + resp.data.total_amount).parent().addClass "line-through"
-        $(".discounted-amount").text "NT$ " + resp.data.discounted_amount
+        $(".discounted-amount").text "NT$ " + resp.data.discounted_total_amount
       else
         $(".discounted-summary").addClass "hide"
         $(".total-amount").parent().removeClass "line-through"
@@ -51,7 +51,7 @@ $ ->
         $.jGrowl resp.message
         $el.parents("tr").fadeOut()
         $totalAmount.text "$ " + resp.data.total_amount
-        $discountedAmount.text "$ " + resp.data.discounted_amount
+        $discountedAmount.text "$ " + resp.data.discounted_total_amount
 
 
 ###

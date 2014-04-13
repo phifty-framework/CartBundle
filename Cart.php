@@ -193,7 +193,7 @@ class Cart extends CartBase
             'total_amount'      => $this->calculateTotalAmount(),
 
             // discounted total amount
-            'discounted_amount' => $this->calculateDiscountedTotalAmount(),
+            'discounted_total_amount' => $this->calculateDiscountedTotalAmount(),
 
             // discount amount (from coupon)
             'discount_amount'   => $this->calculateDiscountAmount(),
