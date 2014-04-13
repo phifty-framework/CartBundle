@@ -35,7 +35,7 @@ class CheckoutNonMember extends Checkout
         }
 
         // copy buyer_fields to member fields
-        $fields = array('buyer_name', 'buyer_phone', 'buyer_cellphone', 'buyer_address');
+        $fields = array('buyer_name', 'buyer_phone', 'buyer_cellphone', 'buyer_address', 'buyer_gender');
         foreach( $fields as $field ) {
             $memberField = str_replace('buyer_', '', $field);
             $this->setArgument( $memberField , $this->arg($field) );
@@ -46,6 +46,7 @@ class CheckoutNonMember extends Checkout
             'phone' => $this->arg('phone'),
             'cellphone' => $this->arg('cellphone'),
             'email' => $this->arg('email'),
+            'gender' => $this->arg('gender'),
             'address' => $this->arg('address'),
             'password' => sha1( $this->arg('password') ),
         ));
