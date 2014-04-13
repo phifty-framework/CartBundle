@@ -302,16 +302,12 @@ class NewebPaymentController extends OrderBaseController
             }
 
         }  catch ( Exception $e ) {
-            $order->regenerateSN();
             error_log($e->message);
         }
 
-        // regenerateSN if the transaction is failed.
         if ( $result ) {
             $email = new PaymentCreditCardEmail($order->member, $order);
             $email->send();
-        } else {
-            $order->regenerateSN();
         }
 
         return $this->render('message.html', [
