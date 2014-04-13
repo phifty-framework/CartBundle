@@ -14,7 +14,7 @@ class SubmitCustomerQuestion extends CreateRecordAction
         if ( $ret ) {
             $question = $this->getRecord();
             $email = new AdminCustomerQuestionEmail($question);
-            // $email->send();
+            $email->send();
         }
         return $ret;
     }
