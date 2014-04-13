@@ -86,6 +86,11 @@ class Cart extends CartBase
         return 0;
     }
 
+    /**
+     * Return the sum of amount from all order items, this method does not count shipping cost in.
+     *
+     * @return int The total amount
+     */
     public function calculateOrderItemTotalAmount() {
         if ( $collection = $this->getOrderItems() ) {
             return $collection->calculateTotalAmount();
@@ -120,7 +125,8 @@ class Cart extends CartBase
      */
     public function applyCoupon($coupon) {
         // always validate coupon
-        if ( $coupon->isValid($this) ) {
+        list($success, $reason) = $coupon->isValid($this);
+        if ($success) {
             $_SESSION['coupon_code'] = $coupon->coupon_code;
             return true;
         }
@@ -137,7 +143,8 @@ class Cart extends CartBase
         if ( isset($_SESSION['coupon_code']) ) {
             $coupon = new Coupon([ 'coupon_code' => $_SESSION['coupon_code'] ]);
             // always validate coupon
-            if ( $coupon->id && $coupon->isValid($this) ) {
+            list($success, $reason) = $coupon->isValid($cart);
+            if ($success) {
                 return $coupon;
             }
             // if it's invalid coupon, just delete the sesssion
