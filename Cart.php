@@ -138,6 +138,10 @@ class Cart extends CartBase
         return isset($_SESSION['coupon_code']);
     }
 
+
+    /**
+     * check current coupon and re-validate the coupon.
+     */
     public function loadSessionCoupon()
     {
         if ( isset($_SESSION['coupon_code']) ) {
@@ -176,6 +180,25 @@ class Cart extends CartBase
         return 0;
     }
 
+
+    /**
+     * Return Cart Summary
+     */
+    public function getSummary() {
+        return array(
+            'orderitem_total_amount' => $this->calculateOrderItemTotalAmount(),
+            'shipping_cost'     => $this->calculateShippingCost(),
+
+            // the original total amount (including shipping cost)
+            'total_amount'      => $this->calculateTotalAmount(),
+
+            // discounted total amount
+            'discounted_amount' => $this->calculateDiscountedTotalAmount(),
+
+            // discount amount (from coupon)
+            'discount_amount'   => $this->calculateDiscountAmount(),
+        );
+    }
 }
 
 
