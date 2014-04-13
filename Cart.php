@@ -143,7 +143,7 @@ class Cart extends CartBase
         if ( isset($_SESSION['coupon_code']) ) {
             $coupon = new Coupon([ 'coupon_code' => $_SESSION['coupon_code'] ]);
             // always validate coupon
-            list($success, $reason) = $coupon->isValid($cart);
+            list($success, $reason) = $coupon->isValid($this);
             if ($success) {
                 return $coupon;
             }
