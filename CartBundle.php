@@ -65,9 +65,17 @@ class CartBundle extends Bundle
 
         $bundle = $this;
         kernel()->event->register( 'adminui.init_menu' , function($menu) use ($bundle) {
-            $menu->createCrudMenuItem( 'order', _('訂單管理') );
-            $menu->createCrudMenuItem( 'returning_order_item', _('申請退貨項目') );
-            $menu->createCrudMenuItem( 'customer_question', _('客服問答管理') );
+            $folder = $menu->createMenuFolder( '購物車相關管理' );
+            $folder->createCrudMenuItem( 'order', _('訂單管理') );
+            $folder->createCrudMenuItem( 'returning_order_item', _('申請退貨項目') );
+            $folder->createCrudMenuItem( 'customer_question', _('客服問答管理') );
+
+            if ( kernel()->bundle('CouponBundle') ) {
+                $folder->createCrudMenuItem( 'coupon', _('折價券管理') );
+            }
+            if ( kernel()->bundle('ShippingBundle') ) {
+                $folder->createCrudMenuItem( 'shipping_company', _('物流公司管理') );
+            }
         });
     }
 
