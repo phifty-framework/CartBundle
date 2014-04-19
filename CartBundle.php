@@ -65,7 +65,7 @@ class CartBundle extends Bundle
 
         $bundle = $this;
         kernel()->event->register( 'adminui.init_menu' , function($menu) use ($bundle) {
-            $folder = $menu->createMenuFolder( '購物車相關管理' );
+            $folder = $menu->createMenuFolder( '電子商務' );
             $folder->createCrudMenuItem( 'order', _('訂單管理') );
             $folder->createCrudMenuItem( 'returning_order_item', _('申請退貨項目') );
             $folder->createCrudMenuItem( 'customer_question', _('客服問答管理') );
