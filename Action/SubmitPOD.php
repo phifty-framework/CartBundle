@@ -5,6 +5,7 @@ use ActionKit\RecordAction\CreateRecordAction;
 use CartBundle\Model\Transaction;
 use CartBundle\Model\Order;
 use CartBundle\Email\PaymentPODEmail;
+use CartBundle\Email\AdminOrderPaymentEmail;
 
 class SubmitPOD extends Action
 {
@@ -41,6 +42,10 @@ class SubmitPOD extends Action
         if ( $ret->success ) {
             $email = new PaymentPODEmail($order->member, $order);
             $email->send();
+
+            $adminEmail = new AdminOrderPaymentEmail($order->member, $order);
+            $adminEmail->send();
+
             return $this->success( _('感謝您的訂購，我們會盡快出貨') );
         }
         return $this->error( __('錯誤 %1'), $ret->message );

@@ -2,11 +2,16 @@
 {% extends "@EmailBundle/email/layout.html" %}
 {% block content %}
 
-<p>{{member.name}} {{member.display('gender')}} 已經透過 {{txn.display('type')}} 付款。</p>
+<p>{{member.name}} {{member.display('gender')}} 已經付款。
 
-<p>訂單 #{{order.sn}}</p>
-<p>付款金額: NTD $ {{txn.amount}}</p>
-<p>付款方式: {{txn.display('type')}}</p>
-<p>付款時間: {{txn.display('created_on')}}</p>
+<p>訂單 <a href="{{Kernel.getBaseUrl()}}/bs/order/edit?id={{order.id}}">#{{order.sn}}</a></p>
+<p>訂單總金額: {{order.total_amount}}</p>
+
+{% if txn %}
+    <p>透過 {{txn.display('type')}} 付款。</p>
+    <p>付款金額: NTD $ {{txn.amount}}</p>
+    <p>付款方式: {{txn.display('type')}}</p>
+    <p>付款時間: {{txn.display('created_on')}}</p>
+{% endif %}
 
 {% endblock %}

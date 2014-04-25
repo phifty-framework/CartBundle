@@ -6,6 +6,7 @@ use CartBundle\Model\Transaction;
 use CartBundle\Model\Order;
 use DateTime;
 use CartBundle\Email\PaymentATMEmail;
+use CartBundle\Email\AdminOrderPaymentEmail;
 
 class SubmitATM extends CreateRecordAction
 {
@@ -104,6 +105,10 @@ class SubmitATM extends CreateRecordAction
         if ( $ret->success ) {
             $email = new PaymentATMEmail($order->member, $order);
             $email->send();
+
+            $adminEmail = new AdminOrderPaymentEmail($order->member, $order, $txn);
+            $adminEmail->send();
+
             return $this->success( _('謝謝您的購買，我們會請專人幫您處理。') );
         } else {
             $this->convertRecordValidation($ret);

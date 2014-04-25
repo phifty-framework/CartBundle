@@ -6,6 +6,7 @@ use CartBundle\Model\Transaction;
 use CartBundle\Controller\OrderBaseController;
 use Exception;
 use CartBundle\Email\PaymentCreditCardEmail;
+use CartBundle\Email\AdminOrderPaymentEmail;
 
 class NewebPaymentController extends OrderBaseController
 {
@@ -282,9 +283,10 @@ class NewebPaymentController extends OrderBaseController
         }
         $order->update(['payment_type' => 'cc']); // credit card
 
+        $txn = new Transaction;
+
         try {
             // record the transction
-            $txn = new Transaction;
             $ret = $txn->create([
                 'order_id' => $order->id,
                 'type'     => 'cc',
@@ -308,6 +310,9 @@ class NewebPaymentController extends OrderBaseController
         if ( $result ) {
             $email = new PaymentCreditCardEmail($order->member, $order);
             $email->send();
+
+            $adminEmail = new AdminOrderPaymentEmail($order->member, $order, $txn);
+            $adminEmail->send();
         }
 
         return $this->render('message.html', [

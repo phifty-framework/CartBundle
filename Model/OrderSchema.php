@@ -190,7 +190,7 @@ class OrderSchema extends SchemaDeclare
 
         $this->column('utc_title')
             ->varchar(64)
-            ->label('統編抬頭')
+            ->label('發票抬頭')
             ->renderAs('TextInput', [ 'size' => 12 ])
             ;
 

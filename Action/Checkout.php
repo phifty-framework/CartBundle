@@ -58,6 +58,15 @@ class Checkout extends CreateRecordAction
             }
         }
 
+        if ( $bundle->config('ChooseDeliveryType') ) {
+            if ( $this->arg('delivery_type') == 'store' ) {
+                $this->requireArgs('delivery_store');
+                if ( $this->result->hasInvalidMessages() ) {
+                    return $this->error(_('請選擇收貨店家'));
+                }
+            }
+        }
+
         $cart = Cart::getInstance();
         $orderItems = $cart->getOrderItems();
 
