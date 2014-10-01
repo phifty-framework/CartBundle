@@ -14,7 +14,6 @@ class AdminOrderPaymentEmail extends AdminEmail
     public $order;
     public $member;
     public $txn;
-
     public $templateHandle = 'payment_admin';
 
     public function __construct($member, $order, $txn = null)
@@ -23,6 +22,10 @@ class AdminOrderPaymentEmail extends AdminEmail
         $this->order = $this['order'] = $order;
         $this->txn = $this['txn'] = $txn;
         parent::__construct();
+    }
+
+    public function title() {
+        return '付款通知';
     }
 }
 
