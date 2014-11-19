@@ -47,6 +47,19 @@ class SessionCartStorage
         $_SESSION['items'][] = $itemId;
     }
 
+    public function all() {
+        return $_SESSION['items'];
+    }
+
+    public function contains($itemId)
+    {
+        if (isset($_SESSION['items']) && is_array($_SESSION['items']) ) {
+            return in_array($itemId, $_SESSION['items']);
+        }
+        return false;
+    }
+
+
     public function remove($itemId) {
         $itemId = intval($itemId);
         $items = $this->get();

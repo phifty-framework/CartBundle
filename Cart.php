@@ -26,6 +26,16 @@ class Cart extends CartBase
         $this->validateItems();
     }
 
+    public function containsProduct($productId) {
+        $orderItems = $this->getOrderItems();
+        foreach($orderItems as $orderItem) {
+            if ($orderItem->product_id == $productId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function removeItem($id)
     {
         if ( $this->deleteOrderItem($id) ) {
