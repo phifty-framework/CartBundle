@@ -8,6 +8,8 @@ use CartBundle\Cart;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\Order;
 use CartBundle\Email\OrderCreatedEmail;
+use Exception;
+
 
 class Checkout extends CreateRecordAction
 {
@@ -94,42 +96,43 @@ class Checkout extends CreateRecordAction
         kernel()->db->beginTransaction();
 
         try {
-            if ( ! parent::run() ) {
+            $ret = parent::run();
+            if (!$ret) {
                 throw new Exception( _('無法建立訂單') );
             }
-            if ( ! $this->record->id ) {
+
+            if (! $this->record->id) {
                 throw new Exception( _('無法建立訂單項目') );
             }
 
-            if ( $coupon ) {
+            if ($coupon) {
                 $coupon->update([ 'used' => ['used + 1'] ]);
             }
 
-            // kernel()->db->query("LOCK TABLES " . OrderItem::table . " AS oi READ");
 
             foreach( $orderItems as $orderItem ) {
                 $orderItem->setAlias('oi');
+
                 $ret = $orderItem->update([
                     'order_id' => $this->record->id,
                     'shipping_status' => 'unpaid',
                 ]);
 
-                if ( $ret->success ) {
-                    if ( $bundle->config('UseProductTypeQuantity') ) {
+                if ($ret->success) {
+                    if ($bundle->config('UseProductTypeQuantity')) {
                         kernel()->db->query("LOCK TABLES " . ProductType::table . " AS t WRITE");
                         $stmt = kernel()->db->prepare("UPDATE " . ProductType::table . " t SET quantity = quantity - ? WHERE id = ?");
                         $stmt->execute([ $orderItem->quantity, $orderItem->type_id ]);
                         kernel()->db->query("UNLOCK TABLES");
                     }
                 } else {
-                    if ( $ret->exception ) {
+                    if ($ret->exception) {
                         throw $ret->exception;
                     }
-                    throw new Exception($ret->message);
+                    throw new Exception("OrderItem update failed: " . $ret->message);
                 }
             }
 
-            $cart->cleanUp();
             kernel()->db->commit();
 
             $this->success(_('訂單建立成功，導向中.. 請稍待'));
@@ -137,13 +140,15 @@ class Checkout extends CreateRecordAction
             $email = new OrderCreatedEmail($currentMember->getRecord(), $this->getRecord());
             $email->send();
 
+            $cart->cleanUp();
+
             return $this->redirectLater('/order/view?' . http_build_query([
                 'o' => $this->record->id,
                 't' => $this->record->token,
             ]), 2);
-        } catch ( Exception $e ) {
+        } catch (Exception $e) {
             kernel()->db->rollback();
-            return $this->error( $e->getMessage() );
+            return $this->error('訂單建立失敗:' . $e->getMessage());
         }
         return $this->error('訂單建立失敗');
     }
