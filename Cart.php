@@ -26,10 +26,10 @@ class Cart extends CartBase
         $this->validateItems();
     }
 
-    public function containsProduct($productId) {
+    public function containsProducts(array $productIds) {
         $orderItems = $this->getOrderItems();
         foreach($orderItems as $orderItem) {
-            if ($orderItem->product_id == $productId) {
+            if (in_array($orderItem->product_id, $productIds)) {
                 return true;
             }
         }
