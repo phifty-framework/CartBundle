@@ -3,4 +3,6 @@ collections:
   - css:
     - cart.css
   - js:
+    - jquery-bezier.js
     - cart.js
+    - add-to-cart.js
