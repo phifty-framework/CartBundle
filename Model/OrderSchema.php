@@ -5,7 +5,9 @@ use MemberBundle\CurrentMember;
 
 class OrderSchema extends SchemaDeclare
 {
-    public function schema() {
+
+    public function schema()
+    {
         $bundle = kernel()->bundle('CartBundle');
         $prefixes = [ 
             '訂購人' => 'buyer_', 
@@ -157,6 +159,13 @@ class OrderSchema extends SchemaDeclare
                 '下午15:00 ~ 下午18:00' => '1500-1800',
                 '下午18:00 ~ 晚上21:00' => '1800-2100',
             ])
+            ;
+
+        $this->column('is_deleted')
+            ->boolean()
+            ->label('已刪除')
+            ->default(false)
+            ->renderAs('CheckboxInput')
             ;
 
         $this->column('coupon_code')
