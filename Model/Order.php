@@ -117,11 +117,4 @@ class Order  extends \CartBundle\Model\OrderBase {
     public function delete() {
         return $this->update(array('is_deleted' => true));
     }
-
-    public function rowClass() {
-        if ($this->is_deleted) {
-            return 'deleted';
-        }
-        return '';
-    }
 }

@@ -5,6 +5,7 @@
     {% set bundle = Kernel.bundle('CartBundle') %}
 
     {{ CRUD.Action.renderSignatureWidget|raw}}
+    {{ CRUD.Action.renderCSRFTokenWidget|raw}}
     {% if CRUD.Record.id %}
         {{ forms.hidden('id', CRUD.Record.id) }}
     {% endif %}
@@ -194,6 +195,7 @@
                 </td>
                 <td class="product-name">
                     {{ subRecordAction.renderSignatureWidget()| raw }}
+                    {{ subRecordAction.renderCSRFTokenWidget()| raw }}
                     {{ subRecordAction.renderWidget('id')| raw }}
                     {# {{orderItem.display('product_id')|raw}} #}
                     {# {{ subRecordAction.renderWidget('product_id')| raw }} #}

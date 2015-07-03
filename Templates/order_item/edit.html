@@ -4,6 +4,7 @@
 <form class="ajax-action" enctype="multipart/form-data" method="post">
     {% set bundle = Kernel.bundle('CartBundle') %}
     {{ CRUD.Action.renderSignatureWidget|raw}}
+    {{ CRUD.Action.renderCSRFTokenWidget|raw}}
     {% if CRUD.Record.id %}
         {{ forms.hidden('id', CRUD.Record.id) }}
     {% endif %}
