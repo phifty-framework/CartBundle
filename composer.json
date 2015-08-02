@@ -1,0 +1,10 @@
+{
+    "name": "corneltek/cartbundle",
+    "authors": [
+        {
+            "name": "c9s",
+            "email": "yoanlin93@gmail.com"
+        }
+    ],
+    "require": {}
+}
