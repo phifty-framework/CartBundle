@@ -1,11 +1,14 @@
 {
     "name": "corneltek/cartbundle",
+    "type": "phifty-bundle",
+    "license": "proprietary",
     "authors": [
-        {
-            "name": "c9s",
-            "email": "yoanlin93@gmail.com"
-        }
+        { "name": "c9s", "email": "yoanlin93@gmail.com" }
     ],
-    "require": {},
-    "autoload": { "psr-4":  { "CartBundle\\": "" } }
+    "require": { "corneltek/installers": "dev-master" },
+    "extra": { "branch-alias": { "dev-master": "3.1.x-dev" } },
+    "autoload": { "psr-4":  { "CartBundle\\": "" } },
+    "repositories": [
+        {"type": "composer", "url": "https://toran.corneltek.com/repo/private/"}
+    ]
 }
