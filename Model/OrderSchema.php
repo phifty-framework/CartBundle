@@ -9,12 +9,8 @@ class OrderSchema extends SchemaDeclare
     public function schema()
     {
         $bundle = kernel()->bundle('CartBundle');
-        $prefixes = [ 
-            '訂購人' => 'buyer_', 
-            '收件人' => 'shipping_',
-        ];
-        foreach( $prefixes as $label => $prefix ) {
-
+        $prefixes = [ '訂購人' => 'buyer_', '收件人' => 'shipping_'];
+        foreach ($prefixes as $label => $prefix) {
             $this->column("{$prefix}name")
                 ->varchar(32)
                 ->label( "{$label}姓名" )
@@ -44,19 +40,25 @@ class OrderSchema extends SchemaDeclare
 
             $this->column("{$prefix}phone_area")
                 ->varchar(3)
-                ->label( "{$label}區碼" )
+                ->label("{$label}區碼")
                 ->renderAs('TextInput', [ 'size' => 3 ])
                 ;
 
             $this->column("{$prefix}phone")
                 ->varchar(32)
-                ->label( "{$label}電話" )
+                ->label("{$label}電話")
                 ->renderAs('TextInput', [ 'size' => 8 ])
                 ;
 
             $this->column("{$prefix}phone_ext")
                 ->varchar(3)
-                ->label( "{$label}分機" )
+                ->label("{$label}分機")
+                ->renderAs('TextInput', [ 'size' => 3 ])
+                ;
+
+            $this->column("{$prefix}postcode")
+                ->varchar(6)
+                ->label("{$label}郵遞區號")
                 ->renderAs('TextInput', [ 'size' => 3 ])
                 ;
 

@@ -47,7 +47,6 @@ class CartBundle extends Bundle
 
         $this->route('/order_item/return', 'OrderController:returnOrderItem');
 
-
         /** routes for payment. */
         $this->route('/payment/neweb'          ,'PaymentController\NewebPaymentController:index');
         $this->route('/payment/neweb/response' ,'PaymentController\NewebPaymentController:response');
@@ -59,10 +58,12 @@ class CartBundle extends Bundle
         $this->route('/payment/atm'          ,'PaymentController\ATMPaymentController:index');
         $this->route('/payment/atm/response' ,'PaymentController\ATMPaymentController:response');
 
-        $this->expandRoute( '/bs/order',          'OrderCRUDHandler');
-        $this->expandRoute( '/bs/returning_order_item',  'ReturningOrderItemCRUDHandler');
-        $this->expandRoute( '/bs/customer_question', 'CustomerQuestionCRUDHandler');
+        $this->addRecordAction('OrderItem');
 
+        /*
+        $this->mount( '/bs/order',          'OrderCRUDHandler');
+        $this->mount( '/bs/returning_order_item',  'ReturningOrderItemCRUDHandler');
+        $this->mount( '/bs/customer_question', 'CustomerQuestionCRUDHandler');
         $bundle = $this;
         kernel()->event->register( 'adminui.init_menu' , function($menu) use ($bundle) {
             $folder = $menu->createMenuFolder( '電子商務' );
@@ -77,6 +78,7 @@ class CartBundle extends Bundle
                 $folder->createCrudMenuItem( 'shipping_company', _('物流公司管理') );
             }
         });
+        */
     }
 
 }

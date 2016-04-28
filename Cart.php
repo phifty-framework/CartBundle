@@ -89,7 +89,8 @@ class Cart extends CartBase
         return true;
     }
 
-    public function calculateTotalQuantity() {
+    public function calculateTotalQuantity()
+    {
         if ( $collection = $this->getOrderItems() ) {
             return $collection->calculateTotalQuantity();
         }
