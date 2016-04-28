@@ -28,12 +28,15 @@ class OrderItemSchema extends SchemaDeclare
             ->label('產品')
             ;
 
+        /*
         $this->column('type_id')
+            ->unsigned()
             ->integer()
             ->refer('ProductBundle\\Model\\ProductTypeSchema')
             ->required()
             ->label('產品類型')
             ;
+        */
 
         $this->column('remark')
             ->text()
