@@ -54,9 +54,10 @@ class Order  extends \CartBundle\Model\OrderBase {
     public function afterCreate($args) 
     {
         // generate order sn with format '201309310001'
-        $this->lockWrite();
+        // fixme: sn lock 
+        // $this->lockWrite();
         $this->update([ 'sn' => $this->generateSN($this->created_on) ]);
-        $this->unlock();
+        // $this->unlock();
     }
 
     public function beforeDelete($args) {
