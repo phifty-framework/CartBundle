@@ -14,6 +14,8 @@ use ShippingBundle\Model\Company as ShippingCompany;
  * + Order item total amount
  * + Shipping cost
  * = Total Amount
+ *   - discount amount
+ *   = discounted total amount
  */
 class Cart extends CartBase
 {
