@@ -14,6 +14,10 @@ use IteratorAggregate;
 
 /**
  * Contains the logics of Cart
+ *
+ * + Order item total amount
+ * + Shipping cost
+ * = Total Amount
  */
 class Cart extends CartBase
 {
@@ -89,9 +93,14 @@ class Cart extends CartBase
         return true;
     }
 
+    /**
+     * Calcualte the total quantity from the current order items
+     *
+     * @return integer
+     */
     public function calculateTotalQuantity()
     {
-        if ( $collection = $this->getOrderItems() ) {
+        if ($collection = $this->getOrderItems()) {
             return $collection->calculateTotalQuantity();
         }
         return 0;
@@ -102,14 +111,16 @@ class Cart extends CartBase
      *
      * @return int The total amount
      */
-    public function calculateOrderItemTotalAmount() {
-        if ( $collection = $this->getOrderItems() ) {
+    public function calculateOrderItemTotalAmount()
+    {
+        if ($collection = $this->getOrderItems()) {
             return $collection->calculateTotalAmount();
         }
         return 0;
     }
 
-    public function calculateTotalAmount() {
+    public function calculateTotalAmount()
+    {
         $totalAmount = 0;
         $totalAmount += $this->calculateOrderItemTotalAmount();
         $totalAmount += $this->calculateShippingCost();

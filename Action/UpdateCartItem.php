@@ -1,27 +1,36 @@
 <?php
 namespace CartBundle\Action;
 use ActionKit\Action;
+use ActionKit\RecordAction\UpdateRecordAction;
 use CartBundle\Cart;
 
-class UpdateCartItem extends Action
+/**
+ * Update order item in Cart.
+ */
+class UpdateCartItem extends UpdateRecordAction
 {
-    public function schema() {
-        $this->param('id')
-            ->required();
+    public $recordClass = 'CartBundle\Model\OrderItem';
 
-        $this->param('product_type');
+    public function run()
+    {
+        $orderItem = $this->getRecord();
+        if ($orderItem->order_id) {
+            return $this->error('Items added to an order should not be updated.');
+        }
 
-        $this->param('quantity');
-    }
-
-    public function run() {
-        $cart = Cart::getInstance();
-        if ($item = $cart->updateOrderItem( $this->arg('id'), $this->arg('product_type') , $this->arg('quantity') ) ) {
+        $ret = parent::run();
+        if ($ret) {
             $summary = $cart->getSummary();
             $summary['amount'] = $item->calculateAmount();
             return $this->success( _('成功更新'), $summary);
-        } else {
-            return $this->error( _('無此權限') );
         }
+        return $this->error( _('無此權限') );
+
+        /*
+        $cart = Cart::getInstance();
+        if ($item = $cart->updateOrderItem($this->arg('id'), $this->arg('product_type') , $this->arg('quantity') )) {
+        } else {
+        }
+        */
     }
 }
