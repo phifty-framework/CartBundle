@@ -1,10 +1,12 @@
 <?php
-
 namespace CartBundle\Model;
-
 use LazyRecord\Schema\SchemaLoader;
+use LazyRecord\Result;
+use SQLBuilder\Bind;
+use SQLBuilder\ArgumentArray;
+use PDO;
+use SQLBuilder\Universal\Query\InsertQuery;
 use LazyRecord\BaseModel;
-
 class OrderItemBase
     extends BaseModel
 {
@@ -16,21 +18,32 @@ class OrderItemBase
     const WRITE_SOURCE_ID = 'default';
     const PRIMARY_KEY = 'id';
     const FIND_BY_PRIMARY_KEY_SQL = 'SELECT * FROM order_items WHERE id = :id LIMIT 1';
-    public static $column_names = array(
+    public static $column_names = array (
       0 => 'id',
       1 => 'order_id',
       2 => 'quantity',
       3 => 'product_id',
       4 => 'remark',
+      5 => 'shipping_id',
+      6 => 'shipping_company_id',
+      7 => 'shipping_status',
+      8 => 'returning_reason',
+      9 => 'shipping_status_last_update',
     );
-    public static $column_hash = array(
+    public static $column_hash = array (
       'id' => 1,
       'order_id' => 1,
       'quantity' => 1,
       'product_id' => 1,
       'remark' => 1,
+      'shipping_id' => 1,
+      'shipping_company_id' => 1,
+      'shipping_status' => 1,
+      'returning_reason' => 1,
+      'shipping_status_last_update' => 1,
     );
-    public static $mixin_classes = array(
+    public static $mixin_classes = array (
+      0 => 'ShippingBundle\\Model\\Mixin\\ShippingStatusMixinSchema',
     );
     protected $table = 'order_items';
     public $readSourceId = 'default';
@@ -38,29 +51,48 @@ class OrderItemBase
     public function getSchema()
     {
         if ($this->_schema) {
-            return $this->_schema;
+           return $this->_schema;
         }
-
         return $this->_schema = SchemaLoader::load('CartBundle\\Model\\OrderItemSchemaProxy');
     }
     public function getId()
     {
-        return $this->get('id');
+            return $this->get('id');
     }
     public function getOrderId()
     {
-        return $this->get('order_id');
+            return $this->get('order_id');
     }
     public function getQuantity()
     {
-        return $this->get('quantity');
+            return $this->get('quantity');
     }
     public function getProductId()
     {
-        return $this->get('product_id');
+            return $this->get('product_id');
     }
     public function getRemark()
     {
-        return $this->get('remark');
+            return $this->get('remark');
+    }
+    public function getShippingId()
+    {
+            return $this->get('shipping_id');
+    }
+    public function getShippingCompanyId()
+    {
+            return $this->get('shipping_company_id');
+    }
+    public function getShippingStatus()
+    {
+            return $this->get('shipping_status');
+    }
+    public function getReturningReason()
+    {
+            return $this->get('returning_reason');
+    }
+    public function getShippingStatusLastUpdate()
+    {
+            return $this->get('shipping_status_last_update');
     }
 }

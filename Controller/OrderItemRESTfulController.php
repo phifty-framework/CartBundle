@@ -14,10 +14,11 @@ class OrderItemRESTfulController extends RESTfulResourceController
         $item = new OrderItem();
         $ret = $item->find($id);
         if ($ret->success) {
-            return $this->toJson($item->toArray());
+            $data = $item->toArray();
+            $data['product'] = $item->product->toArray();
+            return $this->toJson($data);
         }
         header('HTTP/1.0 404 Not Found');
-
         return $this->toJson(['error' => 'record not found']);
     }
 }

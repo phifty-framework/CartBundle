@@ -1,9 +1,6 @@
 <?php
-
 namespace CartBundle\Model;
-
 use LazyRecord\BaseCollection;
-
 class OrderCollectionBase
     extends BaseCollection
 {

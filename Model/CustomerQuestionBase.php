@@ -1,10 +1,12 @@
 <?php
-
 namespace CartBundle\Model;
-
 use LazyRecord\Schema\SchemaLoader;
+use LazyRecord\Result;
+use SQLBuilder\Bind;
+use SQLBuilder\ArgumentArray;
+use PDO;
+use SQLBuilder\Universal\Query\InsertQuery;
 use LazyRecord\BaseModel;
-
 class CustomerQuestionBase
     extends BaseModel
 {
@@ -16,7 +18,7 @@ class CustomerQuestionBase
     const WRITE_SOURCE_ID = 'default';
     const PRIMARY_KEY = 'id';
     const FIND_BY_PRIMARY_KEY_SQL = 'SELECT * FROM customer_questions WHERE id = :id LIMIT 1';
-    public static $column_names = array(
+    public static $column_names = array (
       0 => 'id',
       1 => 'question_title',
       2 => 'question',
@@ -32,7 +34,7 @@ class CustomerQuestionBase
       12 => 'created_by',
       13 => 'updated_by',
     );
-    public static $column_hash = array(
+    public static $column_hash = array (
       'id' => 1,
       'question_title' => 1,
       'question' => 1,
@@ -48,7 +50,7 @@ class CustomerQuestionBase
       'created_by' => 1,
       'updated_by' => 1,
     );
-    public static $mixin_classes = array(
+    public static $mixin_classes = array (
       0 => 'CommonBundle\\Model\\Mixin\\MetaSchema',
     );
     protected $table = 'customer_questions';
@@ -57,65 +59,64 @@ class CustomerQuestionBase
     public function getSchema()
     {
         if ($this->_schema) {
-            return $this->_schema;
+           return $this->_schema;
         }
-
         return $this->_schema = SchemaLoader::load('CartBundle\\Model\\CustomerQuestionSchemaProxy');
     }
     public function getId()
     {
-        return $this->get('id');
+            return $this->get('id');
     }
     public function getQuestionTitle()
     {
-        return $this->get('question_title');
+            return $this->get('question_title');
     }
     public function getQuestion()
     {
-        return $this->get('question');
+            return $this->get('question');
     }
     public function getQuestionTime()
     {
-        return $this->get('question_time');
+            return $this->get('question_time');
     }
     public function getAnswer()
     {
-        return $this->get('answer');
+            return $this->get('answer');
     }
     public function getAnswerTime()
     {
-        return $this->get('answer_time');
+            return $this->get('answer_time');
     }
     public function getOrderId()
     {
-        return $this->get('order_id');
+            return $this->get('order_id');
     }
     public function getOrderItemId()
     {
-        return $this->get('order_item_id');
+            return $this->get('order_item_id');
     }
     public function getMemberId()
     {
-        return $this->get('member_id');
+            return $this->get('member_id');
     }
     public function getRemark()
     {
-        return $this->get('remark');
+            return $this->get('remark');
     }
     public function getCreatedOn()
     {
-        return $this->get('created_on');
+            return $this->get('created_on');
     }
     public function getUpdatedOn()
     {
-        return $this->get('updated_on');
+            return $this->get('updated_on');
     }
     public function getCreatedBy()
     {
-        return $this->get('created_by');
+            return $this->get('created_by');
     }
     public function getUpdatedBy()
     {
-        return $this->get('updated_by');
+            return $this->get('updated_by');
     }
 }

@@ -1,6 +1,5 @@
 <?php
-
-namespace cartbundle;
+namespace CartBundle;
 
 use ProductBundle\Model\Product;
 use CartBundle\Model\Order;
