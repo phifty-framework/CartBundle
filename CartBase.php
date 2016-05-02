@@ -127,18 +127,18 @@ class CartBase
      * @param interger $quantity
      * @return true
      */
-    public function updateOrderItem($itemId, $typeId, $quantity) {
-        $item = new OrderItem( intval($itemId) );
-        if ( ! $item->id ) {
+    public function updateOrderItem($itemId, $typeId, $quantity)
+    {
+        $item = new OrderItem(intval($itemId));
+        if (! $item->id) {
             throw new CartException( _('無此項目') );
         }
-        if ( $item->order_id ) {
+        if ($item->order_id) {
             throw new CartException( _('不可更新已經下訂之訂單項目') );
         }
 
         $args = array();
-
-        if ( $typeId ) {
+        if ($typeId) {
             $type = new ProductType(intval($typeId));
             if ( ! $type->id ) {
                 throw new CartException( _('無此產品類型') );
