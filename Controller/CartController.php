@@ -5,7 +5,6 @@ use CartBundle\Cart;
 
 class CartController extends Controller
 {
-
     /**
      * Cart page controller action
      */
