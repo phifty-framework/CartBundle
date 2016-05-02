@@ -260,6 +260,7 @@ class OrderSchema extends SchemaDeclare
 
 
         $this->column( 'member_id' )
+            ->unsigned()
             ->integer()
             ->refer('MemberBundle\\Model\\MemberSchema')
             ->immutable()
@@ -275,6 +276,35 @@ class OrderSchema extends SchemaDeclare
 
         $this->belongsTo('member', 'MemberBundle\\Model\\MemberSchema', 'id', 'member_id');
 
+
+        if ($eventBundle = kernel()->bundle('EventBundle')) {
+
+            $this->column('event_id')
+                ->unsigned()
+                ->integer()
+                ->refer('EventBundle\\Model\\EventSchema')
+                ->immutable()
+                ->renderAs('SelectInput')
+                ->label('活動')
+                ;
+
+            $this->column('event_reg_id')
+                ->unsigned()
+                ->integer()
+                ->refer('EventBundle\\Model\\EventRegSchema')
+                ->immutable()
+                ->renderAs('SelectInput')
+                ->label('報名資料')
+                ;
+
+            $this->belongsTo('event', 'EventBundle\\Model\\EventSchema', 'id', 'event_id');
+            $this->belongsTo('event_reg', 'EventBundle\\Model\\EventRegSchema', 'id', 'event_reg_id');
+        }
+
+
+
         $this->mixin('CommonBundle\\Model\\Mixin\\MetaSchema');
+
+
     }
 }
