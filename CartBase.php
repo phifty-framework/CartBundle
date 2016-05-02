@@ -1,12 +1,12 @@
 <?php
+
 namespace CartBundle;
+
 use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\OrderItemCollection;
 use CartBundle\Model\Order;
-use Exception;
-use ArrayIterator;
 use CartBundle\Exception\CartException;
 
 /**
@@ -23,72 +23,78 @@ class CartBase
      *
      * @return OrderItemCollection
      */
-    public function getOrderItems() {
+    public function getOrderItems()
+    {
         $items = $this->storage->get();
-        if ( count($items) ) {
-            $collection = new OrderItemCollection;
-            foreach( $items as $id ) {
+        if (count($items)) {
+            $collection = new OrderItemCollection();
+            foreach ($items as $id) {
                 $item = new OrderItem(intval($id));
-                if ( $item->id ) {
+                if ($item->id) {
                     $collection->add($item);
                 }
             }
+
             return $collection;
         }
+
         return array();
     }
 
-    public function validateItemQuantity($item) {
+    public function validateItemQuantity($item)
+    {
         $t = $item->type;
-        if ( !$t || !$t->id ) {
+        if (!$t || !$t->id) {
             return false;
         }
-        if ( $item->quantity > $t->quantity ) {
+        if ($item->quantity > $t->quantity) {
             return false;
         }
+
         return true;
     }
 
-    public function validateItem($item) {
+    public function validateItem($item)
+    {
         if (!$item->id) {
             return false;
         }
-        if ( $item->order_id ) {
+        if ($item->order_id) {
             return false;
         }
         $p = $item->product;
-        if ( !$p || !$p->id ) {
+        if (!$p || !$p->id) {
             return false;
         }
         $t = $item->type;
-        if ( !$t || !$t->id ) {
+        if (!$t || !$t->id) {
             return false;
         }
+
         return true;
     }
 
-
-    public function isInvalidItem($item) {
+    public function isInvalidItem($item)
+    {
         return in_array($item->id, $this->quantityInvalidItems);
     }
 
-
-    public function purgeQuantityInvalidItems() {
+    public function purgeQuantityInvalidItems()
+    {
         $bundle = kernel()->bundle('CartBundle');
-
 
         // using session as our storage
         $items = $this->storage->get();
         $this->quantityInvalidItems = array();
-        if ( count($items) ) {
+        if (count($items)) {
             $newItems = array();
-            foreach( $items as $id ) {
-                $item = new OrderItem( intval($id) );
+            foreach ($items as $id) {
+                $item = new OrderItem(intval($id));
 
-                if ( false == $this->validateItem($item) ) {
+                if (false == $this->validateItem($item)) {
                     continue;
                 }
-                if ( $bundle->config('UseProductTypeQuantity') && false == $this->validateItemQuantity($item) ) {
+                if ($bundle->config('UseProductTypeQuantity') && false == $this->validateItemQuantity($item)) {
                     continue;
                 }
                 $newItems[] = intval($id);
@@ -97,20 +103,21 @@ class CartBase
         }
     }
 
-    public function validateItems() {
+    public function validateItems()
+    {
         $bundle = kernel()->bundle('CartBundle');
 
         // using session as our storage
         $items = $this->storage->get();
         $this->quantityInvalidItems = array();
-        if ( count($items) ) {
+        if (count($items)) {
             $newItems = array();
-            foreach( $items as $id ) {
-                $item = new OrderItem( intval($id) );
-                if ( $this->validateItem($item) ) {
+            foreach ($items as $id) {
+                $item = new OrderItem(intval($id));
+                if ($this->validateItem($item)) {
                     $newItems[] = intval($id);
 
-                    if ( $bundle->config('UseProductTypeQuantity')  && false === $this->validateItemQuantity($item) ) {
+                    if ($bundle->config('UseProductTypeQuantity')  && false === $this->validateItemQuantity($item)) {
                         $this->quantityInvalidItems[] = intval($id);
                     }
                 }
@@ -120,81 +127,82 @@ class CartBase
     }
 
     /**
-     * Update product type or quantity of an order item
+     * Update product type or quantity of an order item.
      *
-     * @param integer $itemId
-     * @param integer $typeId
+     * @param int      $itemId
+     * @param int      $typeId
      * @param interger $quantity
+     *
      * @return true
      */
     public function updateOrderItem($itemId, $typeId, $quantity)
     {
         $item = new OrderItem(intval($itemId));
-        if (! $item->id) {
-            throw new CartException( _('無此項目') );
+        if (!$item->id) {
+            throw new CartException(_('無此項目'));
         }
         if ($item->order_id) {
-            throw new CartException( _('不可更新已經下訂之訂單項目') );
+            throw new CartException(_('不可更新已經下訂之訂單項目'));
         }
 
         $args = array();
         if ($typeId) {
             $type = new ProductType(intval($typeId));
-            if ( ! $type->id ) {
-                throw new CartException( _('無此產品類型') );
+            if (!$type->id) {
+                throw new CartException(_('無此產品類型'));
             }
             $args['type_id'] = $type->id;
         }
-        if ( $quantity ) {
+        if ($quantity) {
             $args['quantity'] = $quantity;
         }
 
-        if ( empty($args) ) {
+        if (empty($args)) {
             return $item;
         }
 
         $ret = $item->update($args);
-        if ( ! $ret->success ) {
+        if (!$ret->success) {
             throw new CartException(_('無法新增至購物車'));
         }
+
         return $item;
     }
 
-    public function deleteOrderItem($id) {
+    public function deleteOrderItem($id)
+    {
         $item = new OrderItem(intval($id));
         // does not belongs to an order
-        if ( $item->order_id ) {
+        if ($item->order_id) {
             return false;
         }
         $ret = $item->delete();
+
         return $ret->success;
     }
 
-    public function createOrderItem($product, $type, $quantity) {
-        $item = new OrderItem;
+    public function createOrderItem($product, $type, $quantity)
+    {
+        $item = new OrderItem();
         $ret = $item->create([
             'product_id' => $product->id,
-            'type_id'    => $type->id,
-            'quantity'   => $quantity,
+            'type_id' => $type->id,
+            'quantity' => $quantity,
         ]);
-        if ( ! $ret->success ) {
+        if (!$ret->success) {
             throw new CartException(_('無法新增至購物車'));
         }
+
         return $item;
     }
 
-
-
-    static public function getInstance() {
+    public static function getInstance()
+    {
         static $instance;
-        if ( $instance ) {
+        if ($instance) {
             return $instance;
         }
-        return $instance = new static;
+
+        return $instance = new static();
     }
-
-
 }
-
-
-

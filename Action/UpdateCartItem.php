@@ -1,6 +1,7 @@
 <?php
+
 namespace CartBundle\Action;
-use ActionKit\Action;
+
 use ActionKit\RecordAction\UpdateRecordAction;
 use CartBundle\Cart;
 
@@ -22,9 +23,11 @@ class UpdateCartItem extends UpdateRecordAction
         if ($ret) {
             $summary = $cart->getSummary();
             $summary['amount'] = $item->calculateAmount();
-            return $this->success( _('成功更新'), $summary);
+
+            return $this->success(_('成功更新'), $summary);
         }
-        return $this->error( _('無此權限') );
+
+        return $this->error(_('無此權限'));
 
         /*
         $cart = Cart::getInstance();

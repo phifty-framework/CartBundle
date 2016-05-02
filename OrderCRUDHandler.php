@@ -1,6 +1,7 @@
 <?php
+
 namespace CartBundle;
-use Phifty\Bundle;
+
 use AdminUI\CRUDHandler;
 use CartBundle\Controller\OrderFilterToolbarItemController;
 
@@ -8,20 +9,20 @@ class OrderCRUDHandler extends CRUDHandler
 {
     /* CRUD Attributes */
     public $modelClass = 'CartBundle\Model\Order';
-    public $crudId     = 'order';
+    public $crudId = 'order';
 
     public $listColumns = array(
-        'id', 'sn', 'buyer_name', 'buyer_cellphone' , 
-        'payment_type', 
+        'id', 'sn', 'buyer_name', 'buyer_cellphone',
+        'payment_type',
         'payment_status',
-        'coupon_code' ,
-        'total_amount', 
-        'discount_amount', 
-        'paid_amount', 
+        'coupon_code',
+        'total_amount',
+        'discount_amount',
+        'paid_amount',
         'created_on',
     );
 
-    public $quicksearchFields = array('buyer_name', 'buyer_phone', 'buyer_cellphone','buyer_address','sn');
+    public $quicksearchFields = array('buyer_name', 'buyer_phone', 'buyer_cellphone', 'buyer_address', 'sn');
 
     public $filterColumns = array('payment_type', 'payment_status');
 
@@ -41,7 +42,8 @@ class OrderCRUDHandler extends CRUDHandler
     // public $pageLimit = 15;
     // public $defaultOrder = array('id', 'DESC');
 
-    public function initToolbarControls() {
+    public function initToolbarControls()
+    {
         parent::initToolbarControls();
         $this->addToolbarItem(new OrderFilterToolbarItemController());
     }
@@ -49,7 +51,7 @@ class OrderCRUDHandler extends CRUDHandler
     public function getCollection()
     {
         $collection = parent::getCollection();
+
         return $collection;
     }
 }
-

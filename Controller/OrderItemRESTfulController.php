@@ -1,9 +1,9 @@
 <?php
+
 namespace Cartbundle\Controller;
-use Phifty\Controller;
+
 use CRUD\Controller\RESTfulResourceController;
 use CartBundle\Model\OrderItem;
-use CartBundle\Model\OrderItemCollection;
 
 class OrderItemRESTfulController extends RESTfulResourceController
 {
@@ -17,6 +17,7 @@ class OrderItemRESTfulController extends RESTfulResourceController
             return $this->toJson($item->toArray());
         }
         header('HTTP/1.0 404 Not Found');
-        return $this->toJson([ 'error' => 'record not found' ]);
+
+        return $this->toJson(['error' => 'record not found']);
     }
 }

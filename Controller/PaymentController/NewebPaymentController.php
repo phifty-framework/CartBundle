@@ -1,6 +1,7 @@
 <?php
+
 namespace CartBundle\Controller\PaymentController;
-use Phifty\Controller;
+
 use CartBundle\Model\Order;
 use CartBundle\Model\Transaction;
 use CartBundle\Controller\OrderBaseController;
@@ -10,7 +11,6 @@ use CartBundle\Email\AdminOrderPaymentEmail;
 
 class NewebPaymentController extends OrderBaseController
 {
-
     /**
      * Translate response code to message for customers.
      *
@@ -21,44 +21,45 @@ class NewebPaymentController extends OrderBaseController
     {
         $table = [
             '15-1018' => '系統無法處理。銀行主機忙碌中或銀行線路中斷',
-            '34-171'  => '金融交易失敗',
-            '8-204'   => '訂單編號重複',
-            '52-554'  => '使用者帳號密碼錯誤',
+            '34-171' => '金融交易失敗',
+            '8-204' => '訂單編號重複',
+            '52-554' => '使用者帳號密碼錯誤',
         ];
-        if ( isset($table["$PRC-$SRC"]) ) {
+        if (isset($table["$PRC-$SRC"])) {
             return $table["$PRC-$SRC"];
         } else {
             return '請與商家聯絡';
         }
     }
 
-
     /**
      * @param string $PRC
      * @param string $SRC
      */
-    public function translateMessage($PRC, $SRC) 
+    public function translateMessage($PRC, $SRC)
     {
         $table = [
             '15-1018' => '系統無法處理。銀行主機忙碌中或銀行線路中斷',
-            '34-171'  => '金融交易失敗',
-            '8-204'   => '訂單編號重複',
-            '52-554'  => '使用者帳號密碼錯誤',
+            '34-171' => '金融交易失敗',
+            '8-204' => '訂單編號重複',
+            '52-554' => '使用者帳號密碼錯誤',
         ];
-        if ( isset($table["$PRC-$SRC"]) ) {
+        if (isset($table["$PRC-$SRC"])) {
             return $table["$PRC-$SRC"];
-        } elseif ( isset($table["$PRC-*"]) ) {
+        } elseif (isset($table["$PRC-*"])) {
             return $table["$PRC-*"];
-        } elseif ( isset($table["*-$SRC"]) ) {
+        } elseif (isset($table["*-$SRC"])) {
             return $table["*-$SRC"];
         }
-        return $this->translatePRCMessage($PRC) . ': ' . $this->translateSRCMessage($SRC);
+
+        return $this->translatePRCMessage($PRC).': '.$this->translateSRCMessage($SRC);
     }
 
     /**
      * @param string $PRC
      */
-    public function translatePRCMessage($PRC) {
+    public function translatePRCMessage($PRC)
+    {
         $table = [
             '0' => '作業順利完成。',
             '2' => '找不到指定的物件。',
@@ -78,18 +79,18 @@ class NewebPaymentController extends OrderBaseController
             '52' => '進行使用者授權期間發生錯誤。',
             '55' => '指令名稱未被視為有效的 $til; 指令。',
         ];
-        if ( isset($table[$PRC]) ) {
+        if (isset($table[$PRC])) {
             return $table[$PRC];
         } else {
             return "未定義訊息 [$PRC] 請查詢藍新提供之 PRC 表格";
         }
     }
 
-
     /**
      * @param string $SRC
      */
-    public function translateSRCMessage($SRC) {
+    public function translateSRCMessage($SRC)
+    {
         $table = [
             '0' => '無其它資訊可用。',
             '3' => '不明指令。',
@@ -148,38 +149,39 @@ class NewebPaymentController extends OrderBaseController
             '5014' => '此回應與交易序號參數有關。',
             '5020' => '此回應與商品總數參數有關。',
         ];
-        if ( isset($table[$SRC]) ) {
+        if (isset($table[$SRC])) {
             return $table[$SRC];
         } else {
             return "未定義訊息 [$SRC] 請查詢藍新提供之 PRC 表格";
         }
     }
 
-    public function validateConfig() {
+    public function validateConfig()
+    {
         $bundle = kernel()->bundle('CartBundle');
 
         // Move to config validation
-        if ( ! $bundle->config('Transaction.Neweb.MerchantNumber') ) {
+        if (!$bundle->config('Transaction.Neweb.MerchantNumber')) {
             throw new Exception('Transaction.Neweb.MerchantNumber is required.');
         }
-        if ( ! $bundle->config('Transaction.Neweb.Code') ) {
+        if (!$bundle->config('Transaction.Neweb.Code')) {
             throw new Exception('Transaction.Neweb.Code is required.');
         }
     }
 
     public function createNewebOrderNumber($order)
     {
-        return $order->sn .  $order->transactions->size();
+        return $order->sn.$order->transactions->size();
     }
-    
 
-    public function getFormData() {
+    public function getFormData()
+    {
         $bundle = kernel()->bundle('CartBundle');
         $config = $bundle->config; // CartBundle config
 
         $order = $this->getCurrentOrder();
-        if ( false === $order ) {
-            return null;
+        if (false === $order) {
+            return;
         }
 
         $this->validateConfig();
@@ -191,10 +193,11 @@ class NewebPaymentController extends OrderBaseController
         $orderNumber = $this->createNewebOrderNumber($order);
         $checkstr =
               $merchantNumber
-            . $orderNumber
-            . $rcode
-            . $order->total_amount;
+            .$orderNumber
+            .$rcode
+            .$order->total_amount;
         $checksum = md5($checkstr);
+
         return array(
             'config' => $bundle->config('Transaction.Neweb'),
             'mobile' => $this->isMobile() ? 1 : 0,
@@ -206,56 +209,60 @@ class NewebPaymentController extends OrderBaseController
     }
 
     /**
-     * Neweb payment form page
+     * Neweb payment form page.
      */
-    public function indexAction() {
+    public function indexAction()
+    {
         $bundle = kernel()->bundle('CartBundle');
         $config = $bundle->config;
 
         $order = $this->getCurrentOrder();
-        if ( false === $order ) {
+        if (false === $order) {
             die('parameter error');
+
             return $this->redirect('/');
         }
         $formData = $this->getFormData();
-        return $this->render("order_payment_credit_card.html", ['neweb' => $formData ]);
+
+        return $this->render('order_payment_credit_card.html', ['neweb' => $formData]);
     }
 
-    public function getParameter($n) 
+    public function getParameter($n)
     {
-        return isset($_POST[$n]) ? $_POST[$n] : "";
+        return isset($_POST[$n]) ? $_POST[$n] : '';
     }
 
-    public function returnAction() {
+    public function returnAction()
+    {
         $bundle = kernel()->bundle('CartBundle');
 
-        $finalResult             = $this->getParameter('final_result');
-        $merchantNumber          = $this->getParameter('P_MerchantNumber');
-        $orderNumber             = $this->getParameter('P_OrderNumber');
-        $amount                  = $this->getParameter('P_Amount');
-        $checkSum                = $this->getParameter('P_CheckSum');
-        $finalReturn_PRC         = $this->getParameter('final_return_PRC');
-        $finalReturn_SRC         = $this->getParameter('final_return_SRC');
+        $finalResult = $this->getParameter('final_result');
+        $merchantNumber = $this->getParameter('P_MerchantNumber');
+        $orderNumber = $this->getParameter('P_OrderNumber');
+        $amount = $this->getParameter('P_Amount');
+        $checkSum = $this->getParameter('P_CheckSum');
+        $finalReturn_PRC = $this->getParameter('final_return_PRC');
+        $finalReturn_SRC = $this->getParameter('final_return_SRC');
         $finalReturn_ApproveCode = $this->getParameter('final_return_ApproveCode');
-        $finalReturn_BankRC      = $this->getParameter('final_return_BankRC');
+        $finalReturn_BankRC = $this->getParameter('final_return_BankRC');
         $finalReturn_BatchNumber = $this->getParameter('final_return_BatchNumber');
 
-        $orgOrderNumber = substr($orderNumber,0,12);
+        $orgOrderNumber = substr($orderNumber, 0, 12);
 
         $code = $bundle->config('Transaction.Neweb.Code');
 
-        $message = "交易失敗";
+        $message = '交易失敗';
         $reason = '';
         $result = false;
-        if ( $finalResult == "1" ) {
-            if( strlen($checkSum)>0){
-                $checkstr = md5($merchantNumber . $orderNumber . $finalResult . $finalReturn_PRC . $code. $finalReturn_SRC . $amount);
-                if ( strtolower($checkstr) == strtolower($checkSum)){
-                    $message = "交易成功";
-                    $reason  = "感謝您的訂購，您的訂單已經成立。";
+        if ($finalResult == '1') {
+            if (strlen($checkSum) > 0) {
+                $checkstr = md5($merchantNumber.$orderNumber.$finalResult.$finalReturn_PRC.$code.$finalReturn_SRC.$amount);
+                if (strtolower($checkstr) == strtolower($checkSum)) {
+                    $message = '交易成功';
+                    $reason = '感謝您的訂購，您的訂單已經成立。';
                     $result = true;
                 } else {
-                    $reason = "交易發生問題，驗證碼錯誤!";
+                    $reason = '交易發生問題，驗證碼錯誤!';
                 }
             }
         } else {
@@ -263,51 +270,50 @@ class NewebPaymentController extends OrderBaseController
         }
 
         $desc = [
-            '結果'       => $finalResult,
-            '店家編號'   => $merchantNumber,
-            '訂單編號'   => $orderNumber,
-            '交易金額'   => $amount,
-            '授權碼'     => $finalReturn_ApproveCode,
+            '結果' => $finalResult,
+            '店家編號' => $merchantNumber,
+            '訂單編號' => $orderNumber,
+            '交易金額' => $amount,
+            '授權碼' => $finalReturn_ApproveCode,
             '銀行回傳碼' => $finalReturn_BankRC,
-            '批次號碼'   => $finalReturn_BatchNumber,
-            '檢查碼'     => $checkSum,
-            '主回傳碼'  => $finalReturn_PRC,
-            '副回傳碼'  => $finalReturn_SRC,
-            '回傳訊息'  => $this->translateMessage($finalReturn_PRC, $finalReturn_SRC),
+            '批次號碼' => $finalReturn_BatchNumber,
+            '檢查碼' => $checkSum,
+            '主回傳碼' => $finalReturn_PRC,
+            '副回傳碼' => $finalReturn_SRC,
+            '回傳訊息' => $this->translateMessage($finalReturn_PRC, $finalReturn_SRC),
         ];
 
-        $order = new Order;
-        $order->load([ 'sn' => $orgOrderNumber ]);
-        if ( ! $order->id ) {
+        $order = new Order();
+        $order->load(['sn' => $orgOrderNumber]);
+        if (!$order->id) {
             die('無此訂單');
         }
         $order->update(['payment_type' => 'cc']); // credit card
 
-        $txn = new Transaction;
+        $txn = new Transaction();
 
         try {
             // record the transction
             $ret = $txn->create([
                 'order_id' => $order->id,
-                'type'     => 'cc',
-                'result'   => $result,
-                'message'  => $message,
-                'amount'   => intval($amount),
-                'reason'   => $this->translateMessage($finalReturn_PRC, $finalReturn_SRC),
-                'code'     => $finalReturn_BankRC,
-                'data'     => yaml_emit($desc, YAML_UTF8_ENCODING),
+                'type' => 'cc',
+                'result' => $result,
+                'message' => $message,
+                'amount' => intval($amount),
+                'reason' => $this->translateMessage($finalReturn_PRC, $finalReturn_SRC),
+                'code' => $finalReturn_BankRC,
+                'data' => yaml_emit($desc, YAML_UTF8_ENCODING),
                 'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
             ]);
 
-            if ( ! $ret->success ) {
+            if (!$ret->success) {
                 throw new Exception($ret->message);
             }
-
-        }  catch ( Exception $e ) {
+        } catch (Exception $e) {
             error_log($e->message);
         }
 
-        if ( $result ) {
+        if ($result) {
             $email = new PaymentCreditCardEmail($order->member, $order);
             $email->send();
 
@@ -316,98 +322,96 @@ class NewebPaymentController extends OrderBaseController
         }
 
         return $this->render('message.html', [
-            'error' => ! $result,
+            'error' => !$result,
             'title' => $message,
-            'message'  => $reason,
+            'message' => $reason,
         ]);
     }
 
-    public function responseAction() {
+    public function responseAction()
+    {
         $bundle = kernel()->bundle('CartBundle');
 
         // Record the transaction
-        $merchantNumber   = $this->getParameter('MerchantNumber');
-        $orderNumber      = $this->getParameter('OrderNumber');
-        $PRC              = $this->getParameter('PRC');
-        $SRC              = $this->getParameter('SRC');
-        $amount           = $this->getParameter('Amount');
-        $checkSum         = $this->getParameter('CheckSum');
-        $approvalCode     = $this->getParameter('ApprovalCode');
+        $merchantNumber = $this->getParameter('MerchantNumber');
+        $orderNumber = $this->getParameter('OrderNumber');
+        $PRC = $this->getParameter('PRC');
+        $SRC = $this->getParameter('SRC');
+        $amount = $this->getParameter('Amount');
+        $checkSum = $this->getParameter('CheckSum');
+        $approvalCode = $this->getParameter('ApprovalCode');
         $bankResponseCode = $this->getParameter('BankResponseCode');
-        $batchNumber      = $this->getParameter('BatchNumber');
+        $batchNumber = $this->getParameter('BatchNumber');
         $code = $bundle->config('Transaction.Neweb.Code');
 
-
-        $orgOrderNumber = substr($orderNumber, 0 ,12);
+        $orgOrderNumber = substr($orderNumber, 0, 12);
 
         // api data with description
-        $desc = [ 
-            '訂單編號'   => $orderNumber,
-            '交易金額'   => $amount,
-            '授權碼'     => $approvalCode,
+        $desc = [
+            '訂單編號' => $orderNumber,
+            '交易金額' => $amount,
+            '授權碼' => $approvalCode,
             '銀行回傳碼' => $bankResponseCode,
-            '批次號碼'   => $batchNumber,
+            '批次號碼' => $batchNumber,
         ];
 
         // fail by default
         $result = false;
         $message = '交易失敗';
-        $reason  = '';
+        $reason = '';
 
-
-        if ( $PRC =="0" && $SRC == "0" ) {
+        if ($PRC == '0' && $SRC == '0') {
             $chkstr = $merchantNumber.$orderNumber.$PRC.$SRC.$code.$amount;
             $chkstr = md5($chkstr);
 
-            $desc['檢查碼']     = $checkSum;
-            $desc['驗證碼']     = $chkstr;
+            $desc['檢查碼'] = $checkSum;
+            $desc['驗證碼'] = $chkstr;
 
             // -- 回傳成功，但結果有可能遭竄改，因此需和編碼內容比較
-            if (strtolower($chkstr)==strtolower($checkSum)) {
+            if (strtolower($chkstr) == strtolower($checkSum)) {
                 $result = true;
                 $message = '交易成功';
                 // $desc['狀態'] = '交易成功';
             } else {
                 $message = '交易失敗';
                 //-- 資料遭竄改
-                $reason  = '交易結果有誤，請與藍新聯絡!';
+                $reason = '交易結果有誤，請與藍新聯絡!';
             }
-        } else if ( $PRC == "15" && $SRC = "1018" ) {
+        } elseif ($PRC == '15' && $SRC = '1018') {
             // XXX: 
             // PRC=15,SRC=1018 
             $reason = '系統無法處理 (request not to Issuer yet) the transaction normally due to the reason that bank hosts busy or networks break transiently.';
-        } else if ( $PRC=="34" && $SRC=="171") {
+        } elseif ($PRC == '34' && $SRC == '171') {
             $reason = '金融失敗';
-        } else if ( $PRC=="8" && $SRC=="204") {
+        } elseif ($PRC == '8' && $SRC == '204') {
             $reason = '訂單編號重複!';
-        } else if ( $PRC=="52" && $SRC=="554") {
+        } elseif ($PRC == '52' && $SRC == '554') {
             $reason = '使用者帳號密碼錯誤!';
         } else {
             $reason = '系統錯誤';
         }
 
-        $order = new Order;
-        $order->load([ 'sn' => $orgOrderNumber ]);
-        if ( ! $order->id ) {
+        $order = new Order();
+        $order->load(['sn' => $orgOrderNumber]);
+        if (!$order->id) {
             die('無此訂單');
         }
 
         // record the transction
-        $txn = new Transaction;
+        $txn = new Transaction();
         $ret = $txn->create([
             'order_id' => $order->id,
-            'result'   => $result,
-            'type'     => 'cc',
-            'amount'   => $amount,
-            'message'  => $message,
-            'reason'   => $reason,
-            'code'     => $bankResponseCode,
-            'data'     => yaml_emit($desc, YAML_UTF8_ENCODING),
+            'result' => $result,
+            'type' => 'cc',
+            'amount' => $amount,
+            'message' => $message,
+            'reason' => $reason,
+            'code' => $bankResponseCode,
+            'data' => yaml_emit($desc, YAML_UTF8_ENCODING),
             'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
         ]);
-        if ( ! $ret->success ) {
+        if (!$ret->success) {
             // XXX: log the error
         }
     }
 }
-

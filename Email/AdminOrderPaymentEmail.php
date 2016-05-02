@@ -1,10 +1,12 @@
 <?php
+
 namespace CartBundle\Email;
+
 use Phifty\Message\Email;
 use UserBundle\Email\AdminEmail;
 
 /**
- * Order Shipping Notification Email
+ * Order Shipping Notification Email.
  *
  *     $email = new AdminOrderPaymentEmail($member, $order, $txn)
  *     $email->send();
@@ -24,12 +26,8 @@ class AdminOrderPaymentEmail extends AdminEmail
         parent::__construct();
     }
 
-    public function title() {
+    public function title()
+    {
         return '付款通知';
     }
 }
-
-
-
-
-

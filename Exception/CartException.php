@@ -1,4 +1,7 @@
 <?php
+
 namespace CartBundle\Exception;
 
-class CartException extends Exception { }
+class CartException extends Exception
+{
+}

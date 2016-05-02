@@ -1,7 +1,6 @@
 <?php
+
 namespace CartBundle\Email;
-use Phifty\Message\Email;
-use MemberBundle\Email\MemberEmail;
 
 class OrderItemShippedEmail extends MemberOrderEmail
 {
@@ -13,12 +12,8 @@ class OrderItemShippedEmail extends MemberOrderEmail
         $this['order_items'] = $items;
     }
 
-    public function title() {
+    public function title()
+    {
         return _('商品出貨通知');
     }
 }
-
-
-
-
-

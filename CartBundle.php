@@ -1,11 +1,16 @@
 <?php
+
 namespace CartBundle;
+
 use Phifty\Bundle;
 use CartBundle\Controller\OrderItemRESTfulController;
 
 class CartBundle extends Bundle
 {
-    public function assets() { return array('cart'); }
+    public function assets()
+    {
+        return array('cart');
+    }
 
     public function defaultConfig()
     {
@@ -13,7 +18,7 @@ class CartBundle extends Bundle
             'RequireUTCNameAndAddress' => 'always',
             'UseProductTypeQuantity' => false,
             'ShipmentTracking' => false,
-            'NoShippingFeeCondition' => array( 'AboveAmount' => 1500 ),
+            'NoShippingFeeCondition' => array('AboveAmount' => 1500),
             'CashFlow' => 'neweb',
             'ChooseDeliveryType' => true,
             'Transaction' => array(
@@ -24,9 +29,9 @@ class CartBundle extends Bundle
                     'ApproveFlag' => 1,
                     'DepositFlag' => 1,
                     'PaymentURL' => 'https://testmaple2.neweb.com.tw/NewebmPP/cdcard.jsp',
-                    'OrderURL'   =>  'http://ibiyaya.dev/payment/neweb/response',
-                    'ReturnURL'  => 'http://ibiyaya.dev/payment/neweb/return',
-                    'AdminURL'   => 'https://testmaple2.neweb.com.tw/NewebPayment2/login.jsp',
+                    'OrderURL' => 'http://ibiyaya.dev/payment/neweb/response',
+                    'ReturnURL' => 'http://ibiyaya.dev/payment/neweb/return',
+                    'AdminURL' => 'https://testmaple2.neweb.com.tw/NewebPayment2/login.jsp',
                 ),
             ),
         );
@@ -48,21 +53,21 @@ class CartBundle extends Bundle
 
         $this->route('/order_item/return', 'OrderController:returnOrderItem');
 
-        /** routes for payment. */
-        $this->route('/payment/neweb'          ,'PaymentController\NewebPaymentController:index');
-        $this->route('/payment/neweb/response' ,'PaymentController\NewebPaymentController:response');
-        $this->route('/payment/neweb/return'   ,'PaymentController\NewebPaymentController:return');
+        /* routes for payment. */
+        $this->route('/payment/neweb', 'PaymentController\NewebPaymentController:index');
+        $this->route('/payment/neweb/response', 'PaymentController\NewebPaymentController:response');
+        $this->route('/payment/neweb/return', 'PaymentController\NewebPaymentController:return');
 
-        $this->route('/payment/pod'          ,'PaymentController\PODPaymentController:index');
-        $this->route('/payment/pod/response' ,'PaymentController\PODPaymentController:response');
+        $this->route('/payment/pod', 'PaymentController\PODPaymentController:index');
+        $this->route('/payment/pod/response', 'PaymentController\PODPaymentController:response');
 
-        $this->route('/payment/atm'          ,'PaymentController\ATMPaymentController:index');
-        $this->route('/payment/atm/response' ,'PaymentController\ATMPaymentController:response');
+        $this->route('/payment/atm', 'PaymentController\ATMPaymentController:index');
+        $this->route('/payment/atm/response', 'PaymentController\ATMPaymentController:response');
 
         $this->addRecordAction('OrderItem');
 
         // URL: http://ichimove.dev/=/order_item/199
-        $this->kernel->restful->addResource('order_item', new OrderItemRESTfulController);
+        $this->kernel->restful->addResource('order_item', new OrderItemRESTfulController());
 
         /*
         $this->mount( '/bs/order',          'OrderCRUDHandler');
@@ -84,5 +89,4 @@ class CartBundle extends Bundle
         });
         */
     }
-
 }

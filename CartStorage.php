@@ -1,12 +1,12 @@
 <?php
-namespace CartBundle;
 
+namespace CartBundle;
 
 /**
  * CartStorage stores only order item id list.
  */
-interface CartStorage {
-
+interface CartStorage
+{
     public function isEmpty();
 
     public function count();
@@ -19,5 +19,3 @@ interface CartStorage {
 
     public function remove($itemId);
 }
-
-

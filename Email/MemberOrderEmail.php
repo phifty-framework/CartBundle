@@ -1,10 +1,12 @@
 <?php
+
 namespace CartBundle\Email;
+
 use Phifty\Message\Email;
 use MemberBundle\Email\MemberEmail;
 
 /**
- * Order Shipping Notification Email
+ * Order Shipping Notification Email.
  *
  *     $email = new MemberOrderEmail($member, $order)
  *     $email->send();
@@ -19,8 +21,3 @@ class MemberOrderEmail extends MemberEmail
         $this->order = $this['order'] = $order;
     }
 }
-
-
-
-
-

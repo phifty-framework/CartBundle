@@ -1,6 +1,7 @@
 <?php
+
 namespace CartBundle\Action;
-use ActionKit\Action;
+
 use ActionKit\RecordAction\DeleteRecordAction;
 
 class DeleteCartItem extends DeleteRecordAction
@@ -13,6 +14,7 @@ class DeleteCartItem extends DeleteRecordAction
         if ($orderItem->order_id) {
             return $this->error('Items added to an order should not be updated.');
         }
+
         return parent::run();
     }
 }

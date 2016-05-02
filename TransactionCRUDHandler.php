@@ -1,13 +1,14 @@
 <?php
+
 namespace CartBundle;
-use Phifty\Bundle;
+
 use AdminUI\CRUDHandler;
 
 class TransactionCRUDHandler extends CRUDHandler
 {
     /* CRUD Attributes */
     public $modelClass = 'CartBundle\Model\Transaction';
-    public $crudId     = 'transaction';
+    public $crudId = 'transaction';
 
     // public $listColumns = array( 'id', 'thumb', 'name' , 'lang' , 'subtitle' , 'sn' );
     // public $quicksearchFields = array('name');
@@ -37,4 +38,3 @@ class TransactionCRUDHandler extends CRUDHandler
         return parent::getCollection();
     }
 }
-

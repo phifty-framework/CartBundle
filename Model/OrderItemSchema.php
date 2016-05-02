@@ -1,5 +1,7 @@
 <?php
+
 namespace CartBundle\Model;
+
 use LazyRecord\Schema\SchemaDeclare;
 
 class OrderItemSchema extends SchemaDeclare
@@ -13,12 +15,11 @@ class OrderItemSchema extends SchemaDeclare
             ->renderable(false)
             ;
 
-
         $this->column('quantity')
             ->integer()
             ->default(1)
             ->label('數量')
-            ->renderAs('TextInput', [ 'size' => 2 ])
+            ->renderAs('TextInput', ['size' => 2])
             ;
 
         $this->column('product_id')
@@ -43,16 +44,15 @@ class OrderItemSchema extends SchemaDeclare
             ->label('品項備註')
             ;
 
-        if ( kernel()->bundle('ShippingBundle') ) {
+        if (kernel()->bundle('ShippingBundle')) {
             $this->mixin('ShippingBundle\\Model\\Mixin\\ShippingStatusMixinSchema');
-            $this->belongsTo('shipping_company', 'ShippingBundle\\Model\\CompanySchema', 'id', 'shipping_company_id' );
+            $this->belongsTo('shipping_company', 'ShippingBundle\\Model\\CompanySchema', 'id', 'shipping_company_id');
         }
 
-        $this->belongsTo('order', 'CartBundle\\Model\\OrderSchema','id','order_id');
+        $this->belongsTo('order', 'CartBundle\\Model\\OrderSchema', 'id', 'order_id');
 
-        $this->belongsTo('type', 'ProductBundle\\Model\\ProductTypeSchema','id','type_id');
+        $this->belongsTo('type', 'ProductBundle\\Model\\ProductTypeSchema', 'id', 'type_id');
 
-        $this->belongsTo('product', 'ProductBundle\\Model\\ProductSchema','id','product_id');
-
+        $this->belongsTo('product', 'ProductBundle\\Model\\ProductSchema', 'id', 'product_id');
     }
 }

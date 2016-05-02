@@ -1,16 +1,13 @@
 <?php
+
 namespace CartBundle\Model;
-use ProductBundle\Model\ProductType;
-use CartBundle\Model\OrderItem;
-use CartBundle\Model\Order;
-use CartBundle\Model\OrderCollection;
+
 use DateTime;
 
-class Order  extends \CartBundle\Model\OrderBase {
-
-
+class Order  extends \CartBundle\Model\OrderBase
+{
     /**
-     * Create Order SN from Date, and Order id
+     * Create Order SN from Date, and Order id.
      *
      *   {year}{month}{day}{order count by day}
      *
@@ -18,72 +15,80 @@ class Order  extends \CartBundle\Model\OrderBase {
      *
      *   12 charactors
      */
-    const SN_FORMAT  = '%8s%04d';
+    const SN_FORMAT = '%8s%04d';
 
-    public function dataLabel() {
+    public function dataLabel()
+    {
         return $this->sn;
     }
 
     /**
-     * @param DateTime $date 
-     * @param int $txnTimes 
-     * @param int $serialNum
+     * @param DateTime $date
+     * @param int      $txnTimes
+     * @param int      $serialNum
      */
-    public function generateSN($date,  $serialNum = null) {
-        if ( is_string($date) ) {
+    public function generateSN($date,  $serialNum = null)
+    {
+        if (is_string($date)) {
             $date = new DateTime($date);
         }
-        if ( ! $serialNum ) {
+        if (!$serialNum) {
             $serialNum = OrderCollection::getCountByDay($date);
         }
+
         return sprintf(self::SN_FORMAT, $date->format('Ymd'), $serialNum);
     }
 
-    public function regenerateSN() 
+    public function regenerateSN()
     {
         // parse sn from the current sn
-        if ( false !== sscanf($this->sn, self::SN_FORMAT, $date, $serialNum) ) {
+        if (false !== sscanf($this->sn, self::SN_FORMAT, $date, $serialNum)) {
             $date = DateTime::createFromFormat('Ymd', $date);
             $this->sn = $this->generateSN($date, $serialNum);
         } else {
             throw new Exception('SN generation failed.');
         }
+
         return $this->save();
     }
 
-    public function afterCreate($args) 
+    public function afterCreate($args)
     {
         // generate order sn with format '201309310001'
         // fixme: sn lock 
         // $this->lockWrite();
-        $this->update([ 'sn' => $this->generateSN($this->created_on) ]);
+        $this->update(['sn' => $this->generateSN($this->created_on)]);
         // $this->unlock();
     }
 
-    public function beforeDelete($args) {
-        if ( $orderItems = $this->order_items ) {
-            foreach( $this->order_items as $item ) {
+    public function beforeDelete($args)
+    {
+        if ($orderItems = $this->order_items) {
+            foreach ($this->order_items as $item) {
                 $item->delete();
             }
         }
-        if ( $txns = $this->transactions ) {
-            foreach( $this->transactions as $txn ) {
+        if ($txns = $this->transactions) {
+            foreach ($this->transactions as $txn) {
                 $txn->delete();
             }
         }
     }
 
-    public function calculateOriginalTotalAmount() {
+    public function calculateOriginalTotalAmount()
+    {
         $totalAmount = $this->shipping_cost;
-        foreach( $this->order_items as $orderItem ) {
+        foreach ($this->order_items as $orderItem) {
             $totalAmount += $orderItem->calculateAmount();
         }
+
         return $totalAmount;
     }
 
-    public function setPaidAmount($amount, $status = 'paid') {
+    public function setPaidAmount($amount, $status = 'paid')
+    {
         $this->paid_amount = $amount;
-        if ( $this->paid_amount >= $this->total_amount ) {
+        if ($this->paid_amount >= $this->total_amount) {
             // paid status
             $this->payment_status = $status;
             $this->order_items->updateShippingStatus('processing');
@@ -94,13 +99,14 @@ class Order  extends \CartBundle\Model\OrderBase {
         }
     }
 
-    public function beforeUpdate($args = array()) 
+    public function beforeUpdate($args = array())
     {
-        if ( isset($args['payment_status']) ) {
+        if (isset($args['payment_status'])) {
             if ($args['payment_status'] != $this->payment_status) {
                 $args['payment_status_last_update'] = date('c');
             }
         }
+
         return $args;
     }
 
@@ -108,14 +114,16 @@ class Order  extends \CartBundle\Model\OrderBase {
     {
     }
 
-    public function getOrderViewUrl() {
-        return kernel()->getBaseUrl() . '/order/view?' . http_build_query([ 
+    public function getOrderViewUrl()
+    {
+        return kernel()->getBaseUrl().'/order/view?'.http_build_query([
             'o' => $this->id,
             't' => $this->token,
         ]);
     }
 
-    public function delete() {
+    public function delete()
+    {
         return $this->update(array('is_deleted' => true));
     }
 }

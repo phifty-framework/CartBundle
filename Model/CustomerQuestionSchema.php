@@ -1,23 +1,25 @@
 <?php
+
 namespace CartBundle\Model;
+
 use LazyRecord\Schema\SchemaDeclare;
 
 class CustomerQuestionSchema extends SchemaDeclare
 {
-    public function schema() 
+    public function schema()
     {
         $this->column('question_title')
             ->varchar(120)
             ->label('問題主旨')
             ->required()
-            ->renderAs('TextInput', array( 'size' => 50 ))
+            ->renderAs('TextInput', array('size' => 50))
             ;
 
         $this->column('question')
             ->text()
             ->label('問題')
             ->required()
-            ->renderAs('TextareaInput', array( 
+            ->renderAs('TextareaInput', array(
                 'rows' => 5,
                 'cols' => 50,
             ))
@@ -27,8 +29,8 @@ class CustomerQuestionSchema extends SchemaDeclare
             ->timestamp()
             ->null()
             ->renderAs('DateTimeInput')
-            ->label( _('發問時間') )
-            ->default(function() {
+            ->label(_('發問時間'))
+            ->default(function () {
                 return date('c');
             })
             ;
@@ -36,7 +38,7 @@ class CustomerQuestionSchema extends SchemaDeclare
         $this->column('answer')
             ->text()
             ->label('客服回答問題')
-            ->renderAs('TextareaInput', array( 
+            ->renderAs('TextareaInput', array(
                 'rows' => 5,
                 'cols' => 50,
             ))
@@ -46,7 +48,7 @@ class CustomerQuestionSchema extends SchemaDeclare
             ->timestamp()
             ->null()
             ->renderAs('DateTimeInput')
-            ->label( _('回答時間') )
+            ->label(_('回答時間'))
             ;
 
         $this->column('order_id')
@@ -61,12 +63,13 @@ class CustomerQuestionSchema extends SchemaDeclare
             ->label('訂單項目')
             ;
 
-        $this->column( 'member_id' )
+        $this->column('member_id')
             ->integer()
             ->refer('MemberBundle\\Model\\MemberSchema')
-            ->default(function() {
-                if ( isset($_SESSION) ) {
-                    $currentMember = new \MemberBundle\CurrentMember;
+            ->default(function () {
+                if (isset($_SESSION)) {
+                    $currentMember = new \MemberBundle\CurrentMember();
+
                     return $currentMember->id;
                 }
             })
@@ -77,14 +80,14 @@ class CustomerQuestionSchema extends SchemaDeclare
         $this->column('remark')
             ->text()
             ->label('後台備註')
-            ->renderAs('TextareaInput', [ 'rows' => 3, 'cols' => 40 ]) 
+            ->renderAs('TextareaInput', ['rows' => 3, 'cols' => 40])
             ;
 
         $this->belongsTo('member', 'MemberBundle\\Model\\MemberSchema', 'id', 'member_id');
 
-        $this->belongsTo('order', 'CartBundle\\Model\\OrderSchema','id','order_id');
+        $this->belongsTo('order', 'CartBundle\\Model\\OrderSchema', 'id', 'order_id');
 
-        $this->belongsTo('order_item', 'CartBundle\\Model\\OrderItemSchema','id','order_item_id');
+        $this->belongsTo('order_item', 'CartBundle\\Model\\OrderItemSchema', 'id', 'order_item_id');
 
         $this->mixin('CommonBundle\\Model\\Mixin\\MetaSchema');
     }

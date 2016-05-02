@@ -1,8 +1,7 @@
 <?php
+
 namespace CartBundle\Email;
-use EmailBundle\BaseEmail;
-use MemberBundle\CurrentMember;
-use UserBundle\Model\UserCollection;
+
 use UserBundle\Email\AdminEmail;
 
 class AdminCustomerQuestionEmail extends AdminEmail
@@ -13,7 +12,8 @@ class AdminCustomerQuestionEmail extends AdminEmail
 
     public $question;
 
-    public function __construct($question) {
+    public function __construct($question)
+    {
         parent::__construct();
         $this->question = $this['question'] = $question;
     }
@@ -22,4 +22,3 @@ class AdminCustomerQuestionEmail extends AdminEmail
     // public function cc();
     // public function bcc();
 }
-

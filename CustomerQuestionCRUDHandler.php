@@ -1,15 +1,16 @@
 <?php
+
 namespace CartBundle;
-use Phifty\Bundle;
+
 use AdminUI\CRUDHandler;
 
 class CustomerQuestionCRUDHandler extends CRUDHandler
 {
     /* CRUD Attributes */
     public $modelClass = 'CartBundle\\Model\\CustomerQuestion';
-    public $crudId     = 'customer_question';
+    public $crudId = 'customer_question';
 
-    public $listColumns = array( 'id', 'question_title', 'question', 'answer', 'order',  'member', 'question_time' , 'answer_time' );
+    public $listColumns = array('id', 'question_title', 'question', 'answer', 'order',  'member', 'question_time', 'answer_time');
 
     // public $filterColumns = array();
     // public $quicksearchFields = array('name');
@@ -28,16 +29,17 @@ class CustomerQuestionCRUDHandler extends CRUDHandler
     // public $pageLimit = 15;
     // public $defaultOrder = array('id', 'DESC');
 
-    public function init() {
+    public function init()
+    {
         parent::init();
-        $this->setFormatter('question',function($record) {
-            if ( $record->question ) {
-                return mb_substr($record->question,0, 10) . '..'; 
+        $this->setFormatter('question', function ($record) {
+            if ($record->question) {
+                return mb_substr($record->question, 0, 10).'..';
             }
         });
-        $this->setFormatter('answer',function($record) { 
-            if ( $record->answer ) {
-                return mb_substr($record->answer,0, 10) . '..'; 
+        $this->setFormatter('answer', function ($record) {
+            if ($record->answer) {
+                return mb_substr($record->answer, 0, 10).'..';
             }
         });
     }
@@ -47,4 +49,3 @@ class CustomerQuestionCRUDHandler extends CRUDHandler
         return parent::getCollection();
     }
 }
-

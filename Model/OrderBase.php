@@ -1,12 +1,10 @@
 <?php
+
 namespace CartBundle\Model;
+
 use LazyRecord\Schema\SchemaLoader;
-use LazyRecord\Result;
-use SQLBuilder\Bind;
-use SQLBuilder\ArgumentArray;
-use PDO;
-use SQLBuilder\Universal\Query\InsertQuery;
 use LazyRecord\BaseModel;
+
 class OrderBase
     extends BaseModel
 {
@@ -18,7 +16,7 @@ class OrderBase
     const WRITE_SOURCE_ID = 'default';
     const PRIMARY_KEY = 'id';
     const FIND_BY_PRIMARY_KEY_SQL = 'SELECT * FROM orders WHERE id = :id LIMIT 1';
-    public static $column_names = array (
+    public static $column_names = array(
       0 => 'id',
       1 => 'buyer_name',
       2 => 'buyer_gender',
@@ -63,7 +61,7 @@ class OrderBase
       41 => 'created_by',
       42 => 'updated_by',
     );
-    public static $column_hash = array (
+    public static $column_hash = array(
       'id' => 1,
       'buyer_name' => 1,
       'buyer_gender' => 1,
@@ -108,7 +106,7 @@ class OrderBase
       'created_by' => 1,
       'updated_by' => 1,
     );
-    public static $mixin_classes = array (
+    public static $mixin_classes = array(
       0 => 'CommonBundle\\Model\\Mixin\\MetaSchema',
     );
     protected $table = 'orders';
@@ -117,180 +115,181 @@ class OrderBase
     public function getSchema()
     {
         if ($this->_schema) {
-           return $this->_schema;
+            return $this->_schema;
         }
+
         return $this->_schema = SchemaLoader::load('CartBundle\\Model\\OrderSchemaProxy');
     }
     public function getId()
     {
-            return $this->get('id');
+        return $this->get('id');
     }
     public function getBuyerName()
     {
-            return $this->get('buyer_name');
+        return $this->get('buyer_name');
     }
     public function getBuyerGender()
     {
-            return $this->get('buyer_gender');
+        return $this->get('buyer_gender');
     }
     public function getBuyerCellphone()
     {
-            return $this->get('buyer_cellphone');
+        return $this->get('buyer_cellphone');
     }
     public function getBuyerPhoneArea()
     {
-            return $this->get('buyer_phone_area');
+        return $this->get('buyer_phone_area');
     }
     public function getBuyerPhone()
     {
-            return $this->get('buyer_phone');
+        return $this->get('buyer_phone');
     }
     public function getBuyerPhoneExt()
     {
-            return $this->get('buyer_phone_ext');
+        return $this->get('buyer_phone_ext');
     }
     public function getBuyerPostcode()
     {
-            return $this->get('buyer_postcode');
+        return $this->get('buyer_postcode');
     }
     public function getBuyerAddress()
     {
-            return $this->get('buyer_address');
+        return $this->get('buyer_address');
     }
     public function getShippingName()
     {
-            return $this->get('shipping_name');
+        return $this->get('shipping_name');
     }
     public function getShippingGender()
     {
-            return $this->get('shipping_gender');
+        return $this->get('shipping_gender');
     }
     public function getShippingCellphone()
     {
-            return $this->get('shipping_cellphone');
+        return $this->get('shipping_cellphone');
     }
     public function getShippingPhoneArea()
     {
-            return $this->get('shipping_phone_area');
+        return $this->get('shipping_phone_area');
     }
     public function getShippingPhone()
     {
-            return $this->get('shipping_phone');
+        return $this->get('shipping_phone');
     }
     public function getShippingPhoneExt()
     {
-            return $this->get('shipping_phone_ext');
+        return $this->get('shipping_phone_ext');
     }
     public function getShippingPostcode()
     {
-            return $this->get('shipping_postcode');
+        return $this->get('shipping_postcode');
     }
     public function getShippingAddress()
     {
-            return $this->get('shipping_address');
+        return $this->get('shipping_address');
     }
     public function getSn()
     {
-            return $this->get('sn');
+        return $this->get('sn');
     }
     public function getToken()
     {
-            return $this->get('token');
+        return $this->get('token');
     }
     public function getPaymentType()
     {
-            return $this->get('payment_type');
+        return $this->get('payment_type');
     }
     public function getPaymentStatusLastUpdate()
     {
-            return $this->get('payment_status_last_update');
+        return $this->get('payment_status_last_update');
     }
     public function getPaymentStatus()
     {
-            return $this->get('payment_status');
+        return $this->get('payment_status');
     }
     public function getPodTime()
     {
-            return $this->get('pod_time');
+        return $this->get('pod_time');
     }
     public function getIsDeleted()
     {
-            return $this->get('is_deleted');
+        return $this->get('is_deleted');
     }
     public function getCouponCode()
     {
-            return $this->get('coupon_code');
+        return $this->get('coupon_code');
     }
     public function getInvoiceNumber()
     {
-            return $this->get('invoice_number');
+        return $this->get('invoice_number');
     }
     public function getInvoiceType()
     {
-            return $this->get('invoice_type');
+        return $this->get('invoice_type');
     }
     public function getUtc()
     {
-            return $this->get('utc');
+        return $this->get('utc');
     }
     public function getUtcTitle()
     {
-            return $this->get('utc_title');
+        return $this->get('utc_title');
     }
     public function getUtcAddress()
     {
-            return $this->get('utc_address');
+        return $this->get('utc_address');
     }
     public function getUtcName()
     {
-            return $this->get('utc_name');
+        return $this->get('utc_name');
     }
     public function getShippingCost()
     {
-            return $this->get('shipping_cost');
+        return $this->get('shipping_cost');
     }
     public function getDiscountAmount()
     {
-            return $this->get('discount_amount');
+        return $this->get('discount_amount');
     }
     public function getPaidAmount()
     {
-            return $this->get('paid_amount');
+        return $this->get('paid_amount');
     }
     public function getTotalAmount()
     {
-            return $this->get('total_amount');
+        return $this->get('total_amount');
     }
     public function getRemark()
     {
-            return $this->get('remark');
+        return $this->get('remark');
     }
     public function getMemberId()
     {
-            return $this->get('member_id');
+        return $this->get('member_id');
     }
     public function getEventId()
     {
-            return $this->get('event_id');
+        return $this->get('event_id');
     }
     public function getEventRegId()
     {
-            return $this->get('event_reg_id');
+        return $this->get('event_reg_id');
     }
     public function getCreatedOn()
     {
-            return $this->get('created_on');
+        return $this->get('created_on');
     }
     public function getUpdatedOn()
     {
-            return $this->get('updated_on');
+        return $this->get('updated_on');
     }
     public function getCreatedBy()
     {
-            return $this->get('created_by');
+        return $this->get('created_by');
     }
     public function getUpdatedBy()
     {
-            return $this->get('updated_by');
+        return $this->get('updated_by');
     }
 }

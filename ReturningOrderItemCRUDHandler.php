@@ -1,16 +1,17 @@
 <?php
+
 namespace CartBundle;
-use Phifty\Bundle;
+
 use AdminUI\CRUDHandler;
 
 class ReturningOrderItemCRUDHandler extends CRUDHandler
 {
     /* CRUD Attributes */
     public $modelClass = 'CartBundle\Model\OrderItem';
-    public $crudId     = 'returning_order_item';
+    public $crudId = 'returning_order_item';
     public $templateId = 'order_item';
 
-    public $listColumns = array( 'order_id', 'product', 'type', 'quantity', 'shipping_company', 'shipping_status', 'returning_reason' );
+    public $listColumns = array('order_id', 'product', 'type', 'quantity', 'shipping_company', 'shipping_status', 'returning_reason');
     // public $filterColumns = array();
     // public $quicksearchFields = array('name');
 
@@ -28,7 +29,7 @@ class ReturningOrderItemCRUDHandler extends CRUDHandler
     // public $pageLimit = 15;
     // public $defaultOrder = array('id', 'DESC');
 
-    public function getListTitle() 
+    public function getListTitle()
     {
         return '退貨項目';
     }
@@ -36,10 +37,10 @@ class ReturningOrderItemCRUDHandler extends CRUDHandler
     public function getCollection()
     {
         $collection = parent::getCollection();
-        $collection->where(array( 
+        $collection->where(array(
             'shipping_status' => 'returning',
         ));
+
         return $collection;
     }
 }
-
