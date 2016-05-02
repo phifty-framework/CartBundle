@@ -9,11 +9,23 @@ class OrderItemSchema extends SchemaDeclare
     public function schema()
     {
         $this->column('order_id')
+            ->unsigned()
             ->integer()
             ->refer('CartBundle\\Model\\OrderSchema')
             ->label('訂單')
             ->renderable(false)
             ;
+
+
+        if (kernel()->bundle('EventBundle')) {
+            $this->column('event_reg_id')
+                ->unsigned()
+                ->integer()
+                ->refer('EventBundle\\Model\\EventRegSchema')
+                ->label('活動')
+                ->renderable(false)
+                ;
+        }
 
         $this->column('quantity')
             ->integer()
