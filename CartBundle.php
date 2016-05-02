@@ -1,6 +1,7 @@
 <?php
 namespace CartBundle;
 use Phifty\Bundle;
+use CartBundle\Controller\OrderItemRESTfulController;
 
 class CartBundle extends Bundle
 {
@@ -59,6 +60,9 @@ class CartBundle extends Bundle
         $this->route('/payment/atm/response' ,'PaymentController\ATMPaymentController:response');
 
         $this->addRecordAction('OrderItem');
+
+        // URL: http://ichimove.dev/=/order_item/199
+        $this->kernel->restful->addResource('order_item', new OrderItemRESTfulController);
 
         /*
         $this->mount( '/bs/order',          'OrderCRUDHandler');

@@ -282,18 +282,16 @@ class OrderSchema extends SchemaDeclare
             $this->column('event_id')
                 ->unsigned()
                 ->integer()
-                ->refer('EventBundle\\Model\\EventSchema')
                 ->immutable()
-                ->renderAs('SelectInput')
+                ->renderAs('HiddenInput')
                 ->label('活動')
                 ;
 
             $this->column('event_reg_id')
                 ->unsigned()
                 ->integer()
-                ->refer('EventBundle\\Model\\EventRegSchema')
                 ->immutable()
-                ->renderAs('SelectInput')
+                ->renderAs('HiddenInput')
                 ->label('報名資料')
                 ;
 

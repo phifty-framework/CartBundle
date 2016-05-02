@@ -1,6 +1,7 @@
 <?php
 namespace Cartbundle\Action;
 use ActionKit\RecordAction\CreateRecordAction;
+use MemberBundle\CurrentMember;
 
 class CreateOrderItem extends CreateRecordAction
 {
@@ -8,6 +9,10 @@ class CreateOrderItem extends CreateRecordAction
 
     public function run()
     {
+        $currentMember = new CurrentMember;
+        if ($currentMember->hasLoggedIn()) {
+            $this->setArg('member_id', $currentMember->id);
+        }
         $ret = parent::run();
         $orderItem = $this->getRecord();
         $data = $orderItem->toArray();
