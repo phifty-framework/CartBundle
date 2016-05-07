@@ -30,10 +30,10 @@ class Cart
 
     public $shippingCompany = 'default';
 
-    public function __construct()
+    public function __construct(CartStorage $storage)
     {
         // TODO: provide options to specify storage engine.
-        $this->storage = new SessionCartStorage();
+        $this->storage = $storage;
         $this->validateItems();
     }
 
@@ -336,7 +336,6 @@ class Cart
     public function validateItems()
     {
         $bundle = kernel()->bundle('CartBundle');
-
         // using session as our storage
         $items = $this->storage->get();
         $this->quantityInvalidItems = array();
@@ -457,14 +456,13 @@ class Cart
     }
 
 
-    public static function getInstance()
+    public static function getInstance(CartStorage $storage = null)
     {
         static $instance;
         if ($instance) {
             return $instance;
         }
-
-        return $instance = new static();
+        return $instance = new static($storage ?: new SessionCartStorage);
     }
 
 }
