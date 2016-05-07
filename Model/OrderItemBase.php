@@ -21,18 +21,20 @@ class OrderItemBase
     public static $column_names = array (
       0 => 'id',
       1 => 'order_id',
-      2 => 'quantity',
-      3 => 'product_id',
-      4 => 'remark',
-      5 => 'shipping_id',
-      6 => 'shipping_company_id',
-      7 => 'shipping_status',
-      8 => 'returning_reason',
-      9 => 'shipping_status_last_update',
+      2 => 'event_reg_id',
+      3 => 'quantity',
+      4 => 'product_id',
+      5 => 'remark',
+      6 => 'shipping_id',
+      7 => 'shipping_company_id',
+      8 => 'shipping_status',
+      9 => 'returning_reason',
+      10 => 'shipping_status_last_update',
     );
     public static $column_hash = array (
       'id' => 1,
       'order_id' => 1,
+      'event_reg_id' => 1,
       'quantity' => 1,
       'product_id' => 1,
       'remark' => 1,
@@ -62,6 +64,10 @@ class OrderItemBase
     public function getOrderId()
     {
             return $this->get('order_id');
+    }
+    public function getEventRegId()
+    {
+            return $this->get('event_reg_id');
     }
     public function getQuantity()
     {

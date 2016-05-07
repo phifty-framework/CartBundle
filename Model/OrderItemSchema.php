@@ -16,7 +16,6 @@ class OrderItemSchema extends SchemaDeclare
             ->renderable(false)
             ;
 
-
         if (kernel()->bundle('EventBundle')) {
             $this->column('event_reg_id')
                 ->unsigned()
