@@ -1,6 +1,6 @@
 <?php
 
-namespace CartBundle;
+namespace CartBundle\CartStorage;
 
 use ArrayIterator;
 use IteratorAggregate;

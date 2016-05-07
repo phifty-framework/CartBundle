@@ -5,6 +5,8 @@ use CartBundle\Exception\CartException;
 use CartBundle\Model\Order;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\OrderItemCollection;
+use CartBundle\CartStorage\CartStorage;
+use CartBundle\CartStorage\SessionCartStorage;
 use CouponBundle\Model\Coupon;
 use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
@@ -464,5 +466,4 @@ class Cart
         }
         return $instance = new static($storage ?: new SessionCartStorage);
     }
-
 }

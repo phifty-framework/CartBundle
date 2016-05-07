@@ -1,6 +1,6 @@
 <?php
 
-namespace CartBundle;
+namespace CartBundle\CartStorage;
 
 /**
  * CartStorage stores only order item id list.
