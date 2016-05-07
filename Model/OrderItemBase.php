@@ -24,12 +24,13 @@ class OrderItemBase
       2 => 'event_reg_id',
       3 => 'quantity',
       4 => 'product_id',
-      5 => 'remark',
-      6 => 'shipping_id',
-      7 => 'shipping_company_id',
-      8 => 'shipping_status',
-      9 => 'returning_reason',
-      10 => 'shipping_status_last_update',
+      5 => 'type_id',
+      6 => 'remark',
+      7 => 'shipping_id',
+      8 => 'shipping_company_id',
+      9 => 'shipping_status',
+      10 => 'returning_reason',
+      11 => 'shipping_status_last_update',
     );
     public static $column_hash = array (
       'id' => 1,
@@ -37,6 +38,7 @@ class OrderItemBase
       'event_reg_id' => 1,
       'quantity' => 1,
       'product_id' => 1,
+      'type_id' => 1,
       'remark' => 1,
       'shipping_id' => 1,
       'shipping_company_id' => 1,
@@ -76,6 +78,10 @@ class OrderItemBase
     public function getProductId()
     {
             return $this->get('product_id');
+    }
+    public function getTypeId()
+    {
+            return $this->get('type_id');
     }
     public function getRemark()
     {

@@ -39,15 +39,17 @@ class Cart
         $this->validateItems();
     }
 
+
     /**
      * Check if the current order item contains the any of the given product Id
      */
     public function containsProducts(array $productIds)
     {
-        $orderItems = $this->fetchOrderItems();
-        foreach ($orderItems as $orderItem) {
-            if (in_array($orderItem->product_id, $productIds)) {
-                return true;
+        if ($orderItems = $this->fetchOrderItems()) {
+            foreach ($orderItems as $orderItem) {
+                if (in_array($orderItem->product_id, $productIds)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -60,19 +62,20 @@ class Cart
      * @param integer $productId
      * @param integer $typeId
      * @param integer $quantity
+     *
+     * @return OrderItem
      */
-    public function addProduct($productId, $typeId = null, $quantity = 1)
+    public function addProduct(Product $product, ProductType $givenType = null, $quantity = 1)
     {
-        $product = new Product(intval($productId));
         if (!$product->id) {
             throw new CartException(_('找不到商品'));
         }
 
-        if ($typeId) {
-            $foundType = null;
+        $foundType = null;
+        if ($givenType) {
             foreach ($product->types as $type) {
-                if (intval($type->id) === intval($typeId)) {
-                    $foundType = $type;
+                if (intval($type->id) === intval($givenType->id)) {
+                    $foundType = $givenType;
                     break;
                 }
             }
@@ -93,21 +96,18 @@ class Cart
         // if it's the same, we should simply update the quantity instead of creating new items
         if ($items = $this->fetchOrderItems()) {
             foreach ($items as $item) {
-                if (intval($item->product_id) !== intval($product->id)) {
+                if (intval($item->product_id) != intval($product->id)) {
                     continue;
                 }
-                if ($typeId && intval($item->type_id) !== intval($foundType->id)) {
+                if ($givenType && intval($item->type_id) != intval($givenType->id)) {
                     continue;
                 }
                 // Update the existing order item
-                $item->update([
-                    'quantity' => intval($item->quantity) + $quantity,
-                ]);
-                return true;
+                $item->update([ 'quantity' => intval($item->quantity) + $quantity ]);
+                return $item;
             }
         }
-        $item = $this->newItem($product, $foundType, $quantity);
-        return true;
+        return $this->newItem($product, $givenType, $quantity);
     }
 
     /**
@@ -263,14 +263,15 @@ class Cart
         if (count($items)) {
             $collection = new OrderItemCollection();
             foreach ($items as $id) {
-                $item = new OrderItem(intval($id));
-                if ($item->id) {
+                $item = new OrderItem;
+                $ret = $item->find(intval($id));
+                if ($ret->success) {
                     $collection->add($item);
                 }
             }
             return $collection;
         }
-        return array();
+        return false;
     }
 
     public function validateItemQuantity(OrderItem $item)
