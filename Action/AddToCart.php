@@ -27,7 +27,7 @@ class AddToCart extends Action
     {
         $cart = Cart::getInstance();
         try {
-            if ($cart->addItem($this->arg('product_id'), $this->arg('product_type'), $this->arg('quantity'))) {
+            if ($cart->addProduct($this->arg('product_id'), $this->arg('product_type'), $this->arg('quantity'))) {
                 return $this->success(_('成功新增至購物車'), array(
                     'total_quantity' => $cart->calculateTotalQuantity(),
                 ));

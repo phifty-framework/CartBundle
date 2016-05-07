@@ -3,6 +3,7 @@
 namespace CartBundle\Action;
 
 use ActionKit\RecordAction\UpdateRecordAction;
+use ProductBundle\Model\ProductType;
 use CartBundle\Cart;
 
 /**
@@ -18,13 +19,25 @@ class UpdateCartItem extends UpdateRecordAction
         if ($orderItem->order_id) {
             return $this->error('Items added to an order should not be updated.');
         }
+
+        $type = new ProductType;
+        $type->find(intval($this->arg('product_type')));
+        if (!$type->id) {
+            return $this->error(_('無此產品類型'));
+        }
+
+        $quantity = intval($this->arg('quantity'));
+        if ($quantity <= 0) {
+            return $this->error(_('數量不可為零'));
+        }
         /*
         $ret = parent::run();
         if ($ret) {
         }
         */
         $cart = Cart::getInstance();
-        if ($item = $cart->updateOrderItem($this->arg('id'), $this->arg('product_type') , $this->arg('quantity') )) {
+
+        if ($cart->updateItem($item, $type, $quantity)) {
             $summary = $cart->getSummary();
             $summary['amount'] = $item->calculateAmount();
             return $this->success(_('成功更新'), $summary);

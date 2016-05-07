@@ -71,7 +71,7 @@ class Checkout extends CreateRecordAction
         }
 
         $cart = Cart::getInstance();
-        $orderItems = $cart->getOrderItems();
+        $orderItems = $cart->fetchOrderItems();
 
         if (count($orderItems) == 0) {
             return $this->error(_('購物車是空的'));

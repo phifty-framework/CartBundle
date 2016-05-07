@@ -17,10 +17,11 @@ class RemoveCartItem extends Action
     public function run()
     {
         $cart = Cart::getInstance();
-        if ($cart->removeItem(intval($this->arg('id')))) {
+        $orderItem = new OrderItem;
+        $ret = $orderItem->find(intval($this->arg('id')));
+        if ($ret->success && $cart->deleteItem($orderItem)) {
             return $this->success(_('已從購物車移除'), $cart->getSummary());
         }
-
         return $this->error(_('無法移除'));
     }
 }

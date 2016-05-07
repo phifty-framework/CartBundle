@@ -37,71 +37,74 @@ class Cart
         $this->validateItems();
     }
 
+    /**
+     * Check if the current order item contains the any of the given product Id
+     */
     public function containsProducts(array $productIds)
     {
-        $orderItems = $this->getOrderItems();
+        $orderItems = $this->fetchOrderItems();
         foreach ($orderItems as $orderItem) {
             if (in_array($orderItem->product_id, $productIds)) {
                 return true;
             }
         }
-
         return false;
     }
 
-    public function removeItem($id)
-    {
-        if ($this->deleteOrderItem($id)) {
-            $this->storage->remove($id);
 
-            return true;
-        }
-
-        return false;
-    }
-
-    public function addItem($productId, $typeId, $quantity = 1)
+    /**
+     * Create new order item based on the given product id and type 
+     *
+     * @param integer $productId
+     * @param integer $typeId
+     * @param integer $quantity
+     */
+    public function addProduct($productId, $typeId = null, $quantity = 1)
     {
         $product = new Product(intval($productId));
         if (!$product->id) {
             throw new CartException(_('找不到商品'));
         }
 
-        $foundType = null;
-        foreach ($product->types as $type) {
-            if (intval($type->id) === intval($typeId)) {
-                $foundType = $type;
-                break;
-            }
-        }
-        if (!$foundType) {
-            throw new CartException(_('此產品無此類型'));
-        }
-
-        if ($foundType->quantity < $quantity) {
-            // XXX: warning...
-        }
-
-        // Create the order item with session here....
-        $quantity = intval($quantity);
-
-        // find the same product and type, 
-        // if it's the same, we should simply update the quantity instead of creating new items
-        if ($items = $this->getOrderItems()) {
-            foreach ($items as $item) {
-                if ($item->product_id == $product->id && $item->type_id == $foundType->id) {
-                    $item->update(array(
-                        'quantity' => intval($item->quantity) + $quantity,
-                    ));
-
-                    return true;
+        if ($typeId) {
+            $foundType = null;
+            foreach ($product->types as $type) {
+                if (intval($type->id) === intval($typeId)) {
+                    $foundType = $type;
+                    break;
                 }
             }
+            if (!$foundType) {
+                throw new CartException(_('此產品無此類型'));
+            }
+            // Validate quantity for the specific type
+            if ($foundType->quantity < $quantity) {
+                // XXX: warning...
+            }
         }
 
-        $item = $this->createOrderItem($product, $foundType, $quantity);
-        $this->storage->add($item->id);
 
+        // Always convert quantity into integer
+        $quantity = intval($quantity);
+
+        // find the same product and type,
+        // if it's the same, we should simply update the quantity instead of creating new items
+        if ($items = $this->fetchOrderItems()) {
+            foreach ($items as $item) {
+                if (intval($item->product_id) !== intval($product->id)) {
+                    continue;
+                }
+                if ($typeId && intval($item->type_id) !== intval($foundType->id)) {
+                    continue;
+                }
+                // Update the existing order item
+                $item->update([
+                    'quantity' => intval($item->quantity) + $quantity,
+                ]);
+                return true;
+            }
+        }
+        $item = $this->newItem($product, $foundType, $quantity);
         return true;
     }
 
@@ -112,7 +115,7 @@ class Cart
      */
     public function calculateTotalQuantity()
     {
-        if ($collection = $this->getOrderItems()) {
+        if ($collection = $this->fetchOrderItems()) {
             return $collection->calculateTotalQuantity();
         }
 
@@ -126,7 +129,7 @@ class Cart
      */
     public function calculateOrderItemTotalAmount()
     {
-        if ($collection = $this->getOrderItems()) {
+        if ($collection = $this->fetchOrderItems()) {
             return $collection->calculateTotalAmount();
         }
 
@@ -218,7 +221,7 @@ class Cart
 
         // Load default shipping method
         $company = new ShippingCompany(['handle' => $this->shippingCompany]);
-        if ($company->id && $this->getOrderItems()) {
+        if ($company->id && $this->fetchOrderItems()) {
             return $company->shipping_cost;
         }
 
@@ -248,11 +251,11 @@ class Cart
 
 
     /**
-     * Get item id list from storage and rebless them into objects.
+     * Fetch item id from storage and rebless them into objects.
      *
      * @return OrderItemCollection
      */
-    public function getOrderItems()
+    public function fetchOrderItems()
     {
         $items = $this->storage->get();
         if (count($items)) {
@@ -268,7 +271,7 @@ class Cart
         return array();
     }
 
-    public function validateItemQuantity($item)
+    public function validateItemQuantity(OrderItem $item)
     {
         $t = $item->type;
         if (!$t || !$t->id) {
@@ -281,7 +284,7 @@ class Cart
         return true;
     }
 
-    public function validateItem($item)
+    public function validateItem(OrderItem $item)
     {
         if (!$item->id) {
             return false;
@@ -301,7 +304,7 @@ class Cart
         return true;
     }
 
-    public function isInvalidItem($item)
+    public function isInvalidItem(OrderItem $item)
     {
         return in_array($item->id, $this->quantityInvalidItems);
     }
@@ -316,8 +319,8 @@ class Cart
         if (count($items)) {
             $newItems = array();
             foreach ($items as $id) {
-                $item = new OrderItem(intval($id));
-
+                $item = new OrderItem;
+                $item->find(intval($id));
                 if (false == $this->validateItem($item)) {
                     continue;
                 }
@@ -353,6 +356,63 @@ class Cart
         }
     }
 
+
+
+
+
+
+    /**
+     * Add an order item to the storage
+     */
+    public function addItem(OrderItem $item)
+    {
+        $this->storage->add($item->id);
+    }
+
+
+    /**
+     * Delete an order item from the storage and the database.
+     */
+    public function deleteItem(OrderItem $item)
+    {
+        if ($item->order_id) {
+            return false;
+        }
+        $ret = $item->delete();
+        if ($ret->error) {
+            throw new Exception("Can't remove item from cart.");
+        }
+        $this->storage->remove($item->id);
+        return true;
+    }
+
+    /**
+     * Create a new order item record and add it to the storage.
+     *
+     * @param Product     $product
+     * @param ProductType $type
+     * @param integer     $quantity
+     * @return boolean
+     */
+    protected function newItem(Product $product, ProductType $type = null, $quantity)
+    {
+        $item = new OrderItem;
+        $ret = $item->create([
+            'product_id' => $product->id,
+            'type_id'    => $type ? $type->id : null,
+            'quantity'   => intval($quantity),
+        ]);
+        if (!$ret->success) {
+            throw new CartException(_('無法新增至購物車'));
+        }
+        $this->storage->add($item->id);
+        return $item;
+    }
+
+
+
+
+
     /**
      * Update product type or quantity of an order item.
      *
@@ -362,66 +422,40 @@ class Cart
      *
      * @return true
      */
-    public function updateOrderItem($itemId, $typeId, $quantity)
+    public function updateItem(OrderItem $item, ProductType $type = null, $quantity)
     {
+        /*
         $item = new OrderItem(intval($itemId));
         if (!$item->id) {
             throw new CartException(_('無此項目'));
         }
+        */
         if ($item->order_id) {
             throw new CartException(_('不可更新已經下訂之訂單項目'));
         }
-
         $args = array();
-        if ($typeId) {
-            $type = new ProductType(intval($typeId));
-            if (!$type->id) {
-                throw new CartException(_('無此產品類型'));
+        if ($type) {
+            if ($product = $item->product) {
+                foreach ($product->types as $productType) {
+                    if (intval($productType->id) === intval($type->id)) {
+                        $args['type_id'] = $type->id;
+                    }
+                }
             }
-            $args['type_id'] = $type->id;
         }
         if ($quantity) {
-            $args['quantity'] = $quantity;
+            $args['quantity'] = intval($quantity);
         }
-
         if (empty($args)) {
-            return $item;
+            return false;
         }
-
         $ret = $item->update($args);
         if (!$ret->success) {
             throw new CartException(_('無法新增至購物車'));
         }
-
-        return $item;
+        return true;
     }
 
-    public function deleteOrderItem($id)
-    {
-        $item = new OrderItem(intval($id));
-        // does not belongs to an order
-        if ($item->order_id) {
-            return false;
-        }
-        $ret = $item->delete();
-
-        return $ret->success;
-    }
-
-    public function createOrderItem($product, $type, $quantity)
-    {
-        $item = new OrderItem();
-        $ret = $item->create([
-            'product_id' => $product->id,
-            'type_id' => $type->id,
-            'quantity' => $quantity,
-        ]);
-        if (!$ret->success) {
-            throw new CartException(_('無法新增至購物車'));
-        }
-
-        return $item;
-    }
 
     public static function getInstance()
     {
