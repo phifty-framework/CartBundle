@@ -367,7 +367,7 @@ class Cart
      */
     public function addItem(OrderItem $item)
     {
-        $this->storage->add($item->id);
+        $this->storage->add($item);
     }
 
 
@@ -383,7 +383,7 @@ class Cart
         if ($ret->error) {
             throw new Exception("Can't remove item from cart.");
         }
-        $this->storage->remove($item->id);
+        $this->storage->remove($item);
         return true;
     }
 
@@ -406,7 +406,7 @@ class Cart
         if (!$ret->success) {
             throw new CartException(_('無法新增至購物車'));
         }
-        $this->storage->add($item->id);
+        $this->storage->add($item);
         return $item;
     }
 

@@ -2,6 +2,8 @@
 
 namespace CartBundle\CartStorage;
 
+use CartBundle\Model\OrderItem;
+
 /**
  * CartStorage stores only order item id list.
  */
@@ -13,9 +15,15 @@ interface CartStorage
 
     public function get();
 
-    public function set($items);
+    /**
+     * @param OrderItem[]
+     */
+    public function set(array $items);
 
-    public function add($itemId);
+    /**
+     *
+     */
+    public function add(OrderItem $item);
 
-    public function remove($itemId);
+    public function remove(OrderItem $item);
 }

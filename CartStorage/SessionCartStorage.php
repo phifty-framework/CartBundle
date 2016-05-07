@@ -2,6 +2,7 @@
 
 namespace CartBundle\CartStorage;
 
+use CartBundle\Model\OrderItem;
 use ArrayIterator;
 use IteratorAggregate;
 use ArrayAccess;
@@ -45,14 +46,14 @@ class SessionCartStorage
         return array();
     }
 
-    public function set($items)
+    public function set(array $items)
     {
         $_SESSION['items'] = $items;
     }
 
-    public function add($itemId)
+    public function add(OrderItem $item)
     {
-        $_SESSION['items'][] = $itemId;
+        $_SESSION['items'][] = $item->id;
     }
 
     public function all()
@@ -60,20 +61,19 @@ class SessionCartStorage
         return $_SESSION['items'];
     }
 
-    public function contains($itemId)
+    public function contains(OrderItem $item)
     {
         if (isset($_SESSION['items']) && is_array($_SESSION['items'])) {
-            return in_array($itemId, $_SESSION['items']);
+            return in_array($item->id, $_SESSION['items']);
         }
 
         return false;
     }
 
-    public function remove($itemId)
+    public function remove(OrderItem $item)
     {
-        $itemId = intval($itemId);
+        $itemId = intval($item->id);
         $items = $this->get();
-
         if ($items && !empty($items)) {
             $idx = array_search($itemId, $this->get());
             if ($idx !== false) {
