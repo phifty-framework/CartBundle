@@ -6,6 +6,7 @@ use CartBundle\Model\OrderItem;
 use Exception;
 use MemberBundle\Model\Member;
 use CartBundle\Email\OrderCreatedEmail;
+use CartBundle\CartBundle;
 
 class CheckoutProcess
 {
@@ -53,10 +54,11 @@ class CheckoutProcess
             $coupon->update(['used' => ['used + 1']]);
         }
         */
+        $bundle = CartBundle::getInstance();
         foreach ($this->cart as $orderItem) {
             $orderItem->setAlias('oi');
             $ret = $orderItem->update([
-                'order_id' => $this->record->id,
+                'order_id'        => $order->id,
                 'delivery_status' => 'unpaid',
             ]);
             if ($ret->error) {
