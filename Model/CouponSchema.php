@@ -6,7 +6,6 @@ class CouponSchema extends SchemaDeclare
 {
     public function schema()
     {
-
         $this->column('brief')
             ->varchar(128)
             ->label('折價券簡述')

@@ -1,6 +1,10 @@
 <?php
+
 namespace CartBundle\Model;
+
 use CartBundle\Model\CouponBase;
+use CartBundle\Cart;
+
 class Coupon
     extends CouponBase
 {
@@ -13,7 +17,7 @@ class Coupon
      *
      * @return [boolean $success, string $reason]
      */
-    public function isValid($cart) {
+    public function isValid(Cart $cart) {
         if (!  $this->id ) {
             return [false, _("無效的折價券") ];
         }
@@ -35,12 +39,12 @@ class Coupon
     /**
      * Implement the logic for different coupon type in this method
      */
-    public function calcualteDiscount($totalAmount) {
+    public function calcualteDiscount($totalAmount)
+    {
         $totalAmount = $totalAmount - $this->discount;
         if ( $totalAmount < 0 ) {
             return 0;
         }
         return $totalAmount;
     }
-    
 }
