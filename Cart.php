@@ -50,7 +50,7 @@ class Cart implements IteratorAggregate
     {
         if ($collection = $this->storage->all()) {
             foreach ($collection as $item) {
-                if (in_array($item->product_id, $product->id)) {
+                if ($item->product_id == $product->id) {
                     return true;
                 }
             }
