@@ -8,6 +8,24 @@ use MemberBundle\Model\Member;
 use CartBundle\Email\OrderCreatedEmail;
 use CartBundle\CartBundle;
 
+use LazyRecord\Result;
+
+class CheckoutException extends Exception
+{
+
+}
+
+class InvalidOrderFormException extends CheckoutException
+{
+    protected $result;
+
+    public function __construct($message, Result $result, Exception $previous = null)
+    {
+        parent::__construct($message, 0, $previous);
+        $this->result = $result;
+    }
+}
+
 class CheckoutProcess
 {
     protected $cart;
@@ -46,7 +64,7 @@ class CheckoutProcess
         $order = new Order;
         $ret = $order->create($args);
         if (!$ret || $ret->error || !$order->id) {
-            throw new Exception(_('無法建立訂單'));
+            throw new InvalidOrderFormException(_('無法建立訂單'), $ret);
         }
 
         /*
@@ -65,7 +83,7 @@ class CheckoutProcess
                 if ($ret->exception) {
                     throw $ret->exception;
                 }
-                throw new Exception("無法更新訂單項目: {$ret->message}");
+                throw new CheckoutException("無法更新訂單項目: {$ret->message}");
             }
             if ($bundle && $bundle->config('UseProductTypeQuantity')) {
                 kernel()->db->query('LOCK TABLES '.ProductType::table.' AS t WRITE');
