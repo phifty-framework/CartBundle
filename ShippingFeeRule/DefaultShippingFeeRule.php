@@ -4,27 +4,27 @@ use Phifty\Bundle;
 use CartBundle\Cart;
 use CartBundle\Model\Logistics;
 
+/**
+ * config based shipping fee rule
+ */
 class DefaultShippingFeeRule implements ShippingFeeRule
 {
     protected $bundle;
 
-    protected $defaultShippingFee;
-
-    public function __construct(Bundle $bundle, $defaultShippingFee = 80)
+    public function __construct(Bundle $bundle)
     {
         $this->bundle = $bundle;
-        $this->defaultShippingFee = $defaultShippingFee;
     }
 
     public function calculate(Cart $cart)
     {
-        if ($aboveAmount = $this->bundle->config('NoShippingFeeCondition.AboveAmount')) {
+        if ($aboveAmount = $this->bundle->config('DefaultShippingFeeRule.AboveAmount')) {
             $orderItemAmount = $cart->calculateOrderItemTotalAmount();
             if ($orderItemAmount >= $aboveAmount) {
                 return 0;
             }
         }
-        return $this->defaultShippingFee;
+        return $this->bundle->config('DefaultShippingFeeRule.DefaultFee') ?: 80;
     }
 }
 

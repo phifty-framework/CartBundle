@@ -39,6 +39,10 @@ class CheckoutProcess
     }
 
 
+    public function preprocess()
+    {
+        $this->cart->removeInvalidItems(true, true);
+    }
     /**
      * @param array $args argument array contains basic information.
      */

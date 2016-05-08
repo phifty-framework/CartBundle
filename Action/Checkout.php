@@ -78,8 +78,8 @@ class Checkout extends CreateRecordAction
             return $this->error(_('購物車是空的'));
         }
 
-        // set default shipping rule.
-        $cart->setShippingFeeRule(new DefaultShippingFeeRule($bundle, 80));
+        // set config based default shipping rule.
+        $cart->setShippingFeeRule(new DefaultShippingFeeRule($bundle));
 
         $shippingFee = $cart->calculateShippingFee();
         $origTotalAmount = $cart->calculateTotalAmount();
