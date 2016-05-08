@@ -2,6 +2,7 @@
 namespace CartBundle\CartStorage;
 
 use CartBundle\Model\OrderItem;
+use CartBundle\Model\OrderItemCollection;
 use ArrayIterator;
 use IteratorAggregate;
 use ArrayAccess;
@@ -52,9 +53,13 @@ class ArrayCartStorage
         $this->items[] = $item;
     }
 
-    public function all()
+    public function all() : OrderItemCollection
     {
-        return $this->items;
+        $collection = new OrderItemCollection;
+        foreach ($this->items as $item) {
+            $collection->add($item);
+        }
+        return $collection;
     }
 
     public function contains(OrderItem $b)

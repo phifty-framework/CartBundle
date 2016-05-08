@@ -3,6 +3,7 @@
 namespace CartBundle\CartStorage;
 
 use CartBundle\Model\OrderItem;
+use CartBundle\Model\OrderItemCollection;
 
 /**
  * CartStorage stores only order item id list.
@@ -13,7 +14,12 @@ interface CartStorage
 
     public function count();
 
-    public function all();
+    /**
+     * Return all order items
+     *
+     * @return OrderItemCollection
+     */
+    public function all() : OrderItemCollection;
 
     /**
      * @param OrderItem[]

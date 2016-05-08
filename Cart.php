@@ -294,6 +294,18 @@ class Cart
         return true;
     }
 
+
+
+    /**
+     * Merge items merge order items that shares the same product and product type
+     */
+    public function mergeItems()
+    {
+        if ($items = $this->storage->all()) {
+        }
+    }
+
+
     /**
      * Remove invalid order items stored in the storage.
      *
