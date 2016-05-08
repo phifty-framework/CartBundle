@@ -8,6 +8,7 @@ use ProductBundle\Model\ProductType;
 use CartBundle\Cart;
 use CartBundle\Model\OrderItem;
 use CartBundle\ShippingFeeRule\DefaultShippingFeeRule;
+use CartBundle\ShippingFeeRule\NoShippingFeeRule;
 use CartBundle\Model\Order;
 use CartBundle\Model\Coupon;
 use CartBundle\Email\OrderCreatedEmail;

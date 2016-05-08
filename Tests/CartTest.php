@@ -9,6 +9,7 @@ use CartBundle\Model\Coupon;
 use CartBundle\Model\CouponSchema;
 use CartBundle\Model\OrderSchema;
 use CartBundle\Model\LogisticsSchema;
+use CartBundle\ShippingFeeRule\NoShippingFeeRule;
 use ProductBundle\Model\ProductSchema;
 use ProductBundle\Model\ProductTypeSchema;
 use ProductBundle\Model\Product;
@@ -151,6 +152,7 @@ class CartTest extends ModelTestCase
             'discount' => 20,
             'required_amount' => 500,
         ]);
+        $cart->setShippingFeeRule(new NoShippingFeeRule);
         $this->assertTrue($cart->applyCoupon($coupon));
         $this->assertEquals(980, $cart->calculateDiscountedTotalAmount());
         $this->assertEquals(0, $cart->calculateShippingFee());

@@ -13,6 +13,7 @@ use CartBundle\CartStorage\SessionCartStorage;
 use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
 use LazyRecord\BaseCollection;
+use LogicException;
 use ArrayIterator;
 use IteratorAggregate;
 use Countable;
@@ -66,7 +67,7 @@ class Cart implements IteratorAggregate, Countable
 
     public function setShippingFeeRule(ShippingFeeRule $rule)
     {
-        $this->shippingFeeRules = $rule;
+        $this->shippingFeeRule = $rule;
     }
 
 
@@ -211,10 +212,10 @@ class Cart implements IteratorAggregate, Countable
 
     public function calculateShippingFee()
     {
-        if ($this->shippingFeeRule) {
-            return $this->shippingFeeRule->calculate($this);
+        if (!$this->shippingFeeRule) {
+            throw new LogicException('Shipping Fee Rule is not given.');
         }
-        return 0;
+        return $this->shippingFeeRule->calculate($this);
     }
 
     /**
