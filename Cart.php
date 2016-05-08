@@ -174,7 +174,7 @@ class Cart implements IteratorAggregate, Countable
         return $totalAmount - $discountedAmount;
     }
 
-    public function getCurrentCoupon() : array
+    public function getCurrentCoupon()
     {
         return $this->coupon;
     }
@@ -186,7 +186,6 @@ class Cart implements IteratorAggregate, Countable
             return $this->coupon->calcualteDiscount($totalAmount);
         }
         return $totalAmount;
-
         /* for multiple coupons
         if (count($this->coupons) > 0) {
             return array_reduce($this->coupons, function($carry, $coupon) {
