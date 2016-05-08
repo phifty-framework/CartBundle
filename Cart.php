@@ -58,20 +58,6 @@ class Cart implements IteratorAggregate
         return false;
     }
 
-    /**
-     * Check if the current order item contains the any of the given product Id
-     */
-    public function containsProducts(array $productIds) : bool
-    {
-        if ($collection = $this->storage->all()) {
-            foreach ($collection as $orderItem) {
-                if (in_array($orderItem->product_id, $productIds)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
 
 
     /**
