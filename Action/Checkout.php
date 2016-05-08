@@ -8,6 +8,7 @@ use ProductBundle\Model\ProductType;
 use CartBundle\Cart;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\Order;
+use CartBundle\Model\Coupon;
 use CartBundle\Email\OrderCreatedEmail;
 use Exception;
 
@@ -87,9 +88,17 @@ class Checkout extends CreateRecordAction
         $this->setArgument('discount_amount', $discountAmount);
         $this->setArgument('member_id', $currentMember->id);
 
-        $coupon = $cart->loadCouponFromSession();
-        if ($coupon) {
-            $this->setArgument('coupon_code', $coupon->coupon_code);
+
+
+        if (isset($_SESSION['coupon_code'])) {
+            $coupon = new Coupon;
+            $ret = $coupon->load(['coupon_code' => $_SESSION['coupon_code']]);
+            if ($ret->success && $cart->applyCoupon($coupon)) {
+                $this->setArgument('coupon_code', $coupon->coupon_code);
+            } else {
+                // if it's invalid coupon, just delete the sesssion
+                unset($_SESSION['coupon_code']);
+            }
         }
 
         kernel()->db->beginTransaction();
@@ -139,6 +148,9 @@ class Checkout extends CreateRecordAction
             $email->send();
 
             $cart->cleanUp();
+
+            // remove the current coupon
+            unset($_SESSION['coupon_code']);
 
             return $this->redirectLater('/order/view?'.http_build_query([
                 'o' => $this->record->id,

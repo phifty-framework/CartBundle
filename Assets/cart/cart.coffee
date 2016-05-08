@@ -43,7 +43,7 @@ $ ->
 
   $(document.body).on "click", ".coupon-submit-btn", ->
     couponCode = $(".coupon-code").val()
-    runAction "CouponBundle::Action::ApplyCoupon",
+    runAction "CartBundle::Action::ApplyCoupon",
       coupon_code: couponCode
     , (resp) ->
       

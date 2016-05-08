@@ -48,7 +48,7 @@
     $(document.body).on("click", ".coupon-submit-btn", function() {
       var couponCode;
       couponCode = $(".coupon-code").val();
-      return runAction("CouponBundle::Action::ApplyCoupon", {
+      return runAction("CartBundle::Action::ApplyCoupon", {
         coupon_code: couponCode
       }, function(resp) {
         if (resp.success) {

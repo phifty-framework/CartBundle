@@ -5,13 +5,13 @@ use CartBundle\Cart;
 use CartBundle\CartStorage\ArrayCartStorage;
 use CartBundle\Model\OrderItemSchema;
 use CartBundle\Model\OrderItem;
+use CartBundle\Model\Coupon;
+use CartBundle\Model\CouponSchema;
 use CartBundle\Model\OrderSchema;
 use ProductBundle\Model\ProductSchema;
 use ProductBundle\Model\ProductTypeSchema;
 use ProductBundle\Model\Product;
 use LazyRecord\Testing\ModelTestCase;
-// ModelTestCase
-//
 
 class CartTest extends ModelTestCase
 {
@@ -19,12 +19,15 @@ class CartTest extends ModelTestCase
 
     public function getModels()
     {
-        return array(
+        return [
             new ProductTypeSchema,
             new ProductSchema,
             new OrderItemSchema,
-            new OrderSchema);
+            new OrderSchema,
+            new CouponSchema,
+        ];
     }
+
 
     public function testCartRemoveInvalidItems()
     {
@@ -125,6 +128,28 @@ class CartTest extends ModelTestCase
         $this->assertCount(1, $cart->storage->all(), 'Should still one order item');
         $this->assertEquals($item1->id, $item2->id, 'Should be the same order item');
         $this->assertCount(1, $cart->storage->all());
+    }
+
+    public function testSimpleCoupon()
+    {
+        $cart = new Cart(new ArrayCartStorage);
+        $this->assertEmpty($cart->storage->all());
+
+        $product = new Product;
+        $product->create([ 'name' => 'Clothes', 'price' => 1000 ]);
+        $type = $product->types->create([ 'name' => 'M', 'quantity' => 10 ]);
+
+        $this->assertNotNull($type->id, 'product type exists');
+        $this->assertNotNull($product->id, 'product exists');
+        $this->assertEquals($product->id, $type->product_id, 'product type exists');
+        $cart->addProduct($product, $type, 1);
+
+        $coupon = new Coupon();
+        $coupon->create([
+            'discount' => 20,
+            'required_amount' => 500,
+        ]);
+        $this->assertTrue($cart->applyCoupon($coupon));
     }
 
 }

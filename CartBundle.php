@@ -80,7 +80,7 @@ class CartBundle extends Bundle
             $folder->createCrudMenuItem( 'returning_order_item', _('申請退貨項目') );
             $folder->createCrudMenuItem( 'customer_question', _('客服問答管理') );
 
-            if ( kernel()->bundle('CouponBundle') ) {
+            if ( kernel()->bundle('CartBundle') ) {
                 $folder->createCrudMenuItem( 'coupon', _('折價券管理') );
             }
             if ( kernel()->bundle('ShippingBundle') ) {

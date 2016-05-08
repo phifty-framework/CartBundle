@@ -7,7 +7,7 @@ use CartBundle\Model\OrderItem;
 use CartBundle\Model\OrderItemCollection;
 use CartBundle\CartStorage\CartStorage;
 use CartBundle\CartStorage\SessionCartStorage;
-use CouponBundle\Model\Coupon;
+use CartBundle\Model\Coupon;
 use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
 use ShippingBundle\Model\Company as ShippingCompany;
@@ -165,10 +165,11 @@ class Cart implements IteratorAggregate, Countable
     public function calculateDiscountedTotalAmount()
     {
         $totalAmount = $this->calculateTotalAmount();
-        if ($coupon = $this->loadCouponFromSession()) {
-            return $coupon->calcualteDiscount($totalAmount);
+        if (count($this->coupons) > 0) {
+            return array_reduce($this->coupons, function($carry, $coupon) {
+                return $coupon->calcualteDiscount($carry);
+            }, $totalAmount);
         }
-
         return $totalAmount;
     }
 
@@ -190,32 +191,11 @@ class Cart implements IteratorAggregate, Countable
 
     public function usingCoupon()
     {
-        // the session is registered only when the coupon is validated..
-        return isset($_SESSION['coupon_code']);
-    }
-
-    /**
-     * check current coupon and re-validate the coupon.
-     */
-    public function loadCouponFromSession()
-    {
-        if (!isset($_SESSION['coupon_code'])) {
-            return false;
-        }
-        $coupon = new Coupon(['coupon_code' => $_SESSION['coupon_code']]);
-        if (!$this->applyCoupon($coupon)) {
-            // if it's invalid coupon, just delete the sesssion
-            unset($_SESSION['coupon_code']);
-            return false;
-        }
-        return $coupon;
+        return !empty($this->coupons);
     }
 
     public function cleanup()
     {
-        if (isset($_SESSION)) {
-            unset($_SESSION['coupon_code']);
-        }
         $this->storage->removeAll();
     }
 
