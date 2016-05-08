@@ -36,7 +36,9 @@ class Cart
     public function __construct(CartStorage $storage)
     {
         $this->storage = $storage;
-        $this->removeInvalidItems();
+
+        $bundle = kernel()->bundle('CartBundle');
+        $this->removeInvalidItems($bundle->config('UseProductTypeQuantity'), $bundle->config('UseProductTypeQuantity'));
     }
 
 
@@ -297,9 +299,8 @@ class Cart
      *
      * @return OrderItem[] Invalid order items will be returned.
      */
-    public function removeInvalidItems()
+    public function removeInvalidItems($validateType = false, $validateQuantity = false)
     {
-        $bundle = kernel()->bundle('CartBundle');
         $invalidItems = [];
         // using session as our storage
         if ($items = $this->storage->all()) {
@@ -307,12 +308,8 @@ class Cart
             if ($items instanceof BaseCollection) {
                 $items = $items->items();
             }
-            $items = array_filter($items, function($item) use ($self, $bundle, & $invalidItems) {
-                if (false === $self->validateItem($item)
-                    || ($bundle
-                        && $bundle->config('UseProductTypeQuantity')
-                        && false === $this->validateItemQuantity($item)))
-                {
+            $items = array_filter($items, function($item) use ($self, & $invalidItems, $validateType, $validateQuantity) {
+                if (false === $self->validateItem($item, $validateType, $validateQuantity)) {
                     $invalidItems[] = $item;
                     return false;
                 }
