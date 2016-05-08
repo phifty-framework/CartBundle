@@ -8,6 +8,7 @@ use CartBundle\Model\OrderItem;
 use CartBundle\Model\Coupon;
 use CartBundle\Model\CouponSchema;
 use CartBundle\Model\OrderSchema;
+use CartBundle\Model\LogisticsSchema;
 use ProductBundle\Model\ProductSchema;
 use ProductBundle\Model\ProductTypeSchema;
 use ProductBundle\Model\Product;
@@ -25,6 +26,7 @@ class CartTest extends ModelTestCase
             new OrderItemSchema,
             new OrderSchema,
             new CouponSchema,
+            new LogisticsSchema,
         ];
     }
 
@@ -142,7 +144,7 @@ class CartTest extends ModelTestCase
         $this->assertNotNull($type->id, 'product type exists');
         $this->assertNotNull($product->id, 'product exists');
         $this->assertEquals($product->id, $type->product_id, 'product type exists');
-        $cart->addProduct($product, $type, 1);
+        $cart->addProduct($product, $type, 1); // just one
 
         $coupon = new Coupon();
         $coupon->create([
@@ -150,6 +152,11 @@ class CartTest extends ModelTestCase
             'required_amount' => 500,
         ]);
         $this->assertTrue($cart->applyCoupon($coupon));
+
+        // var_dump($cart->getSummary());
+
+        $this->assertEquals(980, $cart->calculateDiscountedTotalAmount());
+        $this->assertEquals(0, $cart->calculateShippingFee());
     }
 
 }

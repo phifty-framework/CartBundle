@@ -77,12 +77,9 @@ class Order  extends \CartBundle\Model\OrderBase
 
     public function calculateOriginalTotalAmount()
     {
-        $totalAmount = $this->shipping_cost;
-        foreach ($this->order_items as $orderItem) {
-            $totalAmount += $orderItem->calculateAmount();
-        }
-
-        return $totalAmount;
+        return array_reduce($this->order_items, function($carry, $orderItem) {
+            return $carry + $orderItem->calculateSubtotal();
+        }, $this->shipping_fee);
     }
 
     public function setPaidAmount($amount, $status = 'paid')
@@ -91,11 +88,11 @@ class Order  extends \CartBundle\Model\OrderBase
         if ($this->paid_amount >= $this->total_amount) {
             // paid status
             $this->payment_status = $status;
-            $this->order_items->updateShippingStatus('processing');
+            $this->order_items->updateDeliveryStatus('processing');
         } else {
             // incomplete payment, need to confirm.
             $this->payment_status = 'paid_incomplete';
-            $this->order_items->updateShippingStatus('confirming');
+            $this->order_items->updateDeliveryStatus('confirming');
         }
     }
 

@@ -10,7 +10,6 @@ class OrderCollection  extends \CartBundle\Model\OrderCollectionBase
     {
         $orders = new self();
         $orders->where(['date_format(created_on,\'%Y-%m-%d\')' => $date instanceof DateTime ? $date->format('Y-m-d') : $date]);
-
         return $orders->size();
     }
 }

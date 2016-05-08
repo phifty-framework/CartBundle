@@ -2,7 +2,7 @@ $ ->
   updateCartDetails = (summary) ->
     return if not summary or not summary.total_amount
     $totalAmount.text "NT$ " + summary.total_amount
-    $shippingCost.text "NT$ " + summary.shipping_cost
+    $shippingCost.text "NT$ " + summary.shipping_fee
     $discountAmount.text "NT$ " + summary.discount_amount
     $discountedTotalAmount.text "NT$ " + summary.discounted_total_amount
     

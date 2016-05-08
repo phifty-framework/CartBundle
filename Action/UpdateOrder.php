@@ -19,15 +19,15 @@ class UpdateOrder extends UpdateRecordAction
         $_orderItemStatus = array();
         $order = $this->getRecord();
         foreach ($order->order_items as $item) {
-            $_orderItemStatus[ $item->id ] = $item->shipping_status;
+            $_orderItemStatus[ $item->id ] = $item->delivery_status;
         }
         if ($ret = parent::run()) {
             $shippedItems = array();
             $order->clearInternalCache();
             foreach ($order->order_items as $item) {
                 if (isset($_orderItemStatus[ $item->id ])) {
-                    if ($_orderItemStatus[ $item->id ] != $item->shipping_status) {
-                        if ($item->shipping_status == 'shipped') {
+                    if ($_orderItemStatus[ $item->id ] != $item->delivery_status) {
+                        if ($item->delivery_status == 'shipped') {
                             $shippedItems[] = $item;
                         }
                     }

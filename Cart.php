@@ -6,11 +6,12 @@ use CartBundle\Model\Order;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\OrderItemCollection;
 use CartBundle\Model\Coupon;
+use CartBundle\Model\Logistics;
+use CartBundle\ShippingFeeRule\ShippingFeeRule;
 use CartBundle\CartStorage\CartStorage;
 use CartBundle\CartStorage\SessionCartStorage;
 use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
-use ShippingBundle\Model\Company as ShippingCompany;
 use LazyRecord\BaseCollection;
 use ArrayIterator;
 use IteratorAggregate;
@@ -32,11 +33,13 @@ class Cart implements IteratorAggregate, Countable
      */
     public $storage;
 
-    public $shippingCompany = 'default';
+    protected $logistics;
 
     protected $bundle;
 
     protected $coupons = [];
+
+    protected $shippingFeeRule;
 
     public function __construct(CartStorage $storage)
     {
@@ -60,6 +63,13 @@ class Cart implements IteratorAggregate, Countable
         }
         return false;
     }
+
+    public function setShippingFeeRule(ShippingFeeRule $rule)
+    {
+        $this->shippingFeeRules = $rule;
+    }
+
+
 
 
 
@@ -149,7 +159,7 @@ class Cart implements IteratorAggregate, Countable
     {
         $totalAmount = 0;
         $totalAmount += $this->calculateOrderItemTotalAmount();
-        $totalAmount += $this->calculateShippingCost();
+        $totalAmount += $this->calculateShippingFee();
 
         return $totalAmount;
     }
@@ -199,19 +209,10 @@ class Cart implements IteratorAggregate, Countable
         $this->storage->removeAll();
     }
 
-    public function calculateShippingCost()
+    public function calculateShippingFee()
     {
-        if ($aboveAmount = $this->bundle->config('NoShippingFeeCondition.AboveAmount')) {
-            $orderItemAmount = $this->calculateOrderItemTotalAmount();
-            if ($orderItemAmount >= $aboveAmount) {
-                return 0;
-            }
-        }
-
-        // Load default shipping method
-        $company = new ShippingCompany(['handle' => $this->shippingCompany]);
-        if ($company->id && $this->storage->all()) {
-            return $company->shipping_cost;
+        if ($this->shippingFeeRule) {
+            return $this->shippingFeeRule->calculate($this);
         }
         return 0;
     }
@@ -223,7 +224,7 @@ class Cart implements IteratorAggregate, Countable
     {
         return array(
             'orderitem_total_amount' => $this->calculateOrderItemTotalAmount(),
-            'shipping_cost' => $this->calculateShippingCost(),
+            'shipping_fee' => $this->calculateShippingFee(),
 
             // the original total amount (including shipping cost)
             'total_amount' => $this->calculateTotalAmount(),

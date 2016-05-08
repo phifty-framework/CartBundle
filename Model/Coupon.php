@@ -42,7 +42,7 @@ class Coupon
     public function calcualteDiscount($totalAmount)
     {
         $totalAmount = $totalAmount - $this->discount;
-        if ( $totalAmount < 0 ) {
+        if ($totalAmount < 0) {
             return 0;
         }
         return $totalAmount;

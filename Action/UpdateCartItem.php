@@ -39,7 +39,7 @@ class UpdateCartItem extends UpdateRecordAction
 
         if ($cart->updateItem($item, $type, $quantity)) {
             $summary = $cart->getSummary();
-            $summary['amount'] = $item->calculateAmount();
+            $summary['amount'] = $item->calculateSubtotal();
             return $this->success(_('成功更新'), $summary);
         }
         return $this->error(_('無此權限'));

@@ -216,7 +216,7 @@ class OrderSchema extends SchemaDeclare
             ->renderAs('TextInput', ['size' => 8])
             ;
 
-        $this->column('shipping_cost')
+        $this->column('shipping_fee')
             ->integer()
             ->default(0)
             ->label('運費')

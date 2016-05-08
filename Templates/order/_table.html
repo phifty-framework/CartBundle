@@ -61,13 +61,13 @@
         <td>{{item.product.name}} / {{item.type.name}}</td>
         <td>NT$ {{item.getUnitPrice()}}</td>
         <td>{{item.quantity}}</td>
-        <td>NT$ {{item.calculateAmount()}}</td>
-        <td>{{item.display('shipping_status')}}</td>
+        <td>NT$ {{item.calculateSubtotal()}}</td>
+        <td>{{item.display('delivery_status')}}</td>
     </tr>
     {% endfor %}
     <tr>
         <td colspan="3" align="right">運費</td>
-        <td colspan="1" align="left">NT$ {{order.shipping_cost}}</td>
+        <td colspan="1" align="left">NT$ {{order.shipping_fee}}</td>
         <td> </td>
     </tr>
     <tr>

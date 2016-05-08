@@ -15,7 +15,7 @@ class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase
     {
         $amount = 0;
         foreach ($this as $item) {
-            $amount += $item->calculateAmount();
+            $amount += $item->calculateSubtotal();
         }
 
         return $amount;
@@ -34,7 +34,7 @@ class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase
     public function updateShippingStatus($s)
     {
         foreach ($this as $item) {
-            $ret = $item->update(['shipping_status' => $s]);
+            $ret = $item->update(['delivery_status' => $s]);
             if (!$ret->success) {
                 throw new Exception($ret->message);
             }

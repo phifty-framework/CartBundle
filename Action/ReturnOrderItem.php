@@ -24,10 +24,10 @@ class ReturnOrderItem extends Action
             return $this->error('錯誤的資料');
         }
 
-        if ($orderItem->shipping_status == 'returning' || $orderItem->shipping_status == 'returned') {
+        if ($orderItem->delivery_status == 'returning' || $orderItem->delivery_status == 'returned') {
             return $this->error('此商品已申請退貨或已經退貨');
         }
-        $orderItem->update(['shipping_status' => 'returning']);
+        $orderItem->update(['delivery_status' => 'returning']);
 
         return $this->success('已經申請退貨，請等候通知。');
     }

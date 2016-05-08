@@ -26,7 +26,7 @@ class OrderItem extends \CartBundle\Model\OrderItemBase
         return intval($this->product->price);
     }
 
-    public function calculateAmount()
+    public function calculateSubtotal()
     {
         return $this->getUnitPrice() * intval($this->quantity);
     }
@@ -38,54 +38,54 @@ class OrderItem extends \CartBundle\Model\OrderItemBase
 
     public function beforeUpdate($args)
     {
-        if (isset($args['shipping_status'])) {
-            if ($this->shipping_status != $args['shipping_status']) {
-                $args['shipping_status_last_update'] = date('c');
+        if (isset($args['delivery_status'])) {
+            if ($this->delivery_status != $args['delivery_status']) {
+                $args['delivery_status_last_updated_at'] = date('c');
             }
         }
 
         return $args;
     }
 
-    public function setShippingStatus($status)
+    public function setDeliveryStatus($status)
     {
-        $this->update(['shipping_status' => $status]);
+        $this->update(['delivery_status' => $status]);
     }
 
     public function setStatusPacking()
     {
-        $this->setShippingStatus('packing');
+        $this->setDeliveryStatus('packing');
     }
 
     public function setStatusUnpaid()
     {
-        $this->setShippingStatus('unpaid');
+        $this->setDeliveryStatus('unpaid');
     }
 
     public function setStatusShipped()
     {
-        $this->setShippingStatus('shipped');
+        $this->setDeliveryStatus('shipped');
     }
 
     public function isPacking()
     {
-        return $this->shipping_status == 'packing';
+        return $this->delivery_status == 'packing';
     }
 
     public function isShipped()
     {
-        return $this->shipping_status == 'shipped';
+        return $this->delivery_status == 'shipped';
     }
 
     public function getShippingCompany()
     {
-        return $this->shipping_company;
+        return $this->logistics;
     }
 
     public function getTrackingUrl()
     {
-        if ($this->shipping_id) {
-            return $this->getShippingCompany()->getTrackingUrl($this->shipping_id);
+        if ($this->logistics_id) {
+            return $this->logistics->getTrackingUrl($this->delivery_number);
         }
     }
 }

@@ -25,7 +25,7 @@ class Checkout extends CreateRecordAction
             'paid_amount',
             'total_amount',
             'discount_amount',
-            'shipping_cost',
+            'shipping_fee',
             'member_id',
             'payment_status',
             'payment_type'
@@ -76,14 +76,14 @@ class Checkout extends CreateRecordAction
             return $this->error(_('購物車是空的'));
         }
 
-        $shippingCost = $cart->calculateShippingCost();
+        $shippingCost = $cart->calculateShippingFee();
         $origTotalAmount = $cart->calculateTotalAmount();
         $totalAmount = $cart->calculateDiscountedTotalAmount();
         $discountAmount = $cart->calculateDiscountAmount();
 
         // Use Try-Cache to cache exceptions and process fallbacks.
         $this->setArgument('paid_amount', 0);
-        $this->setArgument('shipping_cost', $shippingCost);
+        $this->setArgument('shipping_fee', $shippingCost);
         $this->setArgument('total_amount', $totalAmount);
         $this->setArgument('discount_amount', $discountAmount);
         $this->setArgument('member_id', $currentMember->id);
@@ -122,7 +122,7 @@ class Checkout extends CreateRecordAction
 
                 $ret = $orderItem->update([
                     'order_id' => $this->record->id,
-                    'shipping_status' => 'unpaid',
+                    'delivery_status' => 'unpaid',
                 ]);
 
                 if ($ret->success) {

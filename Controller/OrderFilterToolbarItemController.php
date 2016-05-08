@@ -13,7 +13,7 @@ class OrderFilterToolbarItemController extends ToolbarItemController
 
     public function getFieldName()
     {
-        return '_order_item_shipping_status';
+        return '_order_item_delivery_status';
     }
 
     public function controlAction()
@@ -22,7 +22,7 @@ class OrderFilterToolbarItemController extends ToolbarItemController
         $handler = $this->getHandler();
         $model = new \CartBundle\Model\OrderItem();
         $action = $model->asCreateAction();
-        $widget = $action->getParam('shipping_status')->createWidget(null, array('allow_empty' => true));
+        $widget = $action->getParam('delivery_status')->createWidget(null, array('allow_empty' => true));
         $widget->name = '_filter_'.$fieldName;
 
         return $this->render('@CRUD/filter.html', array('widget' => $widget));
@@ -34,10 +34,10 @@ class OrderFilterToolbarItemController extends ToolbarItemController
         $handler = $this->getHandler();
         $value = $handler->request->param('_filter_'.$fieldName);
         if ($value !== null && $value !== '') {
-            // $collection->where()->equal('order_items.shipping_status','unpaid');
+            // $collection->where()->equal('order_items.delivery_status','unpaid');
             $collection->join(new \CartBundle\Model\OrderItem(), 'INNER');
             $collection->groupBy('m.id');
-            $collection->where()->equal('order_items.shipping_status', $value);
+            $collection->where()->equal('order_items.delivery_status', $value);
         }
     }
 }

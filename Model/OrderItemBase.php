@@ -26,11 +26,11 @@ class OrderItemBase
       4 => 'product_id',
       5 => 'type_id',
       6 => 'remark',
-      7 => 'shipping_id',
-      8 => 'shipping_company_id',
-      9 => 'shipping_status',
-      10 => 'returning_reason',
-      11 => 'shipping_status_last_update',
+      7 => 'logistics_id',
+      8 => 'delivery_number',
+      9 => 'delivery_status',
+      10 => 'return_reason',
+      11 => 'delivery_status_last_updated_at',
     );
     public static $column_hash = array (
       'id' => 1,
@@ -40,14 +40,13 @@ class OrderItemBase
       'product_id' => 1,
       'type_id' => 1,
       'remark' => 1,
-      'shipping_id' => 1,
-      'shipping_company_id' => 1,
-      'shipping_status' => 1,
-      'returning_reason' => 1,
-      'shipping_status_last_update' => 1,
+      'logistics_id' => 1,
+      'delivery_number' => 1,
+      'delivery_status' => 1,
+      'return_reason' => 1,
+      'delivery_status_last_updated_at' => 1,
     );
     public static $mixin_classes = array (
-      0 => 'ShippingBundle\\Model\\Mixin\\ShippingStatusMixinSchema',
     );
     protected $table = 'order_items';
     public $readSourceId = 'default';
@@ -87,24 +86,24 @@ class OrderItemBase
     {
             return $this->get('remark');
     }
-    public function getShippingId()
+    public function getLogisticsId()
     {
-            return $this->get('shipping_id');
+            return $this->get('logistics_id');
     }
-    public function getShippingCompanyId()
+    public function getDeliveryNumber()
     {
-            return $this->get('shipping_company_id');
+            return $this->get('delivery_number');
     }
-    public function getShippingStatus()
+    public function getDeliveryStatus()
     {
-            return $this->get('shipping_status');
+            return $this->get('delivery_status');
     }
-    public function getReturningReason()
+    public function getReturnReason()
     {
-            return $this->get('returning_reason');
+            return $this->get('return_reason');
     }
-    public function getShippingStatusLastUpdate()
+    public function getDeliveryStatusLastUpdatedAt()
     {
-            return $this->get('shipping_status_last_update');
+            return $this->get('delivery_status_last_updated_at');
     }
 }

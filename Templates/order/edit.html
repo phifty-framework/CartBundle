@@ -142,7 +142,7 @@
                         {{ CRUD.Action.renderField('paid_amount')|raw }}
                     </div>
                     <div class="col-field">
-                        {{ CRUD.Action.renderField('shipping_cost')|raw }}
+                        {{ CRUD.Action.renderField('shipping_fee')|raw }}
                     </div>
                     <div class="col-field">
                         {{ CRUD.Action.renderField('discount_amount')|raw }}
@@ -213,14 +213,14 @@
                     {{subRecordAction.renderWidget('quantity')|raw}}
                     #}
                 </td>
-                <td class="price money">NT$ {{orderItem.calculateAmount()}}</td>
-                <td>{{subRecordAction.renderWidget('shipping_status')|raw}}</td>
+                <td class="price money">NT$ {{orderItem.calculateSubtotal()}}</td>
+                <td>{{subRecordAction.renderWidget('delivery_status')|raw}}</td>
 
-                <td>{{orderItem.shipping_status_last_update|date('Y/m/d A H:i') }}</td>
+                <td>{{orderItem.delivery_status_last_updated_at|date('Y/m/d A H:i') }}</td>
 
                 <td>{{subRecordAction.renderWidget('shipping_company_id')|raw}}</td>
-                <td>{{subRecordAction.renderWidget('shipping_id')|raw}}</td>
-                {% if bundle.config('ShipmentTracking') and orderItem.shipping_id %}
+                <td>{{subRecordAction.renderWidget('delivery_number')|raw}}</td>
+                {% if bundle.config('ShipmentTracking') and orderItem.delivery_number %}
                 <td>
                     {% set trackingUrl = orderItem.getTrackingUrl() %}
                     {% if trackingUrl %}

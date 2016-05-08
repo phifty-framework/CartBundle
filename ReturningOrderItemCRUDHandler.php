@@ -11,7 +11,7 @@ class ReturningOrderItemCRUDHandler extends CRUDHandler
     public $crudId = 'returning_order_item';
     public $templateId = 'order_item';
 
-    public $listColumns = array('order_id', 'product', 'type', 'quantity', 'shipping_company', 'shipping_status', 'returning_reason');
+    public $listColumns = array('order_id', 'product', 'type', 'quantity', 'shipping_company', 'delivery_status', 'return_reason');
     // public $filterColumns = array();
     // public $quicksearchFields = array('name');
 
@@ -38,7 +38,7 @@ class ReturningOrderItemCRUDHandler extends CRUDHandler
     {
         $collection = parent::getCollection();
         $collection->where(array(
-            'shipping_status' => 'returning',
+            'delivery_status' => 'returning',
         ));
 
         return $collection;

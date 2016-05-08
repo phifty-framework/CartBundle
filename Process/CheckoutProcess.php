@@ -23,14 +23,14 @@ class CheckoutProcess
     public function checkout(array $args)
     {
         // preprocess with cart items
-        $shippingCost = $this->cart->calculateShippingCost();
+        $shippingCost = $this->cart->calculateShippingFee();
         $origTotalAmount = $this->cart->calculateTotalAmount();
         $totalAmount = $this->cart->calculateDiscountedTotalAmount();
         $discountAmount = $this->cart->calculateDiscountAmount();
 
         // Use Try-Cache to cache exceptions and process fallbacks.
         $args['paid_amount'] = 0;
-        $args['shipping_cost'] = $shippingCost;
+        $args['shipping_fee'] = $shippingCost;
         $args['total_amount'] =  $totalAmount;
         $args['discount_amount'] = $discountAmount;
         $args['member_id'] = $this->member->id;
@@ -55,7 +55,7 @@ class CheckoutProcess
             $orderItem->setAlias('oi');
             $ret = $orderItem->update([
                 'order_id' => $this->record->id,
-                'shipping_status' => 'unpaid',
+                'delivery_status' => 'unpaid',
             ]);
             if ($ret->error) {
                 if ($ret->exception) {

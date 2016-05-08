@@ -50,7 +50,7 @@ class OrderBase
       28 => 'utc_title',
       29 => 'utc_address',
       30 => 'utc_name',
-      31 => 'shipping_cost',
+      31 => 'shipping_fee',
       32 => 'discount_amount',
       33 => 'paid_amount',
       34 => 'total_amount',
@@ -95,7 +95,7 @@ class OrderBase
       'utc_title' => 1,
       'utc_address' => 1,
       'utc_name' => 1,
-      'shipping_cost' => 1,
+      'shipping_fee' => 1,
       'discount_amount' => 1,
       'paid_amount' => 1,
       'total_amount' => 1,
@@ -247,7 +247,7 @@ class OrderBase
     }
     public function getShippingCost()
     {
-            return $this->get('shipping_cost');
+            return $this->get('shipping_fee');
     }
     public function getDiscountAmount()
     {
