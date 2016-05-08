@@ -4,6 +4,7 @@ use PHPUnit_Framework_TestCase;
 use CartBundle\Cart;
 use CartBundle\CartStorage\ArrayCartStorage;
 use CartBundle\Model\OrderItemSchema;
+use CartBundle\Model\OrderItem;
 use CartBundle\Model\OrderSchema;
 use ProductBundle\Model\ProductSchema;
 use ProductBundle\Model\ProductTypeSchema;
@@ -25,7 +26,21 @@ class CartTest extends ModelTestCase
             new OrderSchema);
     }
 
-    public function testCart()
+    public function testCartRemoveInvalidItems()
+    {
+        $cart = new Cart(new ArrayCartStorage);
+        $this->assertEmpty($cart->storage->all());
+
+        $item = new OrderItem;
+        $this->assertFalse($cart->validateItem($item));
+
+        $cart->addItem($item);
+        $invalidItems = $cart->removeInvalidItems();
+        $this->assertCount(1, $invalidItems);
+
+    }
+
+    public function testCartAddProduct()
     {
         $cart = new Cart(new ArrayCartStorage);
         $this->assertEmpty($cart->storage->all());

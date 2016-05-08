@@ -11,6 +11,7 @@ use CouponBundle\Model\Coupon;
 use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
 use ShippingBundle\Model\Company as ShippingCompany;
+use LazyRecord\BaseCollection;
 
 /**
  * Contains the logics of Cart.
@@ -34,9 +35,8 @@ class Cart
 
     public function __construct(CartStorage $storage)
     {
-        // TODO: provide options to specify storage engine.
         $this->storage = $storage;
-        $this->validateItems();
+        $this->removeInvalidItems();
     }
 
 
@@ -256,18 +256,19 @@ class Cart
     protected function validateItemQuantity(OrderItem $item)
     {
         $t = $item->type;
-        if (!$t || !$t->id) {
+        if (!$t || !$t->id || ($t->quantity !== null && $item->quantity > $t->quantity)) {
             return false;
         }
-        // Validate type quantity
-        if ($item->quantity > $t->quantity) {
-            return false;
-        }
-
         return true;
     }
 
-    protected function validateItem(OrderItem $item, $validateType = false)
+
+    /**
+     * This method validates record's existence and the related product id, product type id.
+     *
+     * @return boolean
+     */
+    public function validateItem(OrderItem $item, $validateType = false, $validateQuantity = false)
     {
         if (!$item->id) {
             return false;
@@ -284,62 +285,43 @@ class Cart
             if (!$t || !$t->id) {
                 return false;
             }
+            if ($validateQuantity && $t->quantity !== null && $item->quantity > $t->quantity) {
+                return false;
+            }
         }
         return true;
     }
 
-    public function isInvalidItem(OrderItem $item)
-    {
-        return in_array($item->id, $this->quantityInvalidItems);
-    }
-
-    public function purgeQuantityInvalidItems()
-    {
-        $bundle = kernel()->bundle('CartBundle');
-
-        // using session as our storage
-        $items = $this->storage->get();
-        $this->quantityInvalidItems = array();
-        if (count($items)) {
-            $newItems = array();
-            foreach ($items as $id) {
-                $item = new OrderItem;
-                $item->find(intval($id));
-                if (false == $this->validateItem($item)) {
-                    continue;
-                }
-                if ($bundle->config('UseProductTypeQuantity') && false == $this->validateItemQuantity($item)) {
-                    continue;
-                }
-                $newItems[] = intval($id);
-            }
-            $this->storage->set($newItems);
-        }
-    }
-
-    public function validateItems()
+    /**
+     * Remove invalid order items stored in the storage.
+     *
+     * @return OrderItem[] Invalid order items will be returned.
+     */
+    public function removeInvalidItems()
     {
         $bundle = kernel()->bundle('CartBundle');
+        $invalidItems = [];
         // using session as our storage
-        $items = $this->storage->get();
-        $this->quantityInvalidItems = array();
-        if (count($items)) {
-            $newItems = array();
-            foreach ($items as $id) {
-                $item = new OrderItem(intval($id));
-                if ($this->validateItem($item)) {
-                    $newItems[] = intval($id);
-
-                    if ($bundle->config('UseProductTypeQuantity')  && false === $this->validateItemQuantity($item)) {
-                        $this->quantityInvalidItems[] = intval($id);
-                    }
-                }
+        if ($items = $this->storage->all()) {
+            $self = $this;
+            if ($items instanceof BaseCollection) {
+                $items = $items->items();
             }
-            $this->storage->set($newItems);
+            $items = array_filter($items, function($item) use ($self, $bundle, & $invalidItems) {
+                if (false === $self->validateItem($item)
+                    || ($bundle
+                        && $bundle->config('UseProductTypeQuantity')
+                        && false === $this->validateItemQuantity($item)))
+                {
+                    $invalidItems[] = $item;
+                    return false;
+                }
+                return true;
+            });
+            $this->storage->set($items);
         }
+        return $invalidItems;
     }
-
-
 
 
 
