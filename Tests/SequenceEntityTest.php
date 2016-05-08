@@ -1,22 +1,22 @@
 <?php
 namespace CartBundle\Tests;
 use LazyRecord\Testing\ModelTestCase;
-use CartBundle\Model\IncrementEntitySchema;
-use CartBundle\Model\IncrementEntity;
+use CartBundle\Model\SequenceEntitySchema;
+use CartBundle\Model\SequenceEntity;
 
-class IncrementEntityTest extends ModelTestCase
+class SequenceEntityTest extends ModelTestCase
 {
 
     public $driver = 'testing';
 
     public function getModels()
     {
-        return [new IncrementEntitySchema];
+        return [new SequenceEntitySchema];
     }
 
     public function testIncrementPrefix()
     {
-        $entity = new IncrementEntity;
+        $entity = new SequenceEntity;
         $result = $entity->create([
             'prefix' => 'Y',
             'pad_length' => 6,
@@ -38,7 +38,7 @@ class IncrementEntityTest extends ModelTestCase
 
     public function testIncrementId()
     {
-        $entity = new IncrementEntity;
+        $entity = new SequenceEntity;
         $result = $entity->create([
             'start_id' => 1,
             'last_id' => 1,

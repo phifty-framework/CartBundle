@@ -2,12 +2,12 @@
 
 namespace CartBundle\Model;
 
-use CartBundle\Model\IncrementEntityBase;
+use CartBundle\Model\SequenceEntityBase;
 use PDO;
 use DateTime;
 
-class IncrementEntity
-    extends IncrementEntityBase
+class SequenceEntity
+    extends SequenceEntityBase
 {
 
     public function getNextId()

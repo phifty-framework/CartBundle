@@ -3,7 +3,7 @@ namespace CartBundle\Model;
 
 use LazyRecord\Schema\DeclareSchema;
 
-class IncrementEntitySchema extends DeclareSchema
+class SequenceEntitySchema extends DeclareSchema
 {
     public function schema()
     {
