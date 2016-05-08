@@ -14,6 +14,7 @@ use ShippingBundle\Model\Company as ShippingCompany;
 use LazyRecord\BaseCollection;
 use ArrayIterator;
 use IteratorAggregate;
+use Countable;
 
 /**
  * Contains the logics of Cart.
@@ -24,7 +25,7 @@ use IteratorAggregate;
  *   - discount amount
  *   = discounted total amount
  */
-class Cart implements IteratorAggregate
+class Cart implements IteratorAggregate, Countable
 {
     /**
      * Storage for saving order items for users.
@@ -34,6 +35,8 @@ class Cart implements IteratorAggregate
     public $shippingCompany = 'default';
 
     protected $bundle;
+
+    protected $coupons = [];
 
     public function __construct(CartStorage $storage)
     {
@@ -162,7 +165,7 @@ class Cart implements IteratorAggregate
     public function calculateDiscountedTotalAmount()
     {
         $totalAmount = $this->calculateTotalAmount();
-        if ($coupon = $this->loadSessionCoupon()) {
+        if ($coupon = $this->loadCouponFromSession()) {
             return $coupon->calcualteDiscount($totalAmount);
         }
 
@@ -172,12 +175,13 @@ class Cart implements IteratorAggregate
     /**
      * Coupon related logics.
      */
-    public function applyCoupon($coupon)
+    public function applyCoupon(Coupon $coupon)
     {
         // always validate coupon
         list($success, $reason) = $coupon->isValid($this);
         if ($success) {
             $_SESSION['coupon_code'] = $coupon->coupon_code;
+            $this->coupons[$coupon->coupon_code] = $coupon;
             return true;
         }
 
@@ -193,24 +197,25 @@ class Cart implements IteratorAggregate
     /**
      * check current coupon and re-validate the coupon.
      */
-    public function loadSessionCoupon()
+    public function loadCouponFromSession()
     {
-        if (isset($_SESSION['coupon_code'])) {
-            $coupon = new Coupon(['coupon_code' => $_SESSION['coupon_code']]);
-            // always validate coupon
-            list($success, $reason) = $coupon->isValid($this);
-            if ($success) {
-                return $coupon;
-            }
+        if (!isset($_SESSION['coupon_code'])) {
+            return false;
+        }
+        $coupon = new Coupon(['coupon_code' => $_SESSION['coupon_code']]);
+        if (!$this->applyCoupon($coupon)) {
             // if it's invalid coupon, just delete the sesssion
             unset($_SESSION['coupon_code']);
+            return false;
         }
+        return $coupon;
     }
 
-    public function cleanUp()
+    public function cleanup()
     {
-        unset($_SESSION['coupon_code']);
-        unset($_SESSION['items']);
+        if (isset($_SESSION)) {
+            unset($_SESSION['coupon_code']);
+        }
         $this->storage->removeAll();
     }
 
@@ -302,11 +307,30 @@ class Cart implements IteratorAggregate
      */
     public function mergeItems()
     {
+        $itemsByProduct = [];
         if ($items = $this->storage->all()) {
             foreach ($items as $item) {
-
+                $itemsByProduct[$item->product_id][ $item->type_id ?: 0 ][] = $item;
             }
         }
+        $mergedItems = [];
+        foreach ($itemsByProduct as $productId => $itemsByType) {
+            foreach ($itemsByType as $typeId => $items) {
+                if (count($items) <= 1) {
+                    array_splice($mergedItems, 0, 0, $items);
+                    continue;
+                }
+                // merge them
+                $firstItem = $items[0];
+                $quantity = array_reduce($items, function($carry, $subItem) {
+                    return $carry + $subItem->quantity;
+                }, 0);
+                $firstItem->update([ 'quantity' => $quantity ]);
+                $mergedItems[] = $firstItem;
+            }
+        }
+        $this->storage->set($mergedItems);
+        return $mergedItems;
     }
 
 
@@ -446,11 +470,24 @@ class Cart implements IteratorAggregate
 
 
     /**
+     * @return OrderItemCollection return order items from storage.
+     */
+    public function getItems()
+    {
+        return $this->storage->all();
+    }
+
+    /**
      * Return order item collection the storage.
      */
     public function getIterator()
     {
         return $this->storage->all();
+    }
+
+    public function count()
+    {
+        return count($this->storage);
     }
 
 }

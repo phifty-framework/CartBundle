@@ -57,6 +57,33 @@ class CartTest extends ModelTestCase
         $this->assertCount(1, $cart->storage->all(), 'Should be only one order item');
     }
 
+    public function testMergeItems()
+    {
+        $cart = new Cart(new ArrayCartStorage);
+        $this->assertEmpty($cart->storage->all());
+
+        $product = new Product;
+        $product->create([ 'name' => 'Clothes' ]);
+        $type = $product->types->create([ 'name' => 'M', 'quantity' => 10 ]);
+
+        $this->assertNotNull($type->id, 'product type exists');
+        $this->assertNotNull($product->id, 'product exists');
+        $this->assertEquals($product->id, $type->product_id, 'product type exists');
+
+        $item1 = $cart->addProduct($product, $type, 1);
+
+        $item2 = new OrderItem;
+        $item2->create([
+            'product_id' => $product->id,
+            'type_id' => $type->id,
+            'quantity' => 1,
+        ]);
+        $cart->addItem($item2);
+        $this->assertCount(2, $cart->storage->all(), 'Should be only 2 order items');
+        $cart->mergeItems();
+        $this->assertCount(1, $cart->storage->all(), 'Should be only one order item after merge');
+    }
+
     public function testContainsProduct()
     {
         $cart = new Cart(new ArrayCartStorage);

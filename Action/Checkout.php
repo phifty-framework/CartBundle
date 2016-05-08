@@ -71,9 +71,7 @@ class Checkout extends CreateRecordAction
         }
 
         $cart = Cart::getInstance();
-        $orderItems = $cart->fetchOrderItems();
-
-        if (count($orderItems) == 0) {
+        if (count($cart) === 0) {
             return $this->error(_('購物車是空的'));
         }
 
@@ -89,7 +87,7 @@ class Checkout extends CreateRecordAction
         $this->setArgument('discount_amount', $discountAmount);
         $this->setArgument('member_id', $currentMember->id);
 
-        $coupon = $cart->loadSessionCoupon();
+        $coupon = $cart->loadCouponFromSession();
         if ($coupon) {
             $this->setArgument('coupon_code', $coupon->coupon_code);
         }
