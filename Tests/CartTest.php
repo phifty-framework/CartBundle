@@ -152,9 +152,6 @@ class CartTest extends ModelTestCase
             'required_amount' => 500,
         ]);
         $this->assertTrue($cart->applyCoupon($coupon));
-
-        // var_dump($cart->getSummary());
-
         $this->assertEquals(980, $cart->calculateDiscountedTotalAmount());
         $this->assertEquals(0, $cart->calculateShippingFee());
     }

@@ -7,6 +7,7 @@ use MemberBundle\CurrentMember;
 use ProductBundle\Model\ProductType;
 use CartBundle\Cart;
 use CartBundle\Model\OrderItem;
+use CartBundle\ShippingFeeRule\DefaultShippingFeeRule;
 use CartBundle\Model\Order;
 use CartBundle\Model\Coupon;
 use CartBundle\Email\OrderCreatedEmail;
@@ -75,6 +76,9 @@ class Checkout extends CreateRecordAction
         if (count($cart) === 0) {
             return $this->error(_('購物車是空的'));
         }
+
+        // set default shipping rule.
+        $cart->setShippingFeeRule(new DefaultShippingFeeRule($bundle, 80));
 
         $shippingCost = $cart->calculateShippingFee();
         $origTotalAmount = $cart->calculateTotalAmount();
