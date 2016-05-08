@@ -71,9 +71,6 @@ class Cart implements IteratorAggregate, Countable
     }
 
 
-
-
-
     /**
      * Create new order item based on the given product id and type 
      *
