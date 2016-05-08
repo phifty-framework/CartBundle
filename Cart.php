@@ -39,6 +39,9 @@ class Cart implements IteratorAggregate
     {
         $this->storage = $storage;
 
+        // Right now we need bundle to get some configs:
+        // - UseProductTypeQuantity
+        // - NoShippingFeeCondition.AboveAmount
         $this->bundle = CartBundle::getInstance();
         $this->removeInvalidItems($this->bundle->config('UseProductTypeQuantity'), $this->bundle->config('UseProductTypeQuantity'));
     }
