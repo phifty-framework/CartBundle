@@ -53,8 +53,11 @@ class ArrayCartStorage
         $this->items[] = $item;
     }
 
-    public function all() : OrderItemCollection
+    public function all()
     {
+        if (empty($this->items)) {
+            return false;
+        }
         $collection = new OrderItemCollection;
         foreach ($this->items as $item) {
             $collection->add($item);

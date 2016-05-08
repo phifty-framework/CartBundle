@@ -19,7 +19,7 @@ interface CartStorage
      *
      * @return OrderItemCollection
      */
-    public function all() : OrderItemCollection;
+    public function all();
 
     /**
      * @param OrderItem[]

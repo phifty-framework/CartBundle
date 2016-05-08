@@ -46,7 +46,7 @@ class SessionCartStorage
         $_SESSION['items'][] = $item->id;
     }
 
-    public function all() : OrderItemCollection
+    public function all()
     {
         if (!isset($_SESSION['items'])) {
             return false;

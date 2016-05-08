@@ -8,6 +8,8 @@ use CartBundle\Model\OrderItemCollection;
 use CartBundle\Model\Coupon;
 use CartBundle\Model\Logistics;
 use CartBundle\ShippingFeeRule\ShippingFeeRule;
+use CartBundle\ShippingFeeRule\NoShippingFeeRule;
+use CartBundle\ShippingFeeRule\DefaultShippingFeeRule;
 use CartBundle\CartStorage\CartStorage;
 use CartBundle\CartStorage\SessionCartStorage;
 use ProductBundle\Model\Product;
@@ -55,6 +57,7 @@ class Cart implements IteratorAggregate, Countable
         // - NoShippingFeeCondition.AboveAmount
         $this->bundle = CartBundle::getInstance();
         $this->removeInvalidItems($this->bundle->config('UseProductTypeQuantity'), $this->bundle->config('UseProductTypeQuantity'));
+        $this->shippingFeeRule = new DefaultShippingFeeRule($this->bundle);
     }
 
     public function containsProduct(Product $product) : bool
@@ -459,7 +462,8 @@ class Cart implements IteratorAggregate, Countable
         if ($instance) {
             return $instance;
         }
-        return $instance = new static($storage ?: new SessionCartStorage);
+        $instance = new static($storage ?: new SessionCartStorage);
+        return $instance;
     }
 
 

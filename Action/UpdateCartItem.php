@@ -5,6 +5,7 @@ namespace CartBundle\Action;
 use ActionKit\RecordAction\UpdateRecordAction;
 use ProductBundle\Model\ProductType;
 use CartBundle\Cart;
+use CartBundle\CartBundle;
 
 /**
  * Update order item in Cart.
@@ -15,15 +16,19 @@ class UpdateCartItem extends UpdateRecordAction
 
     public function run()
     {
-        $orderItem = $this->getRecord();
-        if ($orderItem->order_id) {
+        $bundle = CartBundle::getInstance();
+        $item = $this->getRecord();
+        if ($item->order_id) {
             return $this->error('Items added to an order should not be updated.');
         }
 
-        $type = new ProductType;
-        $type->find(intval($this->arg('product_type')));
-        if (!$type->id) {
-            return $this->error(_('無此產品類型'));
+        $type = null;
+        if ($bundle->config('UseProductType')) {
+            $type = new ProductType;
+            $type->find(intval($this->arg('product_type')));
+            if (!$type->id) {
+                return $this->error(_('無此產品類型'));
+            }
         }
 
         $quantity = intval($this->arg('quantity'));
@@ -36,7 +41,6 @@ class UpdateCartItem extends UpdateRecordAction
         }
         */
         $cart = Cart::getInstance();
-
         if ($cart->updateItem($item, $type, $quantity)) {
             $summary = $cart->getSummary();
             $summary['amount'] = $item->calculateSubtotal();
