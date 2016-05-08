@@ -27,8 +27,9 @@ class Coupon
         return [true, _('可以使用的折價券') ];
     }
 
-    public function increaseUsed() {
-        $this->update([ 'used' => ['used + 1'] ]);
+    public function increaseUsed()
+    {
+        return $this->update([ 'used' => ['used + 1'] ]);
     }
 
     /**

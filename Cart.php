@@ -5,9 +5,9 @@ use CartBundle\Exception\CartException;
 use CartBundle\Model\Order;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\OrderItemCollection;
+use CartBundle\Model\Coupon;
 use CartBundle\CartStorage\CartStorage;
 use CartBundle\CartStorage\SessionCartStorage;
-use CartBundle\Model\Coupon;
 use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
 use ShippingBundle\Model\Company as ShippingCompany;
@@ -176,7 +176,7 @@ class Cart implements IteratorAggregate, Countable
     /**
      * Coupon related logics.
      */
-    public function applyCoupon(Coupon $coupon)
+    public function applyCoupon(Coupon $coupon, & $reason = null)
     {
         // always validate coupon
         list($success, $reason) = $coupon->isValid($this);
