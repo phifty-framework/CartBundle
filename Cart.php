@@ -33,12 +33,14 @@ class Cart implements IteratorAggregate
 
     public $shippingCompany = 'default';
 
+    protected $bundle;
+
     public function __construct(CartStorage $storage)
     {
         $this->storage = $storage;
 
-        $bundle = kernel()->bundle('CartBundle');
-        $this->removeInvalidItems($bundle->config('UseProductTypeQuantity'), $bundle->config('UseProductTypeQuantity'));
+        $this->bundle = CartBundle::getInstance();
+        $this->removeInvalidItems($this->bundle->config('UseProductTypeQuantity'), $this->bundle->config('UseProductTypeQuantity'));
     }
 
     public function containsProduct(Product $product) : bool
@@ -225,8 +227,7 @@ class Cart implements IteratorAggregate
 
     public function calculateShippingCost()
     {
-        $bundle = kernel()->bundle('CartBundle');
-        if ($aboveAmount = $bundle->config('NoShippingFeeCondition.AboveAmount')) {
+        if ($aboveAmount = $this->bundle->config('NoShippingFeeCondition.AboveAmount')) {
             $orderItemAmount = $this->calculateOrderItemTotalAmount();
             if ($orderItemAmount >= $aboveAmount) {
                 return 0;
