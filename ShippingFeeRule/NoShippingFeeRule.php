@@ -1,5 +1,7 @@
 <?php
+
 namespace CartBundle\ShippingFeeRule;
+
 use Phifty\Bundle;
 use CartBundle\Cart;
 use CartBundle\Model\Logistics;

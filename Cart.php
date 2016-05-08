@@ -38,7 +38,11 @@ class Cart implements IteratorAggregate, Countable
 
     protected $bundle;
 
+    protected $coupon;
+
+    /* when we want to support multiple coupon?
     protected $coupons = [];
+     */
 
     protected $shippingFeeRule;
 
@@ -170,15 +174,26 @@ class Cart implements IteratorAggregate, Countable
         return $totalAmount - $discountedAmount;
     }
 
+    public function getCurrentCoupon() : array
+    {
+        return $this->coupon;
+    }
+
     public function calculateDiscountedTotalAmount()
     {
         $totalAmount = $this->calculateTotalAmount();
+        if ($this->coupon) {
+            return $this->coupon->calcualteDiscount($totalAmount);
+        }
+        return $totalAmount;
+
+        /* for multiple coupons
         if (count($this->coupons) > 0) {
             return array_reduce($this->coupons, function($carry, $coupon) {
                 return $coupon->calcualteDiscount($carry);
             }, $totalAmount);
         }
-        return $totalAmount;
+         */
     }
 
     /**
@@ -189,8 +204,8 @@ class Cart implements IteratorAggregate, Countable
         // always validate coupon
         list($success, $reason) = $coupon->isValid($this);
         if ($success) {
-            $_SESSION['coupon_code'] = $coupon->coupon_code;
-            $this->coupons[$coupon->coupon_code] = $coupon;
+            $this->coupon = $coupon;
+            // $this->coupons[$coupon->coupon_code] = $coupon;
             return true;
         }
 
@@ -199,7 +214,8 @@ class Cart implements IteratorAggregate, Countable
 
     public function usingCoupon()
     {
-        return !empty($this->coupons);
+        return $this->coupon ? true : false;
+        // return !empty($this->coupons);
     }
 
     public function cleanup()

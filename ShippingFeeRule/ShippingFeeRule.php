@@ -1,5 +1,8 @@
 <?php
+
 namespace CartBundle\ShippingFeeRule;
+
+use CartBundle\Cart;
 
 interface ShippingFeeRule
 {
