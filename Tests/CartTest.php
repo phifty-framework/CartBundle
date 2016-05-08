@@ -10,28 +10,14 @@ use CartBundle\Model\CouponSchema;
 use CartBundle\Model\OrderSchema;
 use CartBundle\Model\LogisticsSchema;
 use CartBundle\ShippingFeeRule\NoShippingFeeRule;
+use MemberBundle\Model\Member;
 use ProductBundle\Model\ProductSchema;
 use ProductBundle\Model\ProductTypeSchema;
 use ProductBundle\Model\Product;
 use LazyRecord\Testing\ModelTestCase;
 
-class CartTest extends ModelTestCase
+class CartTest extends CartTestCase
 {
-    public $driver = 'testing';
-
-    public function getModels()
-    {
-        return [
-            new ProductTypeSchema,
-            new ProductSchema,
-            new OrderItemSchema,
-            new OrderSchema,
-            new CouponSchema,
-            new LogisticsSchema,
-        ];
-    }
-
-
     public function testCartRemoveInvalidItems()
     {
         $cart = new Cart(new ArrayCartStorage);

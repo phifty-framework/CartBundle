@@ -81,14 +81,14 @@ class Checkout extends CreateRecordAction
         // set default shipping rule.
         $cart->setShippingFeeRule(new DefaultShippingFeeRule($bundle, 80));
 
-        $shippingCost = $cart->calculateShippingFee();
+        $shippingFee = $cart->calculateShippingFee();
         $origTotalAmount = $cart->calculateTotalAmount();
         $totalAmount = $cart->calculateDiscountedTotalAmount();
         $discountAmount = $cart->calculateDiscountAmount();
 
         // Use Try-Cache to cache exceptions and process fallbacks.
         $this->setArgument('paid_amount', 0);
-        $this->setArgument('shipping_fee', $shippingCost);
+        $this->setArgument('shipping_fee', $shippingFee);
         $this->setArgument('total_amount', $totalAmount);
         $this->setArgument('discount_amount', $discountAmount);
         $this->setArgument('member_id', $currentMember->id);
