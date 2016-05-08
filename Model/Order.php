@@ -33,9 +33,10 @@ class Order  extends \CartBundle\Model\OrderBase
             $date = new DateTime($date);
         }
         if (!$serialNum) {
-            $serialNum = OrderCollection::getCountByDay($date);
+            // $serialNum = OrderCollection::getCountByDay($date);
+            // xxx:
+            $serialNum = md5(rand());
         }
-
         return sprintf(self::SN_FORMAT, $date->format('Ymd'), $serialNum);
     }
 

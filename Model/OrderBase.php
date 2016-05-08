@@ -245,7 +245,7 @@ class OrderBase
     {
             return $this->get('utc_name');
     }
-    public function getShippingCost()
+    public function getShippingFee()
     {
             return $this->get('shipping_fee');
     }
