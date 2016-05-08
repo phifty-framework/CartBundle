@@ -213,7 +213,6 @@ class Cart
     public function calculateShippingCost()
     {
         $bundle = kernel()->bundle('CartBundle');
-
         if ($aboveAmount = $bundle->config('NoShippingFeeCondition.AboveAmount')) {
             $orderItemAmount = $this->calculateOrderItemTotalAmount();
             if ($orderItemAmount >= $aboveAmount) {
@@ -226,7 +225,6 @@ class Cart
         if ($company->id && $this->storage->all()) {
             return $company->shipping_cost;
         }
-
         return 0;
     }
 
@@ -250,12 +248,18 @@ class Cart
         );
     }
 
-    public function validateItemQuantity(OrderItem $item)
+    /**
+     * This method is used internally.
+     *
+     * @param OrderItem $item
+     */
+    protected function validateItemQuantity(OrderItem $item)
     {
         $t = $item->type;
         if (!$t || !$t->id) {
             return false;
         }
+        // Validate type quantity
         if ($item->quantity > $t->quantity) {
             return false;
         }
@@ -263,7 +267,7 @@ class Cart
         return true;
     }
 
-    public function validateItem(OrderItem $item)
+    protected function validateItem(OrderItem $item, $validateType = false)
     {
         if (!$item->id) {
             return false;
@@ -275,11 +279,12 @@ class Cart
         if (!$p || !$p->id) {
             return false;
         }
-        $t = $item->type;
-        if (!$t || !$t->id) {
-            return false;
+        if ($validateType) {
+            $t = $item->type;
+            if (!$t || !$t->id) {
+                return false;
+            }
         }
-
         return true;
     }
 
