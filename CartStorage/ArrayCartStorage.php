@@ -27,14 +27,9 @@ class ArrayCartStorage
         $this->items = array();
     }
 
-    public function isEmpty()
+    public function empty()
     {
         return empty($this->items);
-    }
-
-    public function notEmpty()
-    {
-        return !$this->isEmpty();
     }
 
     public function count()
@@ -54,7 +49,7 @@ class ArrayCartStorage
 
     public function add(OrderItem $item)
     {
-        $this->items[] = $item->id;
+        $this->items[] = $item;
     }
 
     public function all()
@@ -75,9 +70,8 @@ class ArrayCartStorage
     public function remove(OrderItem $item)
     {
         $itemId = intval($item->id);
-        $items = $this->get();
-        if ($items && !empty($items)) {
-            $idx = array_search($itemId, $this->get());
+        if ($this->items && !empty($this->items)) {
+            $idx = array_search($itemId, $this->items);
             if ($idx !== false) {
                 array_splice($this->items, $idx, 1);
                 return true;
@@ -110,5 +104,4 @@ class ArrayCartStorage
     {
         unset($this->items[$index]);
     }
-
 }

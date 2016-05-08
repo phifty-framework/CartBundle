@@ -3,6 +3,7 @@
 namespace CartBundle\CartStorage;
 
 use CartBundle\Model\OrderItem;
+use CartBundle\Model\OrderItemCollection;
 use ArrayIterator;
 use IteratorAggregate;
 use ArrayAccess;
@@ -22,14 +23,9 @@ class SessionCartStorage
         $_SESSION['items'] = array();
     }
 
-    public function isEmpty()
+    public function empty()
     {
         return empty($_SESSION['items']);
-    }
-
-    public function notEmpty()
-    {
-        return !empty($_SESSION['items']);
     }
 
     public function count()
@@ -37,15 +33,9 @@ class SessionCartStorage
         return count($_SESSION['items']);
     }
 
-    public function get()
-    {
-        if (isset($_SESSION['items'])) {
-            return $_SESSION['items'];
-        }
-
-        return array();
-    }
-
+    /**
+     * set new items of array
+     */
     public function set(array $items)
     {
         $_SESSION['items'] = $items;
@@ -58,7 +48,18 @@ class SessionCartStorage
 
     public function all()
     {
-        return $_SESSION['items'];
+        if (!isset($_SESSION['items'])) {
+            return false;
+        }
+        $collection = new OrderItemCollection;
+        foreach ($_SESSION['items'] as $id) {
+            $item = new OrderItem;
+            $ret = $item->find(intval($id));
+            if ($ret->success) {
+                $collection->add($item);
+            }
+        }
+        return $collection;
     }
 
     public function contains(OrderItem $item)
@@ -82,32 +83,31 @@ class SessionCartStorage
                 return true;
             }
         }
-
         return false;
     }
 
     public function getIterator()
     {
-        return new ArrayIterator($this->getItems());
+        return $this->all();
     }
 
-    public function offsetSet($name, $value)
+    public function offsetSet($idx, $value)
     {
-        $_SESSION[ $name ] = $value;
+        $_SESSION[$idx] = $value;
     }
 
-    public function offsetExists($name)
+    public function offsetExists($idx)
     {
-        return isset($_SESSION[ $name ]);
+        return isset($_SESSION[ $idx ]);
     }
 
-    public function offsetGet($name)
+    public function offsetGet($idx)
     {
-        return $_SESSION[ $name ];
+        return $_SESSION[ $idx ];
     }
 
-    public function offsetUnset($name)
+    public function offsetUnset($idx)
     {
-        unset($_SESSION[$name]);
+        unset($_SESSION[$idx]);
     }
 }

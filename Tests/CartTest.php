@@ -28,10 +28,10 @@ class CartTest extends ModelTestCase
     public function testCart()
     {
         $cart = new Cart(new ArrayCartStorage);
-        $this->assertFalse($cart->fetchOrderItems());
+        $this->assertEmpty($cart->storage->all());
 
         $product = new Product;
-        $product->create([ 'name' => 'Cloth' ]);
+        $product->create([ 'name' => 'Clothes' ]);
         $type = $product->types->create([ 'name' => 'M', 'quantity' => 10 ]);
 
         $this->assertNotNull($type->id, 'product type exists');
@@ -41,18 +41,14 @@ class CartTest extends ModelTestCase
         $item1 = $cart->addProduct($product, $type, 1);
         $this->assertEquals($product->id, $item1->product_id);
         $this->assertEquals($type->id, $item1->type_id, 'Type should be the same');
-        $this->assertCount(1, $cart->fetchOrderItems(), 'Should be only one order item');
+        $this->assertCount(1, $cart->storage->all(), 'Should be only one order item');
 
         $item2 = $cart->addProduct($product, $type, 1);
         $this->assertEquals($product->id, $item2->product_id);
         $this->assertEquals($type->id, $item2->type_id, 'Type should be the same');
-        $this->assertCount(1, $cart->fetchOrderItems(), 'Should still one order item');
-
+        $this->assertCount(1, $cart->storage->all(), 'Should still one order item');
         $this->assertEquals($item1->id, $item2->id, 'Should be the same order item');
-
-        $orderItems = $cart->fetchOrderItems();
-        // $this->assertCount(1, $orderItems);
-        // var_dump($orderItems->toArray());
+        $this->assertCount(1, $cart->storage->all());
     }
 
 }

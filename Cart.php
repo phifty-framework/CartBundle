@@ -26,7 +26,7 @@ class Cart
     /**
      * Storage for saving order items for users.
      */
-    protected $storage;
+    public $storage;
 
     public $quantityInvalidItems = array();
 
@@ -45,7 +45,7 @@ class Cart
      */
     public function containsProducts(array $productIds)
     {
-        if ($orderItems = $this->fetchOrderItems()) {
+        if ($orderItems = $this->storage->all()) {
             foreach ($orderItems as $orderItem) {
                 if (in_array($orderItem->product_id, $productIds)) {
                     return true;
@@ -94,7 +94,7 @@ class Cart
 
         // find the same product and type,
         // if it's the same, we should simply update the quantity instead of creating new items
-        if ($items = $this->fetchOrderItems()) {
+        if ($items = $this->storage->all()) {
             foreach ($items as $item) {
                 if (intval($item->product_id) != intval($product->id)) {
                     continue;
@@ -117,7 +117,7 @@ class Cart
      */
     public function calculateTotalQuantity()
     {
-        if ($collection = $this->fetchOrderItems()) {
+        if ($collection = $this->storage->all()) {
             return $collection->calculateTotalQuantity();
         }
 
@@ -131,7 +131,7 @@ class Cart
      */
     public function calculateOrderItemTotalAmount()
     {
-        if ($collection = $this->fetchOrderItems()) {
+        if ($collection = $this->storage->all()) {
             return $collection->calculateTotalAmount();
         }
 
@@ -223,7 +223,7 @@ class Cart
 
         // Load default shipping method
         $company = new ShippingCompany(['handle' => $this->shippingCompany]);
-        if ($company->id && $this->fetchOrderItems()) {
+        if ($company->id && $this->storage->all()) {
             return $company->shipping_cost;
         }
 
@@ -248,30 +248,6 @@ class Cart
             // discount amount (from coupon)
             'discount_amount' => $this->calculateDiscountAmount(),
         );
-    }
-
-
-
-    /**
-     * Fetch item id from storage and rebless them into objects.
-     *
-     * @return OrderItemCollection
-     */
-    public function fetchOrderItems()
-    {
-        $items = $this->storage->get();
-        if (count($items)) {
-            $collection = new OrderItemCollection();
-            foreach ($items as $id) {
-                $item = new OrderItem;
-                $ret = $item->find(intval($id));
-                if ($ret->success) {
-                    $collection->add($item);
-                }
-            }
-            return $collection;
-        }
-        return false;
     }
 
     public function validateItemQuantity(OrderItem $item)
