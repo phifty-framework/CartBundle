@@ -37,7 +37,24 @@ class CartTest extends ModelTestCase
         $cart->addItem($item);
         $invalidItems = $cart->removeInvalidItems();
         $this->assertCount(1, $invalidItems);
+    }
 
+    public function testCartAddItem()
+    {
+        $cart = new Cart(new ArrayCartStorage);
+        $this->assertEmpty($cart->storage->all());
+
+        $product = new Product;
+        $product->create([ 'name' => 'Clothes' ]);
+        $type = $product->types->create([ 'name' => 'M', 'quantity' => 10 ]);
+
+        $this->assertNotNull($type->id, 'product type exists');
+        $this->assertNotNull($product->id, 'product exists');
+        $this->assertEquals($product->id, $type->product_id, 'product type exists');
+
+        $item1 = $cart->addProduct($product, $type, 1);
+        $cart->addItem($item1);
+        $this->assertCount(1, $cart->storage->all(), 'Should be only one order item');
     }
 
     public function testCartAddProduct()

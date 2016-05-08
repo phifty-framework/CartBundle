@@ -12,6 +12,8 @@ use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
 use ShippingBundle\Model\Company as ShippingCompany;
 use LazyRecord\BaseCollection;
+use ArrayIterator;
+use IteratorAggregate;
 
 /**
  * Contains the logics of Cart.
@@ -22,14 +24,12 @@ use LazyRecord\BaseCollection;
  *   - discount amount
  *   = discounted total amount
  */
-class Cart
+class Cart implements IteratorAggregate
 {
     /**
      * Storage for saving order items for users.
      */
     public $storage;
-
-    public $quantityInvalidItems = array();
 
     public $shippingCompany = 'default';
 
@@ -41,14 +41,25 @@ class Cart
         $this->removeInvalidItems($bundle->config('UseProductTypeQuantity'), $bundle->config('UseProductTypeQuantity'));
     }
 
+    public function containsProduct(Product $product) : bool
+    {
+        if ($collection = $this->storage->all()) {
+            foreach ($collection as $item) {
+                if (in_array($item->product_id, $product->id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Check if the current order item contains the any of the given product Id
      */
-    public function containsProducts(array $productIds)
+    public function containsProducts(array $productIds) : bool
     {
-        if ($orderItems = $this->storage->all()) {
-            foreach ($orderItems as $orderItem) {
+        if ($collection = $this->storage->all()) {
+            foreach ($collection as $orderItem) {
                 if (in_array($orderItem->product_id, $productIds)) {
                     return true;
                 }
@@ -302,6 +313,9 @@ class Cart
     public function mergeItems()
     {
         if ($items = $this->storage->all()) {
+            foreach ($items as $item) {
+
+            }
         }
     }
 
@@ -315,12 +329,9 @@ class Cart
     {
         $invalidItems = [];
         // using session as our storage
-        if ($items = $this->storage->all()) {
+        if ($collection = $this->storage->all()) {
             $self = $this;
-            if ($items instanceof BaseCollection) {
-                $items = $items->items();
-            }
-            $items = array_filter($items, function($item) use ($self, & $invalidItems, $validateType, $validateQuantity) {
+            $items = array_filter($collection->items(), function($item) use ($self, & $invalidItems, $validateType, $validateQuantity) {
                 if (false === $self->validateItem($item, $validateType, $validateQuantity)) {
                     $invalidItems[] = $item;
                     return false;
@@ -340,7 +351,9 @@ class Cart
      */
     public function addItem(OrderItem $item)
     {
-        $this->storage->add($item);
+        if (!$this->storage->contains($item)) {
+            $this->storage->add($item);
+        }
     }
 
 
@@ -440,4 +453,14 @@ class Cart
         }
         return $instance = new static($storage ?: new SessionCartStorage);
     }
+
+
+    /**
+     * Return order item collection the storage.
+     */
+    public function getIterator()
+    {
+        return $this->storage->all();
+    }
+
 }
