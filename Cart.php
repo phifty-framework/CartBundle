@@ -311,7 +311,7 @@ class Cart
      *
      * @return OrderItem[] Invalid order items will be returned.
      */
-    public function removeInvalidItems($validateType = false, $validateQuantity = false)
+    public function removeInvalidItems($validateType = false, $validateQuantity = false) : array
     {
         $invalidItems = [];
         // using session as our storage
@@ -349,6 +349,7 @@ class Cart
      */
     public function deleteItem(OrderItem $item)
     {
+        // Order item with order_id can't be deleted.
         if ($item->order_id) {
             return false;
         }
@@ -368,7 +369,7 @@ class Cart
      * @param integer     $quantity
      * @return boolean
      */
-    protected function newItem(Product $product, ProductType $type = null, $quantity)
+    protected function newItem(Product $product, ProductType $type = null, $quantity) : OrderItem
     {
         $item = new OrderItem;
         $ret = $item->create([
