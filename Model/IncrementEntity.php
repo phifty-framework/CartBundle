@@ -30,7 +30,7 @@ class IncrementEntity
         $id = strval($this->last_id);
         if ($len = $this->pad_length) {
             $c   = $this->pad_char ?: '0';
-            $id = sprintf("%{$c}{$len}s", $id);
+            $id = str_pad($id, $len, $c, STR_PAD_LEFT);
         }
         if ($this->prefix) {
             return date($this->prefix) . $id;
