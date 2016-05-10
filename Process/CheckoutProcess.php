@@ -34,10 +34,18 @@ class CheckoutProcess
 
     protected $member;
 
+    protected $productTypeQuantityEnabled = false;
+
+
     public function __construct(Member $member, Cart $cart)
     {
         $this->member = $member;
         $this->cart = $cart;
+    }
+
+    public function setProductTypeQuantityEnabled($enabled = true)
+    {
+        $this->productTypeQuantityEnabled = $enabled;
     }
 
     public function preprocess()
@@ -72,12 +80,7 @@ class CheckoutProcess
             throw new InvalidOrderFormException(_('無法建立訂單'), $ret);
         }
 
-        /*
-        if ($coupon) {
-            $coupon->update(['used' => ['used + 1']]);
-        }
-        */
-        $bundle = CartBundle::getInstance();
+        // todo: update coupon used count
         $productType = new ProductType;
         $conn = $productType->getWriteConnection();
         foreach ($this->cart->getItems() as $orderItem) {
@@ -92,7 +95,7 @@ class CheckoutProcess
                 }
                 throw new CheckoutException("無法更新訂單項目: {$ret->message}");
             }
-            if ($bundle && $bundle->config('UseProductTypeQuantity')) {
+            if ($this->productTypeQuantityEnabled) {
                 $this->updateProductTypeQuantity($orderItem);
             }
         }
@@ -100,7 +103,12 @@ class CheckoutProcess
         return true;
     }
 
-    public function updateProductTypeQuantity(OrderItem $item)
+    /**
+     * Update product type quantity base on the item quantity
+     *
+     * @return boolean
+     */
+    protected function updateProductTypeQuantity(OrderItem $item)
     {
         if (!$item->type_id) {
             return false;
@@ -108,19 +116,18 @@ class CheckoutProcess
         $productType = $item->type;
         $conn = $productType->getWriteConnection();
         $conn->query('START TRANSACTION');
-        $table = ProductType::table;
-        $checker = $conn->prepare("SELECT * FROM {$table} WHERE id = ? FOR UPDATE");
-        $checker->execute([$orderItem->type_id]);
+        $table = ProductType::TABLE;
+        $checker = $conn->prepare("SELECT quantity FROM {$table} WHERE id = ? FOR UPDATE");
+        $checker->execute([$item->type_id]);
         $result = $checker->fetch(PDO::FETCH_ASSOC);
-
-        if ($result->quantity < $item->quantity) {
-            $conn->query('COMMIT');
-            // quantity update failed.
+        if (intval($result['quantity']) < $item->quantity) {
+            // rollback if quantity update failed.
+            $conn->query('ROLLBACK');
             return false;
         }
 
         $updater = $conn->prepare("UPDATE {$table} SET quantity = quantity - ? WHERE id = ?");
-        $updater->execute([$orderItem->quantity, $orderItem->type_id]);
+        $updater->execute([$item->quantity, $item->type_id]);
         $conn->query('COMMIT');
         return true;
     }
