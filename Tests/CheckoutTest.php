@@ -81,7 +81,7 @@ class CheckoutTest extends CartTestCase
         $process->setProductTypeQuantityEnabled(true); // this should update the product type quantity
 
         try {
-            $order = $process->checkout($args);
+            $order = $process->checkoutWithTransaction($product->getWriteConnection(), $args);
         } catch (InsufficientOrderItemQuantityException $e) {
 
         } catch (CheckoutException $e) {

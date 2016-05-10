@@ -115,8 +115,6 @@ class CheckoutProcess
     public function checkout(array $formInputs)
     {
         $order = $this->createOrder($formInputs);
-
-
         if ($orderItems = $this->cart->getItems()) {
             foreach ($orderItems as $orderItem) {
                 $this->updateOrderItemStatus($orderItem, $order);
@@ -125,14 +123,32 @@ class CheckoutProcess
                 }
             }
         }
-
         // fixme: read coupon code from somewhere...
         if (isset($formInputs['coupon_code'])) {
             $this->updateCouponStatus($formInputs['coupon_code']);
         }
-
         $this->postProcess($order);
         return $order;
+    }
+
+    /**
+     * Checkout process with transaction handling
+     *
+     * @param PDO $conn connection for transaction
+     * @param array $formInputs
+     */
+    public function checkoutWithTransaction(PDO $conn, array $formInputs)
+    {
+        $conn->query('START TRANSACTION');
+        try {
+            $order = $this->checkout($formInputs);
+            $conn->query('COMMIT');
+            return $order;
+        } catch (Exception $e) {
+            $conn->query('ROLLBACK');
+            throw $e;
+        }
+        return false;
     }
 
     protected function updateOrderItemStatus(OrderItem $item, Order $order)
