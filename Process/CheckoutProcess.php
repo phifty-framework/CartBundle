@@ -69,7 +69,7 @@ class CheckoutProcess
     }
 
 
-    public function createOrder(array $args)
+    public function createOrder(array $formInputs)
     {
         // preprocess with cart items
         $shippingFee     = $this->cart->calculateShippingFee();
@@ -78,18 +78,18 @@ class CheckoutProcess
         $discountAmount  = $this->cart->calculateDiscountAmount();
 
         // Use Try-Cache to cache exceptions and process fallbacks.
-        $args['paid_amount']     = 0;
-        $args['shipping_fee']    = $shippingFee;
-        $args['discount_amount'] = $discountAmount;
-        $args['total_amount']    = $totalAmount;
-        $args['member_id'] = $this->member->id;
+        $formInputs['paid_amount']     = 0;
+        $formInputs['shipping_fee']    = $shippingFee;
+        $formInputs['discount_amount'] = $discountAmount;
+        $formInputs['total_amount']    = $totalAmount;
+        $formInputs['member_id'] = $this->member->id;
 
         if ($coupon = $this->cart->getCurrentCoupon()) {
-            $args['coupon_code'] = $coupon->coupon_code;
+            $formInputs['coupon_code'] = $coupon->coupon_code;
         }
 
         $order = new Order;
-        $ret = $order->create($args);
+        $ret = $order->create($formInputs);
         if (!$ret || $ret->error || !$order->id) {
             throw new InvalidOrderFormException(_('無法建立訂單'), $ret);
         }
@@ -97,36 +97,42 @@ class CheckoutProcess
     }
 
 
+    protected function updateCouponStatus($couponCode)
+    {
+        // todo:
+    }
+
+
+
     /**
      * The checkout method creates an order base on the given cart items.
      *
      * If the order was successfully created, then the Order object will be returned.
      *
-     * @param array $args argument array contains basic information.
+     * @param array $formInputs argument array contains basic information.
      * @return CartBundle\Model\Order
      */
-    public function checkout(array $args)
+    public function checkout(array $formInputs)
     {
-        $tmp = new Order;
-        $conn = $tmp->getWriteConnection();
-        $conn->query('START TRANSACTION');
-        try {
-            $order = $this->createOrder($args);
-            // todo: update coupon used count
-            foreach ($this->cart->getItems() as $orderItem) {
+        $order = $this->createOrder($formInputs);
+
+
+        if ($orderItems = $this->cart->getItems()) {
+            foreach ($orderItems as $orderItem) {
                 $this->updateOrderItemStatus($orderItem, $order);
                 if ($this->productTypeQuantityEnabled) {
                     $this->updateProductTypeQuantity($orderItem);
                 }
             }
-            $this->postProcess($order);
-            $conn->query('COMMIT');
-            return $order;
-        } catch (Exception $e) {
-            $conn->query('ROLLBACK');
-            throw $e;
         }
-        return false;
+
+        // fixme: read coupon code from somewhere...
+        if (isset($formInputs['coupon_code'])) {
+            $this->updateCouponStatus($formInputs['coupon_code']);
+        }
+
+        $this->postProcess($order);
+        return $order;
     }
 
     protected function updateOrderItemStatus(OrderItem $item, Order $order)

@@ -469,6 +469,10 @@ class Cart implements IteratorAggregate, Countable
         return $instance;
     }
 
+    public function setItems(array $items)
+    {
+        $this->storage->set($items);
+    }
 
     /**
      * @return OrderItemCollection return order items from storage.
