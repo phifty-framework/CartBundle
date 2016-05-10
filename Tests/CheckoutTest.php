@@ -31,7 +31,21 @@ class CheckoutTest extends CartTestCase
         ];
     }
 
-    public function testCartCheckoutWithProductTypeQuantity()
+
+    public function quantityProvider() {
+        return [
+            [10, 1, true],
+            [10, 10, true],
+            [10, 11, false],
+        ];
+
+    }
+
+
+    /**
+     * @dataProvider quantityProvider
+     */
+    public function testCartCheckoutWithProductTypeQuantity($totalQuantity, $itemQuantity, $shouldSuccess)
     {
         $userInfo = $this->getUserInfo();
 
@@ -44,14 +58,14 @@ class CheckoutTest extends CartTestCase
 
         $product = new Product;
         $product->create([ 'name' => 'Clothes' ]);
-        $type = $product->types->create([ 'name' => 'M', 'quantity' => 10 ]);
+        $type = $product->types->create([ 'name' => 'M', 'quantity' => $totalQuantity ]);
 
-        $this->assertEquals(10, $type->quantity);
+        $this->assertEquals($totalQuantity, $type->quantity);
 
         $this->assertNotNull($type->id, 'product type exists');
         $this->assertNotNull($product->id, 'product exists');
         $this->assertEquals($product->id, $type->product_id, 'product type exists');
-        $cart->addProduct($product, $type, 1);
+        $cart->addProduct($product, $type, $itemQuantity);
         $cart->setShippingFeeRule(new NoShippingFeeRule);
 
         $args = [];
@@ -65,7 +79,11 @@ class CheckoutTest extends CartTestCase
 
         $ret = $type->reload();
         $this->assertResultSuccess($ret);
-        $this->assertEquals(9, $type->quantity);
+        if ($shouldSuccess) {
+            $this->assertEquals($totalQuantity - $itemQuantity, $type->quantity);
+        } else {
+            $this->assertEquals($totalQuantity, $type->quantity);
+        }
     }
 
     /**
