@@ -318,12 +318,15 @@ class Cart implements IteratorAggregate, Countable
                     continue;
                 }
                 // merge them
-                $firstItem = $items[0];
                 $quantity = array_reduce($items, function($carry, $subItem) {
                     return $carry + $subItem->quantity;
                 }, 0);
-                $firstItem->update([ 'quantity' => $quantity ]);
-                $mergedItems[] = $firstItem;
+                list($first) = array_splice($items, 0, 1);
+                $first->update([ 'quantity' => $quantity ]);
+                foreach ($items as $item) {
+                    $item->delete();
+                }
+                $mergedItems[] = $first;
             }
         }
         $this->storage->set($mergedItems);
