@@ -8,6 +8,7 @@ use CartBundle\Model\OrderItem;
 use CartBundle\Model\OrderSchema;
 use CartBundle\Process\CheckoutProcess;
 
+// some required exception
 use CartBundle\Process\CheckoutException;
 use CartBundle\Process\InsufficientOrderItemQuantityException;
 
@@ -73,8 +74,8 @@ class CheckoutTest extends CartTestCase
 
         $args = [];
         foreach ($userInfo as $key => $value) {
-            $args[ "buyer_$key" ] = $value;
-            $args[ "shipping_$key" ] = $value;
+            $args["buyer_$key"] = $value;
+            $args["shipping_$key"] = $value;
         }
         $process = new CheckoutProcess($member, $cart);
         $process->setProductTypeQuantityEnabled(true); // this should update the product type quantity
@@ -85,6 +86,10 @@ class CheckoutTest extends CartTestCase
 
         } catch (CheckoutException $e) {
 
+        }
+
+        if ($shouldSuccess) {
+            $this->assertInstanceOf('CartBundle\\Model\\Order', $order);
         }
 
         $ret = $type->reload();
