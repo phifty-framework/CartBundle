@@ -3,10 +3,12 @@ namespace CartBundle\Process;
 use CartBundle\Cart;
 use CartBundle\Model\Order;
 use CartBundle\Model\OrderItem;
-use Exception;
-use MemberBundle\Model\Member;
 use CartBundle\Email\OrderCreatedEmail;
 use CartBundle\CartBundle;
+use ProductBundle\Model\ProductType;
+use MemberBundle\Model\Member;
+use Exception;
+use PDO;
 
 use LazyRecord\Result;
 
@@ -38,7 +40,6 @@ class CheckoutProcess
         $this->cart = $cart;
     }
 
-
     public function preprocess()
     {
         $this->cart->removeInvalidItems(true, true);
@@ -49,10 +50,10 @@ class CheckoutProcess
     public function checkout(array $args)
     {
         // preprocess with cart items
-        $shippingFee = $this->cart->calculateShippingFee();
+        $shippingFee     = $this->cart->calculateShippingFee();
         $origTotalAmount = $this->cart->calculateTotalAmount();
-        $totalAmount = $this->cart->calculateDiscountedTotalAmount();
-        $discountAmount = $this->cart->calculateDiscountAmount();
+        $totalAmount     = $this->cart->calculateDiscountedTotalAmount();
+        $discountAmount  = $this->cart->calculateDiscountAmount();
 
         // Use Try-Cache to cache exceptions and process fallbacks.
         $args['paid_amount'] = 0;
@@ -77,7 +78,9 @@ class CheckoutProcess
         }
         */
         $bundle = CartBundle::getInstance();
-        foreach ($this->cart as $orderItem) {
+        $productType = new ProductType;
+        $conn = $productType->getWriteConnection();
+        foreach ($this->cart->getItems() as $orderItem) {
             $orderItem->setAlias('oi');
             $ret = $orderItem->update([
                 'order_id'        => $order->id,
@@ -90,15 +93,39 @@ class CheckoutProcess
                 throw new CheckoutException("無法更新訂單項目: {$ret->message}");
             }
             if ($bundle && $bundle->config('UseProductTypeQuantity')) {
-                kernel()->db->query('LOCK TABLES '.ProductType::table.' AS t WRITE');
-                $stmt = kernel()->db->prepare('UPDATE '.ProductType::table.' t SET quantity = quantity - ? WHERE id = ?');
-                $stmt->execute([$orderItem->quantity, $orderItem->type_id]);
-                kernel()->db->query('UNLOCK TABLES');
+                $this->updateProductTypeQuantity($orderItem);
             }
         }
         $this->postProcess($order);
         return true;
     }
+
+    public function updateProductTypeQuantity(OrderItem $item)
+    {
+        if (!$item->type_id) {
+            return false;
+        }
+        $productType = $item->type;
+        $conn = $productType->getWriteConnection();
+        $conn->query('START TRANSACTION');
+        $table = ProductType::table;
+        $checker = $conn->prepare("SELECT * FROM {$table} WHERE id = ? FOR UPDATE");
+        $checker->execute([$orderItem->type_id]);
+        $result = $checker->fetch(PDO::FETCH_ASSOC);
+
+        if ($result->quantity < $item->quantity) {
+            $conn->query('COMMIT');
+            // quantity update failed.
+            return false;
+        }
+
+        $updater = $conn->prepare("UPDATE {$table} SET quantity = quantity - ? WHERE id = ?");
+        $updater->execute([$orderItem->quantity, $orderItem->type_id]);
+        $conn->query('COMMIT');
+        return true;
+    }
+
+
 
     public function postProcess(Order $order)
     {

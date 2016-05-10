@@ -16,8 +16,9 @@ class UpdateCartItem extends UpdateRecordAction
 
     public function run()
     {
+        $cart   = Cart::getInstance();
         $bundle = CartBundle::getInstance();
-        $item = $this->getRecord();
+        $item   = $this->getRecord();
         if ($item->order_id) {
             return $this->error('Items added to an order should not be updated.');
         }
@@ -33,14 +34,13 @@ class UpdateCartItem extends UpdateRecordAction
 
         $quantity = intval($this->arg('quantity'));
         if ($quantity <= 0) {
-            return $this->error(_('數量不可為零'));
+            return $this->error(_('數量不可為零或小於零。'));
         }
         /*
         $ret = parent::run();
         if ($ret) {
         }
         */
-        $cart = Cart::getInstance();
         if ($cart->updateItem($item, $type, $quantity)) {
             $summary = $cart->getSummary();
             $summary['amount'] = $item->calculateSubtotal();

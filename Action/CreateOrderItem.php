@@ -19,7 +19,6 @@ class CreateOrderItem extends CreateRecordAction
         $orderItem = $this->getRecord();
         $data = $orderItem->toArray();
         $data['product'] = $orderItem->product->toArray();
-
         return $ret ? $this->success('OrderItem created', $data) : $ret;
     }
 }
