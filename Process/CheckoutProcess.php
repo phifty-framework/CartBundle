@@ -28,6 +28,21 @@ class InvalidOrderFormException extends CheckoutException
     }
 }
 
+class InsufficientOrderItemQuantityException extends CheckoutException
+{
+    protected $orderItem;
+
+    protected $availableQuantity;
+
+    public function __construct(OrderItem $orderItem, $availableQuantity, $message)
+    {
+        $this->orderItem = $orderItem;
+        $this->availableQuantity = $availableQuantity;
+        parent::__construct($message);
+    }
+
+}
+
 class CheckoutProcess
 {
     protected $cart;
@@ -52,10 +67,9 @@ class CheckoutProcess
     {
         $this->cart->removeInvalidItems(true, true);
     }
-    /**
-     * @param array $args argument array contains basic information.
-     */
-    public function checkout(array $args)
+
+
+    public function createOrder(array $args)
     {
         // preprocess with cart items
         $shippingFee     = $this->cart->calculateShippingFee();
@@ -64,10 +78,10 @@ class CheckoutProcess
         $discountAmount  = $this->cart->calculateDiscountAmount();
 
         // Use Try-Cache to cache exceptions and process fallbacks.
-        $args['paid_amount'] = 0;
-        $args['shipping_fee'] = $shippingFee;
-        $args['total_amount'] =  $totalAmount;
+        $args['paid_amount']     = 0;
+        $args['shipping_fee']    = $shippingFee;
         $args['discount_amount'] = $discountAmount;
+        $args['total_amount']    = $totalAmount;
         $args['member_id'] = $this->member->id;
 
         if ($coupon = $this->cart->getCurrentCoupon()) {
@@ -79,28 +93,54 @@ class CheckoutProcess
         if (!$ret || $ret->error || !$order->id) {
             throw new InvalidOrderFormException(_('無法建立訂單'), $ret);
         }
+        return $order;
+    }
 
-        // todo: update coupon used count
-        $productType = new ProductType;
-        $conn = $productType->getWriteConnection();
-        foreach ($this->cart->getItems() as $orderItem) {
-            $orderItem->setAlias('oi');
-            $ret = $orderItem->update([
-                'order_id'        => $order->id,
-                'delivery_status' => 'unpaid',
-            ]);
-            if ($ret->error) {
-                if ($ret->exception) {
-                    throw $ret->exception;
+
+    /**
+     * The checkout method creates an order base on the given cart items.
+     *
+     * If the order was successfully created, then the Order object will be returned.
+     *
+     * @param array $args argument array contains basic information.
+     * @return CartBundle\Model\Order
+     */
+    public function checkout(array $args)
+    {
+        $tmp = new Order;
+        $conn = $tmp->getWriteConnection();
+        $conn->query('START TRANSACTION');
+        try {
+            $order = $this->createOrder($args);
+            // todo: update coupon used count
+            foreach ($this->cart->getItems() as $orderItem) {
+                $this->updateOrderItemStatus($orderItem, $order);
+                if ($this->productTypeQuantityEnabled) {
+                    $this->updateProductTypeQuantity($orderItem);
                 }
-                throw new CheckoutException("無法更新訂單項目: {$ret->message}");
             }
-            if ($this->productTypeQuantityEnabled) {
-                $this->updateProductTypeQuantity($orderItem);
-            }
+            $this->postProcess($order);
+            $conn->query('COMMIT');
+            return $order;
+        } catch (Exception $e) {
+            $conn->query('ROLLBACK');
+            throw $e;
         }
-        $this->postProcess($order);
-        return true;
+        return false;
+    }
+
+    protected function updateOrderItemStatus(OrderItem $item, Order $order)
+    {
+        $ret = $item->update([
+            'order_id'        => $order->id,
+            'delivery_status' => 'unpaid',
+        ]);
+        if ($ret->error) {
+            if ($ret->exception) {
+                throw $ret->exception;
+            }
+            throw new CheckoutException("無法更新訂單項目: {$ret->message}");
+        }
     }
 
     /**
@@ -115,20 +155,17 @@ class CheckoutProcess
         }
         $productType = $item->type;
         $conn = $productType->getWriteConnection();
-        $conn->query('START TRANSACTION');
         $table = ProductType::TABLE;
         $checker = $conn->prepare("SELECT quantity FROM {$table} WHERE id = ? FOR UPDATE");
         $checker->execute([$item->type_id]);
         $result = $checker->fetch(PDO::FETCH_ASSOC);
         if (intval($result['quantity']) < $item->quantity) {
             // rollback if quantity update failed.
-            $conn->query('ROLLBACK');
-            return false;
+            throw new InsufficientOrderItemQuantityException($item, intval($result['quantity']), "quantity is not enough.");
         }
 
         $updater = $conn->prepare("UPDATE {$table} SET quantity = quantity - ? WHERE id = ?");
         $updater->execute([$item->quantity, $item->type_id]);
-        $conn->query('COMMIT');
         return true;
     }
 

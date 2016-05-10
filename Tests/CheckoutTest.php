@@ -7,13 +7,16 @@ use CartBundle\Model\OrderItemSchema;
 use CartBundle\Model\OrderItem;
 use CartBundle\Model\OrderSchema;
 use CartBundle\Process\CheckoutProcess;
+
+use CartBundle\Process\CheckoutException;
+use CartBundle\Process\InsufficientOrderItemQuantityException;
+
 use CartBundle\ShippingFeeRule\NoShippingFeeRule;
 use CartBundle\ShippingFeeRule\DefaultShippingFeeRule;
 
 use ProductBundle\Model\ProductSchema;
 use ProductBundle\Model\ProductTypeSchema;
 use ProductBundle\Model\Product;
-
 use MemberBundle\Model\Member;
 
 class CheckoutTest extends CartTestCase
@@ -75,7 +78,14 @@ class CheckoutTest extends CartTestCase
         }
         $process = new CheckoutProcess($member, $cart);
         $process->setProductTypeQuantityEnabled(true); // this should update the product type quantity
-        $process->checkout($args);
+
+        try {
+            $order = $process->checkout($args);
+        } catch (InsufficientOrderItemQuantityException $e) {
+
+        } catch (CheckoutException $e) {
+
+        }
 
         $ret = $type->reload();
         $this->assertResultSuccess($ret);
