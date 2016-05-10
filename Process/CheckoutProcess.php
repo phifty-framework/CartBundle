@@ -175,8 +175,7 @@ class CheckoutProcess
         if (!$item->type_id) {
             return false;
         }
-        $productType = $item->type;
-        $conn = $productType->getWriteConnection();
+        $conn = $item->getWriteConnection();
         $table = ProductType::TABLE;
         $checker = $conn->prepare("SELECT quantity FROM {$table} WHERE id = ? FOR UPDATE");
         $checker->execute([$item->type_id]);
