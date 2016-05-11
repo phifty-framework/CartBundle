@@ -20,19 +20,21 @@ class SequenceEntityBase
     const FIND_BY_PRIMARY_KEY_SQL = 'SELECT * FROM sequence_entities WHERE id = :id LIMIT 1';
     public static $column_names = array (
       0 => 'id',
-      1 => 'prefix',
-      2 => 'pad_char',
-      3 => 'pad_length',
-      4 => 'start_id',
-      5 => 'last_id',
-      6 => 'increment',
-      7 => 'created_on',
-      8 => 'updated_on',
-      9 => 'created_by',
-      10 => 'updated_by',
+      1 => 'handle',
+      2 => 'prefix',
+      3 => 'pad_char',
+      4 => 'pad_length',
+      5 => 'start_id',
+      6 => 'last_id',
+      7 => 'increment',
+      8 => 'created_on',
+      9 => 'updated_on',
+      10 => 'created_by',
+      11 => 'updated_by',
     );
     public static $column_hash = array (
       'id' => 1,
+      'handle' => 1,
       'prefix' => 1,
       'pad_char' => 1,
       'pad_length' => 1,
@@ -60,6 +62,10 @@ class SequenceEntityBase
     public function getId()
     {
             return $this->get('id');
+    }
+    public function getHandle()
+    {
+            return $this->get('handle');
     }
     public function getPrefix()
     {

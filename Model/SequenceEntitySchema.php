@@ -7,6 +7,10 @@ class SequenceEntitySchema extends DeclareSchema
 {
     public function schema()
     {
+        $this->column('handle')
+            ->varchar(12)
+            ;
+
         $this->column('prefix')
             ->varchar(20)
             ;

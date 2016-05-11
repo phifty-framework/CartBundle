@@ -3,63 +3,35 @@
 namespace CartBundle\Model;
 
 use DateTime;
+use CartBundle\Model\SequenceEntitySchema;
+use CartBundle\Model\SequenceEntity;
 
 class Order  extends \CartBundle\Model\OrderBase
 {
-    /**
-     * Create Order SN from Date, and Order id.
-     *
-     *   {year}{month}{day}{order count by day}
-     *
-     *   20140102 0005
-     *
-     *   12 charactors
-     */
-    const SN_FORMAT = '%8s%04d';
-
     public function dataLabel()
     {
         return $this->sn;
     }
 
-    /**
-     * @param DateTime $date
-     * @param int      $txnTimes
-     * @param int      $serialNum
-     */
-    public function generateSN($date,  $serialNum = null)
+    public static function generateSN()
     {
-        if (is_string($date)) {
-            $date = new DateTime($date);
-        }
-        if (!$serialNum) {
-            // $serialNum = OrderCollection::getCountByDay($date);
-            // xxx:
-            $serialNum = md5(rand());
-        }
-        return sprintf(self::SN_FORMAT, $date->format('Ymd'), $serialNum);
-    }
-
-    public function regenerateSN()
-    {
-        // parse sn from the current sn
-        if (false !== sscanf($this->sn, self::SN_FORMAT, $date, $serialNum)) {
-            $date = DateTime::createFromFormat('Ymd', $date);
-            $this->sn = $this->generateSN($date, $serialNum);
-        } else {
-            throw new Exception('SN generation failed.');
-        }
-
-        return $this->save();
+        $sequence = new SequenceEntity;
+        $sequence->loadOrCreate([
+            'handle' => 'default-order-seq',
+            'prefix' => 'Y',
+            'pad_length' => 12,
+            'pad_char' => '0',
+            'start_id' => 1,
+            'last_id' => 1,
+        ], 'handle');
+        $sn = $sequence->getNextId();
+        return $sn;
     }
 
     public function afterCreate($args)
     {
-        // generate order sn with format '201309310001'
-        // fixme: sn lock 
-        // $this->lockWrite();
-        $this->update(['sn' => $this->generateSN($this->created_on)]);
-        // $this->unlock();
+        // fixme: select for update...
+        $this->update(['sn' => self::generateSN() ]);
     }
 
     public function beforeDelete($args)
