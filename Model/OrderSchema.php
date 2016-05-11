@@ -82,9 +82,6 @@ class OrderSchema extends SchemaDeclare
             ->label('訂單 Security Token')
             ->hint('請勿修改或清空')
             ->renderAs('TextInput', ['size' => 8])
-            ->default(function () {
-                return substr(md5(uniqid('', true)), 0, 8);
-            })
             ;
 
         if ($bundle->config('ChooseDeliveryType')) {

@@ -13,12 +13,23 @@ class Order  extends \CartBundle\Model\OrderBase
         return $this->sn;
     }
 
+    /**
+     * @return string token
+     */
+    public static function generateToken()
+    {
+        return substr(md5(uniqid('O', true)), 0, 8);
+    }
+
+    /**
+     * @return string sn
+     */
     public static function generateSN()
     {
         $sequence = new SequenceEntity;
         $sequence->loadOrCreate([
             'handle' => 'default-order-seq',
-            'prefix' => 'Y',
+            'prefix' => 'Ymd',
             'pad_length' => 12,
             'pad_char' => '0',
             'start_id' => 1,
@@ -67,6 +78,14 @@ class Order  extends \CartBundle\Model\OrderBase
             $this->payment_status = 'paid_incomplete';
             $this->order_items->updateDeliveryStatus('confirming');
         }
+    }
+
+    public function beforeCreate($args = array())
+    {
+        if (!isset($args['token'])) {
+            $args['token'] = self::generateToken();
+        }
+        return $args;
     }
 
     public function beforeUpdate($args = array())
