@@ -24,10 +24,10 @@ class UpdateCartItem extends UpdateRecordAction
         }
 
         $type = null;
-        if ($bundle->config('UseProductType')) {
+        if ($bundle->config('UseProductType') && $this->arg('product_type')) {
             $type = new ProductType;
-            $type->find(intval($this->arg('product_type')));
-            if (!$type->id) {
+            $ret = $type->find(intval($this->arg('product_type')));
+            if ($ret->error) {
                 return $this->error(_('無此產品類型'));
             }
         }
