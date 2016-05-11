@@ -5,7 +5,10 @@
     "authors": [
         { "name": "c9s", "email": "yoanlin93@gmail.com" }
     ],
-    "require": { "corneltek/installers": "dev-master" },
+    "require": {
+        "corneltek/installers": "dev-master",
+        "corneltek/esunacq": "^1.0"
+    },
     "extra": { "branch-alias": { "dev-master": "3.1.x-dev" } },
     "autoload": { "psr-4":  { "CartBundle\\": "" } },
     "repositories": [
