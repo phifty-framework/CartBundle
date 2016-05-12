@@ -10,19 +10,11 @@ use Exception;
 use CartBundle\Email\PaymentCreditCardEmail;
 use CartBundle\Email\AdminOrderPaymentEmail;
 
-class NewebPaymentController extends OrderBaseController implements ThirdPartyPaymentController
+class NewebPaymentController extends BasePaymentController implements ThirdPartyPaymentController
 {
-    protected $paymentConfigKey = 'Transaction.Neweb';
-
-    protected function getPaymentConfig($key)
+    public function getPaymentId()
     {
-        $bundle = CartBundle::getInstance();
-        return $bundle->config("{$this->paymentConfigKey}.{$key}");
-    }
-
-    public function getSubmitUrl()
-    {
-        $this->getPaymentConfig('Transaction.Neweb.PaymentURL');
+        return 'neweb';
     }
 
     public function buildFormFields(Order $order, array $override = array())
@@ -51,7 +43,7 @@ class NewebPaymentController extends OrderBaseController implements ThirdPartyPa
             'checksum' => $checksum,
             'op' => 'AcceptPayment',
             'OrderURL' => $this->getPaymentConfig('OrderUrl'),
-            'ReturnURL' => $this->getPaymentConfig('ReturnUrl'),
+            'ReturnURL' => $this->getReturnUrl(),
         ];
         return array_merge($formFields, $override);
     }
@@ -207,27 +199,11 @@ class NewebPaymentController extends OrderBaseController implements ThirdPartyPa
         }
     }
 
-    // todo: fix this in build stage
-    protected function validateConfig()
-    {
-        $bundle = kernel()->bundle('CartBundle');
-        // Move to config validation
-        if (!$bundle->config('Transaction.Neweb.MerchantNumber')) {
-            throw new Exception('Transaction.Neweb.MerchantNumber is required.');
-        }
-        if (!$bundle->config('Transaction.Neweb.Code')) {
-            throw new Exception('Transaction.Neweb.Code is required.');
-        }
-    }
-
     /**
      * Neweb payment form page.
      */
     public function indexAction()
     {
-        $bundle = kernel()->bundle('CartBundle');
-        $config = $bundle->config;
-
         $order = $this->getCurrentOrder();
         if (false === $order) {
             die('parameter error');
@@ -246,8 +222,6 @@ class NewebPaymentController extends OrderBaseController implements ThirdPartyPa
 
     public function returnAction()
     {
-        $bundle = kernel()->bundle('CartBundle');
-
         $finalResult = $this->getParameter('final_result');
         $merchantNumber = $this->getParameter('P_MerchantNumber');
         $orderNumber = $this->getParameter('P_OrderNumber');
@@ -261,7 +235,7 @@ class NewebPaymentController extends OrderBaseController implements ThirdPartyPa
 
         $orgOrderNumber = substr($orderNumber, 0, 12);
 
-        $code = $bundle->config('Transaction.Neweb.Code');
+        $code = $this->getPaymentConfig('Code');
 
         $message = '交易失敗';
         $reason = '';
@@ -342,7 +316,7 @@ class NewebPaymentController extends OrderBaseController implements ThirdPartyPa
 
     public function responseAction()
     {
-        $bundle = kernel()->bundle('CartBundle');
+        $code = $this->getPaymentConfig('Code');
 
         // Record the transaction
         $merchantNumber = $this->getParameter('MerchantNumber');
@@ -354,7 +328,7 @@ class NewebPaymentController extends OrderBaseController implements ThirdPartyPa
         $approvalCode = $this->getParameter('ApprovalCode');
         $bankResponseCode = $this->getParameter('BankResponseCode');
         $batchNumber = $this->getParameter('BatchNumber');
-        $code = $bundle->config('Transaction.Neweb.Code');
+
 
         $orgOrderNumber = substr($orderNumber, 0, 12);
 

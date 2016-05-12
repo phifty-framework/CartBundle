@@ -14,19 +14,11 @@ use EsunBank\ACQ\AuthRequestBuilder;
 use EsunBank\ACQ\TxnType;
 
 
-class EsunPaymentController extends OrderBaseController implements ThirdPartyPaymentController
+class EsunPaymentController extends BasePaymentController implements ThirdPartyPaymentController
 {
-    protected $paymentConfigKey = 'Transaction.EsunACQ';
-
-    protected function getPaymentConfig($key)
+    public function getPaymentId()
     {
-        $bundle = CartBundle::getInstance();
-        return $bundle->config("{$this->paymentConfigKey}.{$key}");
-    }
-
-    public function getSubmitUrl()
-    {
-        return $this->getPaymentConfig('PaymentURL');
+        return 'esunacq';
     }
 
     public function buildFormFields(Order $order, array $override = array())
@@ -37,7 +29,7 @@ class EsunPaymentController extends OrderBaseController implements ThirdPartyPay
         $KEY = $bundle->config('KEY'); // MAC KEY
         $ONO = $order->sn;
         $TA = $order->total_amount;
-        $returnUrl = $this->getPaymentConfig('ReturnURL');
+        $returnUrl = $this->getReturnUrl();
         $builder = new AuthRequestBuilder($KEY, [
             'MID' => $MID,  // 特店代碼 char(15)
             'CID' => $CID,  // 子特店代碼 char(20)
@@ -45,6 +37,10 @@ class EsunPaymentController extends OrderBaseController implements ThirdPartyPay
         ]);
         return array_merge($builder->formFields($ONO, $TA), $override);
     }
+
+
+
+
 
 
     public function indexAction()
