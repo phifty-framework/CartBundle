@@ -1,3 +1,7 @@
+{% for n, val in formFields %}
+<input type="hidden" name="{{n}}" value="{{val}}"/>
+{% endfor %}
+{#
 <input type="hidden" name="MerchantNumber" value="{{neweb.config.MerchantNumber}}"/>
 <input type="hidden" name="OrderNumber"    value="{{neweb.order_number}}"/>
 <input type="hidden" name="Amount"         value="{{neweb.order.total_amount}}"/>
@@ -10,3 +14,4 @@
 <input type="hidden" name="ReturnURL"      value="{{neweb.config.ReturnURL}}"/>
 <input type="hidden" name="checksum"       value="{{neweb.checksum}}"/>
 <input type="hidden" name="op"             value="AcceptPayment"/>
+#}

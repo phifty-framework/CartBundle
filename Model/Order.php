@@ -5,6 +5,8 @@ namespace CartBundle\Model;
 use DateTime;
 use CartBundle\Model\SequenceEntitySchema;
 use CartBundle\Model\SequenceEntity;
+use CartBundle\Cart;
+use CartBundle\CartStorage\ArrayCartStorage;
 
 class Order  extends \CartBundle\Model\OrderBase
 {
@@ -115,4 +117,16 @@ class Order  extends \CartBundle\Model\OrderBase
     {
         return $this->update(array('is_deleted' => true));
     }
+
+
+    /**
+     * Create a cart based on the order items of this order.
+     *
+     * @return Cart
+     */
+    public function createCartFromItems()
+    {
+        return new Cart(new ArrayCartStorage($this->order_items->items()));
+    }
+
 }

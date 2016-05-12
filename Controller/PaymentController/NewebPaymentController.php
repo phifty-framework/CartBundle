@@ -2,6 +2,7 @@
 
 namespace CartBundle\Controller\PaymentController;
 
+use CartBundle\CartBundle;
 use CartBundle\Model\Order;
 use CartBundle\Model\Transaction;
 use CartBundle\Controller\OrderBaseController;
@@ -9,8 +10,58 @@ use Exception;
 use CartBundle\Email\PaymentCreditCardEmail;
 use CartBundle\Email\AdminOrderPaymentEmail;
 
-class NewebPaymentController extends OrderBaseController
+class NewebPaymentController extends OrderBaseController implements ThirdPartyPaymentController
 {
+    protected $paymentConfigKey = 'Transaction.Neweb';
+
+    protected function getPaymentConfig($key)
+    {
+        $bundle = CartBundle::getInstance();
+        return $bundle->config("{$this->paymentConfigKey}.{$key}");
+    }
+
+    public function getSubmitUrl()
+    {
+        $this->getPaymentConfig('Transaction.Neweb.PaymentURL');
+    }
+
+    public function buildFormFields(Order $order, array $override = array())
+    {
+        // $order = $this->getCurrentOrder();
+        $merchantNumber = $this->getPaymentConfig('MerchantNumber');
+        $code = $this->getPaymentConfig('Code');
+        $rcode = $this->getPaymentConfig('RCode');
+        $orderNumber = $order->sn . $order->transactions->size();
+
+        $checkstr =
+              $merchantNumber
+            . $orderNumber
+            . $rcode
+            . $order->total_amount;
+        $checksum = md5($checkstr);
+        $formFields = [
+            'MerchantNumber' => $merchantNumber,
+            'OrderNumber' => $orderNumber,
+            'Amount' => $order->total_amount,
+            'OrgOrderNumber' => $order->id,
+            'ApproveFlag' => 1,
+            'DepositFlag' => 1,
+            'Englishmode' => kernel()->locale->current() != 'zh_TW' ? 1 : 0,
+            'iphonepage' => $this->isMobile() ? 1 : 0,
+            'checksum' => $checksum,
+            'op' => 'AcceptPayment',
+            'OrderURL' => $this->getPaymentConfig('OrderUrl'),
+            'ReturnURL' => $this->getPaymentConfig('ReturnUrl'),
+        ];
+        return array_merge($formFields, $override);
+    }
+
+
+
+
+
+
+
     /**
      * Translate response code to message for customers.
      *
@@ -156,10 +207,10 @@ class NewebPaymentController extends OrderBaseController
         }
     }
 
-    public function validateConfig()
+    // todo: fix this in build stage
+    protected function validateConfig()
     {
         $bundle = kernel()->bundle('CartBundle');
-
         // Move to config validation
         if (!$bundle->config('Transaction.Neweb.MerchantNumber')) {
             throw new Exception('Transaction.Neweb.MerchantNumber is required.');
@@ -167,45 +218,6 @@ class NewebPaymentController extends OrderBaseController
         if (!$bundle->config('Transaction.Neweb.Code')) {
             throw new Exception('Transaction.Neweb.Code is required.');
         }
-    }
-
-    public function createNewebOrderNumber($order)
-    {
-        return $order->sn.$order->transactions->size();
-    }
-
-    public function getFormData()
-    {
-        $bundle = kernel()->bundle('CartBundle');
-        $config = $bundle->config; // CartBundle config
-
-        $order = $this->getCurrentOrder();
-        if (false === $order) {
-            return;
-        }
-
-        $this->validateConfig();
-
-        $merchantNumber = $bundle->config('Transaction.Neweb.MerchantNumber');
-        $code = $bundle->config('Transaction.Neweb.Code');
-        $rcode = $bundle->config('Transaction.Neweb.RCode');
-
-        $orderNumber = $this->createNewebOrderNumber($order);
-        $checkstr =
-              $merchantNumber
-            .$orderNumber
-            .$rcode
-            .$order->total_amount;
-        $checksum = md5($checkstr);
-
-        return array(
-            'config' => $bundle->config('Transaction.Neweb'),
-            'mobile' => $this->isMobile() ? 1 : 0,
-            'english' => kernel()->locale->current() != 'zh_TW' ? 1 : 0,
-            'order_number' => $orderNumber,
-            'order' => $order,
-            'checksum' => $checksum,
-        );
     }
 
     /**

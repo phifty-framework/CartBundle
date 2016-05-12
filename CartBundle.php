@@ -21,6 +21,7 @@ class CartBundle extends Bundle
             'NoShippingFeeCondition' => array('AboveAmount' => 1500),
             'CashFlow' => 'neweb',
             'ChooseDeliveryType' => true,
+            'DefaultRoutes' => false,
             'Transaction' => array(
                 'Neweb' => array(
                     'MerchantNumber' => 759973,
@@ -42,28 +43,30 @@ class CartBundle extends Bundle
         // $this->route('/=/cart/items', 'CartController:items');
         // $this->route('/=/cart/calculate', 'CartController:calculate');
         // $this->route('/=/cart/apply_coupon', 'CartController:applyCoupon');
+        if ($this->config('DefaultRoutes')) {
+            $this->route('/cart', 'CartController:index');
+            $this->route('/checkout/confirm', 'CheckoutController:confirm');
+            $this->route('/checkout/order', 'CheckoutController:order');
 
-        $this->route('/cart', 'CartController:index');
-        $this->route('/checkout/confirm', 'CheckoutController:confirm');
-        $this->route('/checkout/order', 'CheckoutController:order');
+            $this->route('/order/view', 'OrderController:view');
+            $this->route('/order/payment', 'OrderController:payment');
+            $this->route('/order/print', 'OrderController:packingList');
 
-        $this->route('/order/view', 'OrderController:view');
-        $this->route('/order/payment', 'OrderController:payment');
-        $this->route('/order/print', 'OrderController:packingList');
+            $this->route('/order_item/return', 'OrderController:returnOrderItem');
 
-        $this->route('/order_item/return', 'OrderController:returnOrderItem');
+            /* routes for payment. */
+            $this->route('/payment/neweb', 'PaymentController\NewebPaymentController:index');
+            $this->route('/payment/neweb/response', 'PaymentController\NewebPaymentController:response');
+            $this->route('/payment/neweb/return', 'PaymentController\NewebPaymentController:return');
 
-        /* routes for payment. */
-        $this->route('/payment/neweb', 'PaymentController\NewebPaymentController:index');
-        $this->route('/payment/neweb/response', 'PaymentController\NewebPaymentController:response');
-        $this->route('/payment/neweb/return', 'PaymentController\NewebPaymentController:return');
+            $this->route('/payment/pod', 'PaymentController\PODPaymentController:index');
+            $this->route('/payment/pod/response', 'PaymentController\PODPaymentController:response');
 
-        $this->route('/payment/pod', 'PaymentController\PODPaymentController:index');
-        $this->route('/payment/pod/response', 'PaymentController\PODPaymentController:response');
+            $this->route('/payment/atm', 'PaymentController\ATMPaymentController:index');
+            $this->route('/payment/atm/response', 'PaymentController\ATMPaymentController:response');
+        }
 
-        $this->route('/payment/atm', 'PaymentController\ATMPaymentController:index');
-        $this->route('/payment/atm/response', 'PaymentController\ATMPaymentController:response');
-
+        // Add OrderItem actions
         $this->addRecordAction('OrderItem');
 
         // URL: http://ichimove.dev/=/order_item/199
