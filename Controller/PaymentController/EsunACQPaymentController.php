@@ -14,7 +14,7 @@ use EsunBank\ACQ\AuthRequestBuilder;
 use EsunBank\ACQ\TxnType;
 
 
-class EsunPaymentController extends BasePaymentController implements ThirdPartyPaymentController
+class EsunACQPaymentController extends BasePaymentController implements ThirdPartyPaymentController
 {
     public function getPaymentId()
     {

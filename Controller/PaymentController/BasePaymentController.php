@@ -7,7 +7,7 @@ use CartBundle\Model\Transaction;
 use CartBundle\Controller\OrderBaseController;
 use Exception;
 
-class BasePaymentController extends OrderBaseController
+abstract class BasePaymentController extends OrderBaseController
 {
     abstract public function getPaymentId();
 
@@ -21,7 +21,7 @@ class BasePaymentController extends OrderBaseController
     public function getReturnPath()
     {
         $paymentId = $this->getPaymentId();
-        return "/payment/{$this->paymentId}/return";
+        return "/payment/{$paymentId}/return";
     }
 
 

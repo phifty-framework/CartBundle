@@ -54,17 +54,23 @@ class CartBundle extends Bundle
 
             $this->route('/order_item/return', 'OrderController:returnOrderItem');
 
-            /* routes for payment. */
-            $this->route('/payment/neweb', 'PaymentController\NewebPaymentController:index');
-            $this->route('/payment/neweb/response', 'PaymentController\NewebPaymentController:response');
-            $this->route('/payment/neweb/return', 'PaymentController\NewebPaymentController:return');
-
-            $this->route('/payment/pod', 'PaymentController\PODPaymentController:index');
-            $this->route('/payment/pod/response', 'PaymentController\PODPaymentController:response');
-
-            $this->route('/payment/atm', 'PaymentController\ATMPaymentController:index');
-            $this->route('/payment/atm/response', 'PaymentController\ATMPaymentController:response');
         }
+
+        /* routes for payment. */
+        $this->route('/payment/neweb', 'PaymentController\\NewebPaymentController:index');
+        $this->route('/payment/neweb/response', 'PaymentController\\NewebPaymentController:response');
+        $this->route('/payment/neweb/return', 'PaymentController\\NewebPaymentController:return');
+
+        $this->route('/payment/esunacq', 'PaymentController\\EsunACQPaymentController:index');
+        $this->route('/payment/esunacq/return', 'PaymentController\\EsunACQPaymentController:return');
+
+        $this->route('/payment/pod', 'PaymentController\\PODPaymentController:index');
+        $this->route('/payment/pod/response', 'PaymentController\\PODPaymentController:response');
+
+        $this->route('/payment/atm', 'PaymentController\\ATMPaymentController:index');
+        $this->route('/payment/atm/response', 'PaymentController\\ATMPaymentController:response');
+
+
 
         // Add OrderItem actions
         $this->addRecordAction('OrderItem');
