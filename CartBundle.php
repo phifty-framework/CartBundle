@@ -4,6 +4,9 @@ namespace CartBundle;
 
 use Phifty\Bundle;
 use CartBundle\Controller\OrderItemRESTfulController;
+use CartBundle\ShippingFeeRule\ShippingFeeRule;
+use CartBundle\ShippingFeeRule\NoShippingFeeRule;
+use CartBundle\ShippingFeeRule\DefaultShippingFeeRule;
 
 class CartBundle extends Bundle
 {
@@ -12,13 +15,18 @@ class CartBundle extends Bundle
         return array('cart');
     }
 
+    public function getShippingFeeRule()
+    {
+        return new DefaultShippingFeeRule($this);
+    }
+
     public function defaultConfig()
     {
         return array(
             'RequireUTCNameAndAddress' => 'always',
             'UseProductTypeQuantity' => false,
             'ShipmentTracking' => false,
-            'NoShippingFeeCondition' => array('AboveAmount' => 1500),
+            'DefaultShippingFeeRule' => array('AboveAmount' => 1500),
             'CashFlow' => 'neweb',
             'ChooseDeliveryType' => true,
             'DefaultRoutes' => false,

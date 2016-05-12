@@ -16,15 +16,22 @@ class DefaultShippingFeeRule implements ShippingFeeRule
         $this->bundle = $bundle;
     }
 
-    public function calculate(Cart $cart)
+    /**
+     * Calculate the shipping fee by total amount
+     */
+    public function byTotalAmount($orderItemAmount)
     {
         if ($aboveAmount = $this->bundle->config('DefaultShippingFeeRule.AboveAmount')) {
-            $orderItemAmount = $cart->calculateOrderItemTotalAmount();
             if ($orderItemAmount >= $aboveAmount) {
                 return 0;
             }
         }
         return $this->bundle->config('DefaultShippingFeeRule.DefaultFee') ?: 80;
+    }
+
+    public function calculate(Cart $cart)
+    {
+        return $this->byTotalAmount($cart->calculateOrderItemTotalAmount());
     }
 }
 

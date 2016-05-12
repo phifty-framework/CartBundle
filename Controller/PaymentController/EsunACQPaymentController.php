@@ -116,15 +116,15 @@ class EsunACQPaymentController extends BasePaymentController implements ThirdPar
 
         $orderSN = $request->param('ONO');
         $orderSN = substr($orderSN, 0, -2); // the last two number are txn no
+        $order = new Order;
+        try {
+            $ret = $order->load(['sn' => $orderSN]);
+            if ($ret->error || !$order->id) {
+                throw new Exception('無此訂單');
+            }
+            $order->update(['payment_type' => 'cc']); // credit card
 
-        $order = new Order();
-        $order->load(['sn' => $orderSN]);
-        if (!$order->id) {
-            die('無此訂單');
-        }
-        $order->update(['payment_type' => 'cc']); // credit card
-
-        $txn = new Transaction();
+            $txn = new Transaction;
             $ret = $txn->create([
                 'order_id' => $order->id,
                 'type'     => 'cc',
@@ -142,14 +142,9 @@ class EsunACQPaymentController extends BasePaymentController implements ThirdPar
             if ($ret->error) {
                 throw new Exception($ret->message);
             }
-        /*
-        try {
-        }
-        catch (Exception $e) {
+        } catch (Exception $e) {
             error_log($message = $e->getMessage());
         }
-        */
-
         if ($result) {
             $email = new PaymentCreditCardEmail($order->member, $order);
             $email->send();

@@ -79,7 +79,7 @@ class Checkout extends CreateRecordAction
         }
 
         // set config based default shipping rule.
-        $cart->setShippingFeeRule(new DefaultShippingFeeRule($bundle));
+        $cart->setShippingFeeRule($bundle->getShippingFeeRule());
 
         $shippingFee = $cart->calculateShippingFee();
         $origTotalAmount = $cart->calculateTotalAmount();
