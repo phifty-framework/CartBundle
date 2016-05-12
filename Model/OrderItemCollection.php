@@ -31,7 +31,7 @@ class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase
         return $quantity;
     }
 
-    public function updateShippingStatus($s)
+    public function updateDeliveryStatus($s)
     {
         foreach ($this as $item) {
             $ret = $item->update(['delivery_status' => $s]);

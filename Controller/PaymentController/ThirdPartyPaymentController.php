@@ -32,11 +32,26 @@ interface ThirdPartyPaymentController
      */
     public function buildFormFields(Order $order, array $override = array());
 
+
+
+
+
+    /**
+     * translate response form fields
+     *
+     * @return array
+     */
+    public function translateResponseFields(array $params);
+
     /**
      * Response action, implements the verification
      */
-    public function responseAction();
+    public function returnAction();
+
+
+
 }
+
 
 
 

@@ -6,9 +6,57 @@ use CartBundle\CartBundle;
 use CartBundle\Model\Order;
 use CartBundle\Model\Transaction;
 use CartBundle\Controller\OrderBaseController;
-use Exception;
 use CartBundle\Email\PaymentCreditCardEmail;
 use CartBundle\Email\AdminOrderPaymentEmail;
+use Exception;
+
+class NewebResponseVerifier {
+
+    protected $config;
+
+    public function __construct(array $config)
+    {
+        $this->config = $config;
+    }
+
+    protected function getConfig($name)
+    {
+        if (isset($this->config[$name])) {
+            return $this->config[$name];
+        }
+    }
+
+    /**
+     * Verify return url parameters
+     */
+    public function verify(array $params)
+    {
+        $finalResult             = @$params['final_result'];
+        $merchantNumber          = @$params['P_MerchantNumber'];
+        $orderNumber             = @$params['P_OrderNumber'];
+        $amount                  = @$params['P_Amount'];
+        $checkSum                = @$params['P_CheckSum'];
+        $finalReturn_PRC         = @$params['final_return_PRC'];
+        $finalReturn_SRC         = @$params['final_return_SRC'];
+        $finalReturn_ApproveCode = @$params['final_return_ApproveCode'];
+        $finalReturn_BankRC      = @$params['final_return_BankRC'];
+        $finalReturn_BatchNumber = @$params['final_return_BatchNumber'];
+
+        $orgOrderNumber = substr($orderNumber, 0, 12);
+
+        $code = $this->getConfig('Code');
+        if ($finalResult != '1') {
+            return false;
+        }
+        // 偽造或錯誤
+        if (strlen($checkSum) == 0) {
+            return false;
+        }
+        $checkstr = md5($merchantNumber.$orderNumber.$finalResult.$finalReturn_PRC.$code.$finalReturn_SRC.$amount);
+        return strtolower($checkstr) === strtolower($checkSum);
+    }
+}
+
 
 class NewebPaymentController extends BasePaymentController implements ThirdPartyPaymentController
 {
@@ -60,7 +108,7 @@ class NewebPaymentController extends BasePaymentController implements ThirdParty
      * @param string $PRC
      * @param string $SRC
      */
-    public function translateCustomerMessage($PRC, $SRC)
+    protected function translateCustomerMessage($PRC, $SRC)
     {
         $table = [
             '15-1018' => '系統無法處理。銀行主機忙碌中或銀行線路中斷',
@@ -70,9 +118,8 @@ class NewebPaymentController extends BasePaymentController implements ThirdParty
         ];
         if (isset($table["$PRC-$SRC"])) {
             return $table["$PRC-$SRC"];
-        } else {
-            return '請與商家聯絡';
         }
+        return '請與商家聯絡';
     }
 
     /**
@@ -222,62 +269,34 @@ class NewebPaymentController extends BasePaymentController implements ThirdParty
 
     public function returnAction()
     {
-        $finalResult = $this->getParameter('final_result');
-        $merchantNumber = $this->getParameter('P_MerchantNumber');
-        $orderNumber = $this->getParameter('P_OrderNumber');
-        $amount = $this->getParameter('P_Amount');
-        $checkSum = $this->getParameter('P_CheckSum');
-        $finalReturn_PRC = $this->getParameter('final_return_PRC');
-        $finalReturn_SRC = $this->getParameter('final_return_SRC');
-        $finalReturn_ApproveCode = $this->getParameter('final_return_ApproveCode');
-        $finalReturn_BankRC = $this->getParameter('final_return_BankRC');
-        $finalReturn_BatchNumber = $this->getParameter('final_return_BatchNumber');
+        $params = $this->getRequest()->getBodyParameters();
+        $finalReturn_PRC = $this->getRequest()->param('final_return_PRC');
+        $finalReturn_SRC = $this->getRequest()->param('final_return_SRC');
 
-        $orgOrderNumber = substr($orderNumber, 0, 12);
-
-        $code = $this->getPaymentConfig('Code');
-
-        $message = '交易失敗';
+        $verifier = new NewebResponseVerifier([
+            'code' => $this->getPaymentConfig('Code'),
+        ]);
+        $success = $verifier->verify($params);
+        $message = '交易成功。感謝您的訂購，您的訂單已經成立。';
         $reason = '';
-        $result = false;
-        if ($finalResult == '1') {
-            if (strlen($checkSum) > 0) {
-                $checkstr = md5($merchantNumber.$orderNumber.$finalResult.$finalReturn_PRC.$code.$finalReturn_SRC.$amount);
-                if (strtolower($checkstr) == strtolower($checkSum)) {
-                    $message = '交易成功';
-                    $reason = '感謝您的訂購，您的訂單已經成立。';
-                    $result = true;
-                } else {
-                    $reason = '交易發生問題，驗證碼錯誤!';
-                }
-            }
-        } else {
-            $reason = $this->translateCustomerMessage($finalReturn_PRC, $finalReturn_SRC);
+        if (!$success) {
+            $message = '交易失敗';
+            $reason  = $this->translateCustomerMessage($finalReturn_PRC, $finalReturn_SRC);
         }
 
-        $desc = [
-            '結果' => $finalResult,
-            '店家編號' => $merchantNumber,
-            '訂單編號' => $orderNumber,
-            '交易金額' => $amount,
-            '授權碼' => $finalReturn_ApproveCode,
-            '銀行回傳碼' => $finalReturn_BankRC,
-            '批次號碼' => $finalReturn_BatchNumber,
-            '檢查碼' => $checkSum,
-            '主回傳碼' => $finalReturn_PRC,
-            '副回傳碼' => $finalReturn_SRC,
-            '回傳訊息' => $this->translateMessage($finalReturn_PRC, $finalReturn_SRC),
-        ];
+        // from POST
+        $desc = $this->translateResponseFields($params);
+        $desc['回傳訊息'] = $this->translateMessage($finalReturn_PRC, $finalReturn_SRC);
 
         $order = new Order();
-        $order->load(['sn' => $orgOrderNumber]);
-        if (!$order->id) {
+        $ret = $order->load(['sn' => $orgOrderNumber]);
+        if ($ret->error || !$order->id) {
             die('無此訂單');
         }
         $order->update(['payment_type' => 'cc']); // credit card
 
+        // Create transaction for this order.
         $txn = new Transaction();
-
         try {
             // record the transction
             $ret = $txn->create([
@@ -291,7 +310,6 @@ class NewebPaymentController extends BasePaymentController implements ThirdParty
                 'data' => yaml_emit($desc, YAML_UTF8_ENCODING),
                 'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
             ]);
-
             if (!$ret->success) {
                 throw new Exception($ret->message);
             }
@@ -314,6 +332,40 @@ class NewebPaymentController extends BasePaymentController implements ThirdParty
         ]);
     }
 
+
+    public function translateResponseFields(array $params)
+    {
+        $labels = [
+            'OrderNumber'      => '訂單編號',
+            'Amount'           => '交易金額',
+            'ApprovalCode'     => '授權碼',
+            'BankResponseCode' => '銀行回傳碼',
+            'BatchNumber'      => '批次號碼',
+            'final_result'             => '結果',
+            'P_MerchantNumber'         => '店家編號',
+            'P_OrderNumber'            => '訂單編號',
+            'P_Amount'                 => '交易金額',
+            'final_return_ApproveCode' => '授權碼',
+            'final_return_BankRC'      => '銀行回傳碼',
+            'final_return_BatchNumber' => '批次號碼',
+            'P_CheckSum'               => '檢查碼',
+            'final_return_PRC'         => '主回傳碼',
+            'final_return_SRC'         => '副回傳碼',
+        ];
+        $array = [];
+        foreach ($params as $name => $value) {
+            if (isset($labels[$name])) {
+                $array[$labels[$name]] = $value;
+            } else {
+                $array[$name] = $value;
+            }
+        }
+        // '回傳訊息' = $this->translateMessage($finalReturn_PRC, $finalReturn_SRC)
+        return $array;
+    }
+
+
+
     public function responseAction()
     {
         $code = $this->getPaymentConfig('Code');
@@ -332,20 +384,14 @@ class NewebPaymentController extends BasePaymentController implements ThirdParty
 
         $orgOrderNumber = substr($orderNumber, 0, 12);
 
-        // api data with description
-        $desc = [
-            '訂單編號' => $orderNumber,
-            '交易金額' => $amount,
-            '授權碼' => $approvalCode,
-            '銀行回傳碼' => $bankResponseCode,
-            '批次號碼' => $batchNumber,
-        ];
+        $params = $this->getRequest()->getParameters();
+        $desc = $this->translateResponseFields($params);
+
 
         // fail by default
         $result = false;
         $message = '交易失敗';
         $reason = '';
-
         if ($PRC == '0' && $SRC == '0') {
             $chkstr = $merchantNumber.$orderNumber.$PRC.$SRC.$code.$amount;
             $chkstr = md5($chkstr);
@@ -387,14 +433,14 @@ class NewebPaymentController extends BasePaymentController implements ThirdParty
         $txn = new Transaction();
         $ret = $txn->create([
             'order_id' => $order->id,
-            'result' => $result,
-            'type' => 'cc',
-            'amount' => $amount,
-            'message' => $message,
-            'reason' => $reason,
-            'code' => $bankResponseCode,
-            'data' => yaml_emit($desc, YAML_UTF8_ENCODING),
-            'raw_data' => yaml_emit($_POST, YAML_UTF8_ENCODING),
+            'result'   => $result,
+            'type'     => 'cc',
+            'amount'   => $amount,
+            'message'  => $message,
+            'reason'   => $reason,
+            'code'     => $bankResponseCode,
+            'data'     => $this->_encode($desc),
+            'raw_data' => $this->_encode($_POST),
         ]);
         if (!$ret->success) {
             // XXX: log the error

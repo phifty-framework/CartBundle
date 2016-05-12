@@ -47,7 +47,7 @@ class OrderItem extends \CartBundle\Model\OrderItemBase
         return $args;
     }
 
-    public function setDeliveryStatus($status)
+    public function updateDeliveryStatus($status)
     {
         $this->update(['delivery_status' => $status]);
     }

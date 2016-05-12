@@ -6,6 +6,7 @@ use CartBundle\Model\Order;
 use CartBundle\Model\Transaction;
 use CartBundle\Controller\OrderBaseController;
 use Exception;
+use Symfony\Component\Yaml\Yaml;
 
 abstract class BasePaymentController extends OrderBaseController
 {
@@ -34,4 +35,13 @@ abstract class BasePaymentController extends OrderBaseController
     {
         return $this->getPaymentConfig('ReturnUrl') ?: kernel()->getBaseUrl() . $this->getReturnPath();
     }
+
+    protected function _encode($input)
+    {
+        if (extension_loaded('yaml')) {
+            return yaml_emit($input, YAML_UTF8_ENCODING);
+        }
+        return Yaml::dump($input, 1);
+    }
+
 }
