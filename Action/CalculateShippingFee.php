@@ -18,7 +18,7 @@ class CalculateShippingFee extends Action
     {
         $bundle = CartBundle::getInstance();
         if ($shippingFeeRule = $bundle->getShippingFeeRule()) {
-            $itemsAmount = $this->arg('items_amount');
+            $itemsAmount = intval($this->arg('items_amount'));
             return $this->success('success', ['shipping_fee' => $shippingFeeRule->byTotalAmount($itemsAmount) ]);
         }
         return $this->error('shipping fee rule is not defined in system config.');
