@@ -58,7 +58,7 @@ class Cart implements IteratorAggregate, Countable
         $this->shippingFeeRule = $this->bundle->getShippingFeeRule();
     }
 
-    public function containsProduct(Product $product) : bool
+    public function containsProduct(Product $product)
     {
         if ($collection = $this->storage->all()) {
             foreach ($collection as $item) {
@@ -337,7 +337,7 @@ class Cart implements IteratorAggregate, Countable
      *
      * @return OrderItem[] Invalid order items will be returned.
      */
-    public function removeInvalidItems($validateType = false, $validateQuantity = false) : array
+    public function removeInvalidItems($validateType = false, $validateQuantity = false)
     {
         $invalidItems = [];
         // using session as our storage
