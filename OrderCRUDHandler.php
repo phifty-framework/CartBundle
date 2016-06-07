@@ -9,6 +9,7 @@ class OrderCRUDHandler extends CRUDHandler
 {
     /* CRUD Attributes */
     public $modelClass = 'CartBundle\Model\Order';
+
     public $crudId = 'order';
 
     public $listColumns = array(
@@ -42,16 +43,16 @@ class OrderCRUDHandler extends CRUDHandler
     // public $pageLimit = 15;
     // public $defaultOrder = array('id', 'DESC');
 
+    /*
     public function initToolbarControls()
     {
         parent::initToolbarControls();
         $this->addToolbarItem(new OrderFilterToolbarItemController());
     }
+    */
 
     public function getCollection()
     {
-        $collection = parent::getCollection();
-
-        return $collection;
+        return parent::getCollection();
     }
 }
