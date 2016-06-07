@@ -1,15 +1,17 @@
-{% extends '@CRUD/list_inner.html' %}
-{% block extra_buttons %}
+{% extends '@AppCRUD/list_inner.html' %}
 
+{#
+{% block extra_buttons %}
 <input type="button" 
     value="{% trans "列印訂單" %}"
     data-record-id="{{ item.id }}"
     data-id="{{ item.id }}"
     data-token="{{ item.token }}"
     class="btn order-print-btn"/>
-
 {% endblock %}
+#}
 
+{#
 {% block script %}
     {{parent()}}
 <script>
@@ -22,3 +24,4 @@ $(function() {
 });
 </script>
 {% endblock %}
+#}
