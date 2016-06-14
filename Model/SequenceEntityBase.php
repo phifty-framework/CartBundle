@@ -10,6 +10,7 @@ use LazyRecord\BaseModel;
 class SequenceEntityBase
     extends BaseModel
 {
+    const SCHEMA_CLASS = 'CartBundle\\Model\\SequenceEntitySchema';
     const SCHEMA_PROXY_CLASS = 'CartBundle\\Model\\SequenceEntitySchemaProxy';
     const COLLECTION_CLASS = 'CartBundle\\Model\\SequenceEntityCollection';
     const MODEL_CLASS = 'CartBundle\\Model\\SequenceEntity';

@@ -101,7 +101,7 @@ class OrderItemSchema extends SchemaDeclare
             ->renderAs('DateTimeInput')
             ->label( _('貨運狀態更新時間') )
             ->default(function() {
-                return date('c');
+                return new \DateTime;
             })
             ;
 

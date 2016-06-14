@@ -10,6 +10,7 @@ use LazyRecord\BaseModel;
 class CouponBase
     extends BaseModel
 {
+    const SCHEMA_CLASS = 'CartBundle\\Model\\CouponSchema';
     const SCHEMA_PROXY_CLASS = 'CartBundle\\Model\\CouponSchemaProxy';
     const COLLECTION_CLASS = 'CartBundle\\Model\\CouponCollection';
     const MODEL_CLASS = 'CartBundle\\Model\\Coupon';

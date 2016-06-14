@@ -71,7 +71,7 @@ class OrderSchema extends SchemaDeclare
         }
 
         $this->column('sn')
-            ->varchar(16)
+            ->varchar(30)
             ->label(_('訂單編號'))
             ->renderAs('TextInput', ['size' => 10])
             ;
@@ -126,7 +126,7 @@ class OrderSchema extends SchemaDeclare
             ->renderAs('DateTimeInput')
             ->label(_('付款狀態最後更新時間'))
             ->default(function () {
-                return date('c');
+                return new \DateTime;
             })
             ;
 

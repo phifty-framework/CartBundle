@@ -40,7 +40,7 @@ class OrderItem extends \CartBundle\Model\OrderItemBase
     {
         if (isset($args['delivery_status'])) {
             if ($this->delivery_status != $args['delivery_status']) {
-                $args['delivery_status_last_updated_at'] = date('c');
+                $args['delivery_status_last_updated_at'] = date('Y-m-d H:i:s');
             }
         }
 
