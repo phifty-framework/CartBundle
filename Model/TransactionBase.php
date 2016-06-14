@@ -10,6 +10,7 @@ use LazyRecord\BaseModel;
 class TransactionBase
     extends BaseModel
 {
+    const SCHEMA_CLASS = 'CartBundle\\Model\\TransactionSchema';
     const SCHEMA_PROXY_CLASS = 'CartBundle\\Model\\TransactionSchemaProxy';
     const COLLECTION_CLASS = 'CartBundle\\Model\\TransactionCollection';
     const MODEL_CLASS = 'CartBundle\\Model\\Transaction';

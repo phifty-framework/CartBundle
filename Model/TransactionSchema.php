@@ -70,11 +70,10 @@ class TransactionSchema extends SchemaDeclare
         $this->column('paid_date')
             ->timestamp()
             ->null()
-            ->required()
             ->renderAs('DateTimeInput')
             ->label(_('付款日期'))
             ->default(function () {
-                return date('c');
+                return new \DateTime;
             })
             ;
 
@@ -85,7 +84,7 @@ class TransactionSchema extends SchemaDeclare
             ->renderAs('DateTimeInput')
             ->label(_('建立時間'))
             ->default(function () {
-                return date('c');
+                return new \DateTime;
             })
             ;
 
