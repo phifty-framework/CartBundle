@@ -11,10 +11,13 @@ class UpdateOrderItem extends UpdateRecordAction
 
     public function runValidate()
     {
+        /*
+        FIXME: front end cart calls this action to update order item....
         $cUser = kernel()->currentUser;
         if (!$cUser->isLogged() || !$cUser->hasRole('admin')) {
             return $this->error(_('權限不足'));
         }
+        */
         // Not sure why this method call fails while submitting from nested action.
         // XXX: return parent::runValidate();
         return true;
