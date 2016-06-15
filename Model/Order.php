@@ -94,7 +94,7 @@ class Order  extends \CartBundle\Model\OrderBase
     {
         if (isset($args['payment_status'])) {
             if ($args['payment_status'] != $this->payment_status) {
-                $args['payment_status_last_update'] = date('c');
+                $args['payment_status_last_update'] = new \DateTime;
             }
         }
 
