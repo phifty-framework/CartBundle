@@ -47,7 +47,7 @@ class Order  extends \CartBundle\Model\OrderBase
         $this->update(['sn' => self::generateSN() ]);
     }
 
-    public function beforeDelete($args)
+    public function afterDelete($args)
     {
         if ($orderItems = $this->order_items) {
             foreach ($this->order_items as $item) {
@@ -59,6 +59,10 @@ class Order  extends \CartBundle\Model\OrderBase
                 $txn->delete();
             }
         }
+        if ($this->event_reg_id) {
+            $this->event_reg->delete();
+        }
+        return $args;
     }
 
     public function calculateOriginalTotalAmount()
