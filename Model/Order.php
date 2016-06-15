@@ -32,7 +32,7 @@ class Order  extends \CartBundle\Model\OrderBase
         $sequence->loadOrCreate([
             'handle' => 'default-order-seq',
             'prefix' => 'Ymd',
-            'pad_length' => 12,
+            'pad_length' => 10,
             'pad_char' => '0',
             'start_id' => 1,
             'last_id' => 1,
