@@ -47,8 +47,13 @@ class Order  extends \CartBundle\Model\OrderBase
         $this->update(['sn' => self::generateSN() ]);
     }
 
-    public function afterDelete($args)
+
+    /**
+     * Clean up
+     */
+    public function beforeDelete($args)
     {
+        // Delete has-many records
         if ($orderItems = $this->order_items) {
             foreach ($this->order_items as $item) {
                 $item->delete();
@@ -59,11 +64,18 @@ class Order  extends \CartBundle\Model\OrderBase
                 $txn->delete();
             }
         }
+        return $args;
+    }
+
+    public function afterDelete($args)
+    {
+        // Delete belongs to records
         if ($this->event_reg_id) {
             $this->event_reg->delete();
         }
         return $args;
     }
+
 
     public function calculateOriginalTotalAmount()
     {
