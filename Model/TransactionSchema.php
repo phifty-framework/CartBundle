@@ -68,7 +68,7 @@ class TransactionSchema extends SchemaDeclare
 
         /* the paid_date */
         $this->column('paid_date')
-            ->timestamp()
+            ->datetime()
             ->null()
             ->renderAs('DateTimeInput')
             ->label(_('付款日期'))
