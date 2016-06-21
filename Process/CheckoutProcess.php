@@ -51,11 +51,22 @@ class CheckoutProcess
 
     protected $productTypeQuantityEnabled = false;
 
+    protected $baseAmount = 0;
 
     public function __construct(Member $member, Cart $cart)
     {
         $this->member = $member;
         $this->cart = $cart;
+    }
+
+    public function setBaseAmount($baseAmount)
+    {
+        $this->baseAmount = $baseAmount;
+    }
+
+    public function setExtraItems(array $extraItems)
+    {
+        $this->extraItems = $extraItems;
     }
 
     public function setProductTypeQuantityEnabled($enabled = true)
@@ -72,17 +83,36 @@ class CheckoutProcess
     public function createOrder(array $formInputs)
     {
         // preprocess with cart items
+        $baseAmount = $this->baseAmount ?: 0;
         $shippingFee     = $this->cart->calculateShippingFee();
         $origTotalAmount = $this->cart->calculateTotalAmount();
-        $totalAmount     = $this->cart->calculateDiscountedTotalAmount();
         $discountAmount  = $this->cart->calculateDiscountAmount();
+        $totalAmount     = $this->cart->calculateDiscountedTotalAmount();
+
+        // Calculate extra fee from extraItems
+        $extraAmount = 0;
+        if (!empty($this->extraItems)) {
+            /*
+            $extraItem = [
+                'className' => 'event-group-fee',
+                'label' => "組別 {$eventReg->group->title}",
+                'price' => $eventReg->group->fee
+            ];
+            */
+            $extraAmount = array_reduce($this->extraItems, function($carry, $current) {
+                if (isset($current['price'])) {
+                    return $carry + intval($current['price']);
+                }
+                return $carry;
+            }, 0);
+        }
 
         // Use Try-Cache to cache exceptions and process fallbacks.
         $formInputs['paid_amount']     = 0;
         $formInputs['shipping_fee']    = $shippingFee;
         $formInputs['discount_amount'] = $discountAmount;
-        $formInputs['total_amount']    = $totalAmount;
-        $formInputs['member_id'] = $this->member->id;
+        $formInputs['total_amount']    = $baseAmount + $extraAmount + $totalAmount;
+        $formInputs['member_id']       = $this->member->id;
 
         if ($coupon = $this->cart->getCurrentCoupon()) {
             $formInputs['coupon_code'] = $coupon->coupon_code;

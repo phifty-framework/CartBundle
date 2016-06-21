@@ -163,7 +163,6 @@ class Cart implements IteratorAggregate, Countable
         $totalAmount = 0;
         $totalAmount += $this->calculateOrderItemTotalAmount();
         $totalAmount += $this->calculateShippingFee();
-
         return $totalAmount;
     }
 
@@ -225,6 +224,9 @@ class Cart implements IteratorAggregate, Countable
 
     public function calculateShippingFee()
     {
+        if (count($this->storage) == 0) {
+            return 0;
+        }
         if (!$this->shippingFeeRule) {
             throw new LogicException('Shipping Fee Rule is not given.');
         }
