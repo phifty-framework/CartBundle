@@ -61,7 +61,7 @@ class CheckoutTest extends CartTestCase
         $this->assertEmpty($cart->storage->all());
 
         $product = new Product;
-        $product->create([ 'name' => 'Clothes' ]);
+        $product->create([ 'name' => 'Clothes' , 'price' => 1000 ]);
         $type = $product->types->create([ 'name' => 'M', 'quantity' => $totalQuantity ]);
 
         $this->assertEquals($totalQuantity, $type->quantity);
@@ -78,6 +78,9 @@ class CheckoutTest extends CartTestCase
             $args["shipping_$key"] = $value;
         }
         $process = new CheckoutProcess($member, $cart);
+        $process->setExtraItems([
+            ['price' => 200]
+        ]);
         $process->setProductTypeQuantityEnabled(true); // this should update the product type quantity
 
         try {
@@ -91,6 +94,7 @@ class CheckoutTest extends CartTestCase
         if ($shouldSuccess) {
             $this->assertInstanceOf('CartBundle\\Model\\Order', $order);
         }
+        $this->assertEquals(1200, $order->total_amount);
 
         $ret = $type->reload();
         $this->assertResultSuccess($ret);
