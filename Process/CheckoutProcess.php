@@ -227,6 +227,7 @@ class CheckoutProcess
             throw new InsufficientOrderItemQuantityException($item, "quantity is not enough.", $e->getActualQuantity());
         } catch (Exception $e) {
             $conn->rollback();
+            throw $e;
         }
         return true;
     }
