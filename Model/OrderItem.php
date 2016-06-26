@@ -93,4 +93,19 @@ class OrderItem extends \CartBundle\Model\OrderItemBase
             return $this->logistics->getTrackingUrl($this->delivery_number);
         }
     }
+
+    static public function create(Product $product, $quantity = 1)
+    {
+        $item = new self;
+        $ret = $item->create([ 
+            'product_id' => $product,
+            'quantity' => $quantity,
+        ]);
+        if ($ret->error) {
+            return false;
+        }
+        return $item;
+    }
+
+
 }

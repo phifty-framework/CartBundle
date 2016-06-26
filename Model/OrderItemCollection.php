@@ -23,12 +23,9 @@ class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase
 
     public function calculateTotalQuantity()
     {
-        $quantity = 0;
-        foreach ($this as $item) {
-            $quantity += $item->quantity;
-        }
-
-        return $quantity;
+        return array_reduce($this->items(), function($carry, $current) {
+            return $carry + intval($item->quantity);
+        }, 0);
     }
 
     public function updateDeliveryStatus($s)
