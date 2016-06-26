@@ -94,7 +94,7 @@ class OrderItem extends \CartBundle\Model\OrderItemBase
         }
     }
 
-    static public function create(Product $product, $quantity = 1)
+    static public function createItem(Product $product, $quantity = 1)
     {
         $item = new self;
         $ret = $item->create([ 

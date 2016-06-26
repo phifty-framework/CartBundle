@@ -16,6 +16,9 @@ use CartBundle\Model\Order;
  */
 class OrderItemTest extends ModelTestCase
 {
+    public $driver = 'testing';
+
+
     public function getModels()
     {
         return [
@@ -38,13 +41,11 @@ class OrderItemTest extends ModelTestCase
         $item = new OrderItem;
         $ret = $item->create([ 
             'product_id' => $product->id,
-            'quantity' => 1,
+            'quantity' => 10,
         ]);
         $this->assertResultSuccess($ret);
+        $this->assertEquals(1000, $item->calculateSubtotal());
     }
-
-
-
 }
 
 
