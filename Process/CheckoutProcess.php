@@ -219,14 +219,14 @@ class CheckoutProcess
 
         try {
             $conn = $item->getWriteConnection();
-            $conn->query('BEGIN');
+            $conn->beginTransaction();
             $item->deductQuantity($item->quantity, $conn);
-            $conn->query('COMMIT');
+            $conn->commit();
         } catch (InsufficientTypeQuantityException $e) {
-            $conn->query('ROLLBACK');
+            $conn->rollback();
             throw new InsufficientOrderItemQuantityException($item, "quantity is not enough.", $e->getActualQuantity());
         } catch (Exception $e) {
-            $conn->query('ROLLBACK');
+            $conn->rollback();
         }
         return true;
     }
