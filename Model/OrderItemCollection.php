@@ -24,7 +24,7 @@ class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase
     public function calculateTotalQuantity()
     {
         return array_reduce($this->items(), function($carry, $current) {
-            return $carry + intval($item->quantity);
+            return $carry + intval($current->quantity);
         }, 0);
     }
 
@@ -32,8 +32,8 @@ class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase
     {
         foreach ($this as $item) {
             $ret = $item->update(['delivery_status' => $s]);
-            if (!$ret->success) {
-                throw new Exception($ret->message);
+            if ($ret->error) {
+                throw new RuntimeException($ret->message);
             }
         }
     }
