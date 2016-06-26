@@ -2,6 +2,7 @@
 namespace CartBundle\Process;
 use CartBundle\Cart;
 use CartBundle\Model\Order;
+use CartBundle\Model\Coupon;
 use CartBundle\Model\OrderItem;
 use CartBundle\Email\OrderCreatedEmail;
 use CartBundle\CartBundle;
@@ -36,13 +37,12 @@ class InsufficientOrderItemQuantityException extends CheckoutException
 
     protected $availableQuantity;
 
-    public function __construct(OrderItem $orderItem, $availableQuantity, $message)
+    public function __construct(OrderItem $orderItem, $message = null, $availableQuantity = null)
     {
         $this->orderItem = $orderItem;
-        $this->availableQuantity = $availableQuantity;
         parent::__construct($message);
+        $this->availableQuantity = $availableQuantity;
     }
-
 }
 
 class CheckoutProcess
@@ -131,7 +131,15 @@ class CheckoutProcess
 
     protected function updateCouponStatus($couponCode)
     {
-        // todo:
+        if (empty($couponCode)) {
+            return false;
+        }
+
+        $coupon = new Coupon;
+        $ret = $coupon->load([ 'code' => $couponCode ]);
+        if ($ret->error) {
+            throw new Exception("Inexistent coupon");
+        }
     }
 
 
@@ -148,6 +156,7 @@ class CheckoutProcess
     {
         $order = $this->createOrder($formInputs);
         if ($orderItems = $this->cart->getItems()) {
+            // TODO: Simplify this to single query?
             foreach ($orderItems as $orderItem) {
                 $this->updateOrderItemStatus($orderItem, $order);
                 if ($this->productTypeQuantityEnabled) {
@@ -183,6 +192,9 @@ class CheckoutProcess
         return false;
     }
 
+    /**
+     * Method method will modify the order_id field and update the delivery_status to 'unpaid'.
+     */
     protected function updateOrderItemStatus(OrderItem $item, Order $order)
     {
         $ret = $item->update([
@@ -190,9 +202,6 @@ class CheckoutProcess
             'delivery_status' => 'unpaid',
         ]);
         if ($ret->error) {
-            if ($ret->exception) {
-                throw $ret->exception;
-            }
             throw new CheckoutException("無法更新訂單項目: {$ret->message}");
         }
     }
@@ -204,9 +213,10 @@ class CheckoutProcess
      */
     protected function decuctOrderItemQuantity(OrderItem $item)
     {
-        if (!$item->type_id) {
-            return false;
+        if (!$item->satisfyQuantity()) {
+            throw new InsufficientOrderItemQuantityException($item, "quantity is not enough.");
         }
+
         try {
             $conn = $item->getWriteConnection();
             $conn->query('BEGIN');
@@ -214,7 +224,7 @@ class CheckoutProcess
             $conn->query('COMMIT');
         } catch (InsufficientTypeQuantityException $e) {
             $conn->query('ROLLBACK');
-            throw new InsufficientOrderItemQuantityException($item, $e->getActualQuantity(), "quantity is not enough.");
+            throw new InsufficientOrderItemQuantityException($item, "quantity is not enough.", $e->getActualQuantity());
         } catch (Exception $e) {
             $conn->query('ROLLBACK');
         }
@@ -222,7 +232,9 @@ class CheckoutProcess
     }
 
 
-
+    /**
+     * Trigger post process
+     */
     public function postProcess(Order $order)
     {
         $email = new OrderCreatedEmail($this->member, $order);

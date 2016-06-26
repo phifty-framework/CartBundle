@@ -8,10 +8,19 @@ use RuntimeException;
 
 class OrderItem extends \CartBundle\Model\OrderItemBase
 {
+    public function satisfyQuantity()
+    {
+        if ($this->type_id && $this->type) {
+            return $this->type->satisfyQuantity($this->quantity);
+        } else if ($this->product_id && $this->product) {
+            return $this->product->satisfyQuantity($this->quantity);
+        }
+        return false;
+    }
+
     /**
      * Check if there is a product type, then we deduct the quantity from 
      * that product type.
-     *
      */
     public function deductQuantity()
     {
@@ -36,7 +45,7 @@ class OrderItem extends \CartBundle\Model\OrderItemBase
 
     public function setOrder($orderId)
     {
-        $this->update(['order_id' => $orderId]);
+        return $this->update(['order_id' => $orderId]);
     }
 
     public function beforeUpdate($args)
