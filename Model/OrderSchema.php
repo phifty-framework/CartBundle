@@ -247,6 +247,13 @@ class OrderSchema extends SchemaDeclare
             ->renderAs('TextareaInput', ['rows' => 1, 'cols' => 40])
             ;
 
+        $this->column('parent_order_id')
+            ->integer()
+            ->unsigned()
+            ->null()
+            ->label('主訂單')
+            ;
+
         // an order has many order items
         $this->many('order_items', 'CartBundle\\Model\\OrderItemSchema', 'order_id', 'id');
 
@@ -270,7 +277,11 @@ class OrderSchema extends SchemaDeclare
             ->label('會員')
             ;
 
-        $this->belongsTo('member', 'MemberBundle\\Model\\MemberSchema', 'id', 'member_id');
+        $this->belongsTo('parent_order', 'Order')
+            ->by('parent_order_id');
+
+        $this->belongsTo('member', 'MemberBundle\\Model\\MemberSchema')
+            ->by('member_id');
 
         if ($eventBundle = kernel()->bundle('EventBundle')) {
             $this->column('event_id')
