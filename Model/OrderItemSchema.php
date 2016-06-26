@@ -105,12 +105,16 @@ class OrderItemSchema extends SchemaDeclare
             })
             ;
 
-        $this->belongsTo('logistics', 'CartBundle\\Model\\LogisticsSchema', 'id', 'logistics_id');
+        $this->belongsTo('logistics', 'Logistics')
+            ->by('logistics_id');
 
-        $this->belongsTo('order', 'CartBundle\\Model\\OrderSchema', 'id', 'order_id');
+        $this->belongsTo('order', 'Order')
+            ->by('order_id');
 
-        $this->belongsTo('type', 'ProductBundle\\Model\\ProductTypeSchema', 'id', 'type_id');
+        $this->belongsTo('type', 'ProductBundle\\Model\\ProductTypeSchema')
+            ->by('type_id');
 
-        $this->belongsTo('product', 'ProductBundle\\Model\\ProductSchema', 'id', 'product_id');
+        $this->belongsTo('product', 'ProductBundle\\Model\\ProductSchema')
+            ->by('product_id');
     }
 }

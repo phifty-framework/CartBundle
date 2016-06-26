@@ -8,8 +8,6 @@ use RuntimeException;
 
 class OrderItem extends \CartBundle\Model\OrderItemBase
 {
-
-
     /**
      * Check if there is a product type, then we deduct the quantity from 
      * that product type.
@@ -17,9 +15,9 @@ class OrderItem extends \CartBundle\Model\OrderItemBase
      */
     public function deductQuantity()
     {
-        if ($this->type_id && $this->type->id) {
+        if ($this->type_id && $this->type) {
             return $this->type->deductQuantity($this->quantity);
-        } else if ($this->product_id && $this->product->id) {
+        } else if ($this->product_id && $this->product) {
             return $this->product->deductQuantity($this->quantity);
         } else {
             throw new RuntimeException("Can not deduct quantity, both product and type are not found.");
