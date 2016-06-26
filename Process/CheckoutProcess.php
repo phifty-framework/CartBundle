@@ -6,8 +6,10 @@ use CartBundle\Model\OrderItem;
 use CartBundle\Email\OrderCreatedEmail;
 use CartBundle\CartBundle;
 use ProductBundle\Model\ProductType;
+use ProductBundle\Exception\InsufficientTypeQuantityException;
 use MemberBundle\Model\Member;
 use Exception;
+use RuntimeException;
 use PDO;
 
 use LazyRecord\Result;
@@ -149,7 +151,7 @@ class CheckoutProcess
             foreach ($orderItems as $orderItem) {
                 $this->updateOrderItemStatus($orderItem, $order);
                 if ($this->productTypeQuantityEnabled) {
-                    $this->updateProductTypeQuantity($orderItem);
+                    $this->decuctOrderItemQuantity($orderItem);
                 }
             }
         }
@@ -200,23 +202,22 @@ class CheckoutProcess
      *
      * @return boolean
      */
-    protected function updateProductTypeQuantity(OrderItem $item)
+    protected function decuctOrderItemQuantity(OrderItem $item)
     {
         if (!$item->type_id) {
             return false;
         }
-        $conn = $item->getWriteConnection();
-        $table = ProductType::TABLE;
-        $checker = $conn->prepare("SELECT quantity FROM {$table} WHERE id = ? FOR UPDATE");
-        $checker->execute([$item->type_id]);
-        $result = $checker->fetch(PDO::FETCH_ASSOC);
-        if (intval($result['quantity']) < $item->quantity) {
-            // rollback if quantity update failed.
-            throw new InsufficientOrderItemQuantityException($item, intval($result['quantity']), "quantity is not enough.");
+        try {
+            $conn = $item->getWriteConnection();
+            $conn->query('BEGIN');
+            $item->deductQuantity($item->quantity, $conn);
+            $conn->query('COMMIT');
+        } catch (InsufficientTypeQuantityException $e) {
+            $conn->query('ROLLBACK');
+            throw new InsufficientOrderItemQuantityException($item, $e->getActualQuantity(), "quantity is not enough.");
+        } catch (Exception $e) {
+            $conn->query('ROLLBACK');
         }
-
-        $updater = $conn->prepare("UPDATE {$table} SET quantity = quantity - ? WHERE id = ?");
-        $updater->execute([$item->quantity, $item->type_id]);
         return true;
     }
 

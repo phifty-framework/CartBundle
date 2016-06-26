@@ -4,23 +4,28 @@ namespace CartBundle\Model;
 
 use ProductBundle\Model\Product;
 use ProductBundle\Model\ProductType;
+use RuntimeException;
 
 class OrderItem extends \CartBundle\Model\OrderItemBase
 {
-    /*
-    public function validateType() {
-        $type = new ProductType;
-        $ret = $type->load($this->type_id);
-        if ( ! $ret->success ) {
-            return false;
-        }
-        return true;
-    }
 
-    public function validateQuantity() {
 
-    }
+    /**
+     * Check if there is a product type, then we deduct the quantity from 
+     * that product type.
+     *
      */
+    public function deductQuantity()
+    {
+        if ($this->type_id && $this->type->id) {
+            return $this->type->deductQuantity($this->quantity);
+        } else if ($this->product_id && $this->product->id) {
+            return $this->product->deductQuantity($this->quantity);
+        } else {
+            throw new RuntimeException("Can not deduct quantity, both product and type are not found.");
+        }
+    }
+
     public function getUnitPrice()
     {
         return intval($this->product->price);
