@@ -4,7 +4,6 @@ use CartBundle\Cart;
 use CartBundle\Model\Order;
 use CartBundle\Model\Coupon;
 use CartBundle\Model\OrderItem;
-use CartBundle\Email\OrderCreatedEmail;
 use CartBundle\CartBundle;
 use ProductBundle\Model\ProductType;
 use ProductBundle\Exception\InsufficientTypeQuantityException;
@@ -238,8 +237,6 @@ class CheckoutProcess
      */
     public function postProcess(Order $order)
     {
-        $email = new OrderCreatedEmail($this->member, $order);
-        $email->send();
     }
 
     public function finalize()
