@@ -3,8 +3,9 @@
 namespace CartBundle\Model;
 
 use Exception;
+use CartBundle\Model\OrderItemCollectionBase;
 
-class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase
+class OrderItemCollection extends OrderItemCollectionBase
 {
     /**
      * Calculate order item level total amount (excluding coupon).
@@ -13,12 +14,9 @@ class OrderItemCollection  extends \CartBundle\Model\OrderItemCollectionBase
      */
     public function calculateTotalAmount()
     {
-        $amount = 0;
-        foreach ($this as $item) {
-            $amount += $item->calculateSubtotal();
-        }
-
-        return $amount;
+        return array_reduce($this->items(), function($carry, $current) {
+            return $carry + intval($current->calculateSubtotal());
+        }, 0);
     }
 
     public function calculateTotalQuantity()
