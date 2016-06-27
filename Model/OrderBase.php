@@ -56,13 +56,14 @@ class OrderBase
       33 => 'paid_amount',
       34 => 'total_amount',
       35 => 'remark',
-      36 => 'member_id',
-      37 => 'event_id',
-      38 => 'event_reg_id',
-      39 => 'created_on',
-      40 => 'updated_on',
-      41 => 'created_by',
-      42 => 'updated_by',
+      36 => 'parent_order_id',
+      37 => 'member_id',
+      38 => 'event_id',
+      39 => 'event_reg_id',
+      40 => 'created_on',
+      41 => 'updated_on',
+      42 => 'created_by',
+      43 => 'updated_by',
     );
     public static $column_hash = array (
       'id' => 1,
@@ -101,6 +102,7 @@ class OrderBase
       'paid_amount' => 1,
       'total_amount' => 1,
       'remark' => 1,
+      'parent_order_id' => 1,
       'member_id' => 1,
       'event_id' => 1,
       'event_reg_id' => 1,
@@ -265,6 +267,10 @@ class OrderBase
     public function getRemark()
     {
             return $this->get('remark');
+    }
+    public function getParentOrderId()
+    {
+            return $this->get('parent_order_id');
     }
     public function getMemberId()
     {

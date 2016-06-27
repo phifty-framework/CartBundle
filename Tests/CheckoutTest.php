@@ -9,8 +9,8 @@ use CartBundle\Model\OrderSchema;
 use CartBundle\Process\CheckoutProcess;
 
 // some required exception
-use CartBundle\Process\CheckoutException;
-use CartBundle\Process\InsufficientOrderItemQuantityException;
+use CartBundle\Exception\CheckoutException;
+use CartBundle\Exception\InsufficientOrderItemQuantityException;
 
 use CartBundle\ShippingFeeRule\NoShippingFeeRule;
 use CartBundle\ShippingFeeRule\DefaultShippingFeeRule;

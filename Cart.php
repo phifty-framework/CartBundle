@@ -54,14 +54,14 @@ class Cart implements IteratorAggregate, Countable
         // - UseProductTypeQuantity
         // - NoShippingFeeCondition.AboveAmount
         $this->bundle = CartBundle::getInstance();
-        $this->removeInvalidItems($this->bundle->config('UseProductTypeQuantity'), $this->bundle->config('UseProductTypeQuantity'));
+        // $this->removeInvalidItems($this->bundle->config('UseProductTypeQuantity'), $this->bundle->config('UseProductTypeQuantity'));
         $this->shippingFeeRule = $this->bundle->getShippingFeeRule();
     }
 
     public function containsProduct(Product $product)
     {
-        if ($collection = $this->storage->all()) {
-            foreach ($collection as $item) {
+        if ($items = $this->storage->get()) {
+            foreach ($items as $item) {
                 if ($item->product_id == $product->id) {
                     return true;
                 }
@@ -114,7 +114,7 @@ class Cart implements IteratorAggregate, Countable
 
         // find the same product and type,
         // if it's the same, we should simply update the quantity instead of creating new items
-        if ($items = $this->storage->all()) {
+        if ($items = $this->storage->get()) {
             foreach ($items as $item) {
                 if (intval($item->product_id) != intval($product->id)) {
                     continue;
@@ -154,16 +154,15 @@ class Cart implements IteratorAggregate, Countable
         if ($collection = $this->storage->all()) {
             return $collection->calculateTotalAmount();
         }
-
+        
         return 0;
     }
 
     public function calculateTotalAmount()
     {
-        $totalAmount = 0;
-        $totalAmount += $this->calculateOrderItemTotalAmount();
-        $totalAmount += $this->calculateShippingFee();
-        return $totalAmount;
+        return $this->calculateOrderItemTotalAmount()
+            + $this->calculateShippingFee()
+            ;
     }
 
     public function calculateDiscountAmount()
@@ -305,7 +304,7 @@ class Cart implements IteratorAggregate, Countable
     public function mergeItems()
     {
         $itemsByProduct = [];
-        if ($items = $this->storage->all()) {
+        if ($items = $this->storage->get()) {
             foreach ($items as $item) {
                 $itemsByProduct[$item->product_id][ $item->type_id ?: 0 ][] = $item;
             }
@@ -343,9 +342,9 @@ class Cart implements IteratorAggregate, Countable
     {
         $invalidItems = [];
         // using session as our storage
-        if ($collection = $this->storage->all()) {
+        if ($items = $this->storage->get()) {
             $self = $this;
-            $items = array_filter($collection->items(), function($item) use ($self, & $invalidItems, $validateType, $validateQuantity) {
+            $items = array_filter($items, function($item) use ($self, & $invalidItems, $validateType, $validateQuantity) {
                 if (false === $self->validateItem($item, $validateType, $validateQuantity)) {
                     $invalidItems[] = $item;
                     return false;

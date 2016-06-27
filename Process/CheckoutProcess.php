@@ -8,41 +8,12 @@ use CartBundle\CartBundle;
 use ProductBundle\Model\ProductType;
 use ProductBundle\Exception\InsufficientTypeQuantityException;
 use MemberBundle\Model\Member;
+use CartBundle\Exception\CheckoutException;
+use CartBundle\Exception\InvalidOrderFormException;
+use CartBundle\Exception\InsufficientOrderItemQuantityException;
 use Exception;
 use RuntimeException;
 use PDO;
-
-use LazyRecord\Result;
-
-class CheckoutException extends Exception
-{
-
-}
-
-class InvalidOrderFormException extends CheckoutException
-{
-    protected $result;
-
-    public function __construct($message, Result $result, Exception $previous = null)
-    {
-        parent::__construct($message, 0, $previous);
-        $this->result = $result;
-    }
-}
-
-class InsufficientOrderItemQuantityException extends CheckoutException
-{
-    protected $orderItem;
-
-    protected $availableQuantity;
-
-    public function __construct(OrderItem $orderItem, $message = null, $availableQuantity = null)
-    {
-        $this->orderItem = $orderItem;
-        parent::__construct($message);
-        $this->availableQuantity = $availableQuantity;
-    }
-}
 
 class CheckoutProcess
 {
@@ -81,7 +52,7 @@ class CheckoutProcess
     }
 
 
-    public function createOrder(array $formInputs)
+    protected function createOrder(array $formInputs)
     {
         // preprocess with cart items
         $baseAmount = $this->baseAmount ?: 0;
