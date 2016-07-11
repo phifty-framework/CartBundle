@@ -17,13 +17,7 @@ class OrderItemSchema extends SchemaDeclare
             ;
 
         if (kernel()->bundle('EventBundle')) {
-            $this->column('event_reg_id')
-                ->unsigned()
-                ->integer()
-                ->refer('EventBundle\\Model\\EventRegSchema')
-                ->label('活動')
-                ->renderable(false)
-                ;
+            $this->mixin('EventBundle\\Model\\Mixin\\EventRegOwnerMixinSchema');
         }
 
         $this->column('quantity')
@@ -104,6 +98,7 @@ class OrderItemSchema extends SchemaDeclare
                 return new \DateTime;
             })
             ;
+
 
         $this->belongsTo('logistics', 'Logistics')
             ->by('logistics_id');
