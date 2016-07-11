@@ -48,6 +48,7 @@ class OrderItemBase
       'delivery_status_last_updated_at' => 1,
     );
     public static $mixin_classes = array (
+      0 => 'EventBundle\\Model\\Mixin\\EventRegOwnerMixinSchema',
     );
     protected $table = 'order_items';
     public $readSourceId = 'default';

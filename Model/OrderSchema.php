@@ -284,24 +284,8 @@ class OrderSchema extends SchemaDeclare
             ->by('member_id');
 
         if ($eventBundle = kernel()->bundle('EventBundle')) {
-            $this->column('event_id')
-                ->unsigned()
-                ->integer()
-                ->immutable()
-                ->renderAs('HiddenInput')
-                ->label('活動')
-                ;
-
-            $this->column('event_reg_id')
-                ->unsigned()
-                ->integer()
-                ->immutable()
-                ->renderAs('HiddenInput')
-                ->label('報名資料')
-                ;
-
-            $this->belongsTo('event', 'EventBundle\\Model\\EventSchema', 'id', 'event_id');
-            $this->belongsTo('event_reg', 'EventBundle\\Model\\EventRegSchema', 'id', 'event_reg_id');
+            $this->mixin('EventBundle\\Model\\Mixin\\EventOwnerMixinSchema');
+            $this->mixin('EventBundle\\Model\\Mixin\\EventRegOwnerMixinSchema');
         }
 
         $this->mixin('CommonBundle\\Model\\Mixin\\MetaSchema');

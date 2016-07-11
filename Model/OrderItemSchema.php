@@ -18,6 +18,7 @@ class OrderItemSchema extends SchemaDeclare
 
         if (kernel()->bundle('EventBundle')) {
             $this->mixin('EventBundle\\Model\\Mixin\\EventRegOwnerMixinSchema');
+            $this->belongsTo('event_reg', 'EventBundle\\Model\\EventRegSchema', 'id', 'event_reg_id');
         }
 
         $this->column('quantity')

@@ -113,6 +113,8 @@ class OrderBase
     );
     public static $mixin_classes = array (
       0 => 'CommonBundle\\Model\\Mixin\\MetaSchema',
+      1 => 'EventBundle\\Model\\Mixin\\EventRegOwnerMixinSchema',
+      2 => 'EventBundle\\Model\\Mixin\\EventOwnerMixinSchema',
     );
     protected $table = 'orders';
     public $readSourceId = 'default';
